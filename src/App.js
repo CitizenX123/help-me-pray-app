@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send } from 'lucide-react';
+import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils } from 'lucide-react';
 
 const HelpMePrayApp = () => {
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
@@ -22,69 +22,225 @@ const HelpMePrayApp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
 
+  // Dynamic prayer components for generating unique prayers
+  const prayerTemplates = {
+    gratitude: {
+      openings: [
+        "Thank you for the gift of",
+        "I am grateful for",
+        "My heart overflows with gratitude for",
+        "I give thanks for",
+        "Blessed be the gift of",
+        "I appreciate the blessing of"
+      ],
+      subjects: [
+        "this new day and all the opportunities it brings",
+        "the love that surrounds me",
+        "my health, my family, and my ability to make a difference",
+        "the simple joys and everyday miracles",
+        "the strength you provide during difficult times",
+        "the wisdom gained through life's experiences",
+        "the beauty found in ordinary moments",
+        "the grace that carries me through each day"
+      ],
+      closings: [
+        "Help me to never take these blessings for granted.",
+        "May I use these gifts wisely and with purpose.",
+        "Guide me to share this abundance with others.",
+        "Keep my heart open to recognize daily miracles.",
+        "Let gratitude transform my perspective on life.",
+        "May thankfulness be my constant companion."
+      ]
+    },
+    morning: {
+      openings: [
+        "As I begin this new day,",
+        "With the dawn of this morning,",
+        "As sunlight breaks through,",
+        "At the start of this fresh day,",
+        "With renewed hope this morning,",
+        "As I welcome this new beginning,"
+      ],
+      subjects: [
+        "fill my heart with hope and my mind with clarity",
+        "grant me strength for today's challenges and wisdom for decisions",
+        "help me approach each moment with presence and purpose",
+        "guide my steps and let me be a source of light to others",
+        "give me patience for difficulties and joy in small victories",
+        "inspire me to live with intention and compassion",
+        "help me to be mindful of your presence throughout this day"
+      ],
+      closings: [
+        "May I be present in each moment and kind in every interaction.",
+        "Let me approach each task with patience and purpose.",
+        "Help me to make this day meaningful and blessed.",
+        "Guide me to spread positivity wherever I go today.",
+        "May this day be filled with grace and growth.",
+        "Let me be a blessing to all I encounter today."
+      ]
+    },
+    bedtime: {
+      openings: [
+        "As this day comes to a close,",
+        "In the quiet of this evening,",
+        "As night falls gently,",
+        "At the end of this day,",
+        "In these peaceful moments,",
+        "As I prepare for rest,"
+      ],
+      subjects: [
+        "I reflect on the moments of grace and growth",
+        "I release the worries and burdens of today",
+        "I find peace in your constant presence",
+        "I surrender my concerns to your loving care",
+        "I cherish the blessings this day has brought",
+        "I seek forgiveness for any mistakes I've made"
+      ],
+      closings: [
+        "Grant me peaceful sleep and healing rest.",
+        "May tomorrow bring new opportunities to serve and love.",
+        "Help me wake refreshed and ready for a new day.",
+        "Let your peace guard my heart and mind through the night.",
+        "May I rest securely in your love and protection.",
+        "Prepare my heart for tomorrow's possibilities."
+      ]
+    },
+    healing: {
+      openings: [
+        "Divine Healer,",
+        "Source of all comfort,",
+        "God of restoration,",
+        "Loving Father,",
+        "Great Physician,",
+        "Merciful God,"
+      ],
+      subjects: [
+        "grant healing to all who are suffering in body, mind, or spirit",
+        "help me heal from past hurts and find the courage to forgive",
+        "restore what is broken within me and around me",
+        "bring comfort to the afflicted and strength to their caregivers",
+        "mend the wounds that time alone cannot heal",
+        "transform pain into wisdom and suffering into compassion"
+      ],
+      closings: [
+        "Give me patience with the healing process and hope for better days.",
+        "May I find strength in weakness and peace in the midst of storms.",
+        "Help me trust in your perfect timing for restoration.",
+        "Let healing flow through every part of my being.",
+        "Grant me the serenity to accept what I cannot change.",
+        "May your healing power work miracles in my life and others'."
+      ]
+    },
+    family: {
+      openings: [
+        "Loving God,",
+        "Creator of families,",
+        "Source of all love,",
+        "Divine Father,",
+        "God of relationships,",
+        "Heavenly Parent,"
+      ],
+      subjects: [
+        "bless my family with love, understanding, and unity",
+        "watch over my friends and loved ones wherever they may be",
+        "help me be a better family member and friend",
+        "strengthen the bonds between those I hold dear",
+        "bring healing to broken relationships in my family",
+        "protect my loved ones from harm and surround them with your love"
+      ],
+      closings: [
+        "Help us support each other through life's joys and challenges.",
+        "Give me patience, kindness, and wisdom in all my relationships.",
+        "May our family be a source of strength and encouragement.",
+        "Let love be the foundation of all our interactions.",
+        "Help me to forgive quickly and love unconditionally.",
+        "May our relationships reflect your love and grace."
+      ]
+    },
+    grace: {
+      openings: [
+        "Gracious God,",
+        "Generous Provider,",
+        "Source of all good gifts,",
+        "Heavenly Father,",
+        "Creator and Sustainer,",
+        "Lord of the harvest,"
+      ],
+      subjects: [
+        "we thank you for this meal and the hands that prepared it",
+        "bless this food to our bodies and our fellowship to your glory",
+        "we are grateful for your provision and the abundance before us",
+        "thank you for bringing us together around this table",
+        "bless those who do not have enough and help us to share",
+        "we acknowledge that every good gift comes from you",
+        "thank you for the farmers, workers, and all who made this meal possible"
+      ],
+      closings: [
+        "May this food nourish our bodies and strengthen us to serve you.",
+        "Use us to be a blessing to others as you have blessed us.",
+        "Help us to always remember those in need.",
+        "May our gratitude overflow into acts of kindness.",
+        "Bless this time of fellowship and conversation.",
+        "Thank you for your constant care and provision."
+      ]
+    }
+  };
+
   const prayerCategories = {
     gratitude: {
       icon: Heart,
       name: 'Gratitude',
       description: 'Prayers for thanksgiving and expressing appreciation',
-      color: 'bg-indigo-500',
-      prayers: [
-        "Thank you for the gift of this new day and all the opportunities it brings. Help me to see beauty in the ordinary moments and find joy in simple pleasures.",
-        "I am grateful for the love that surrounds me, the roof over my head, and the food on my table. May I never take these blessings for granted.",
-        "Thank you for my health, my family, and the ability to make a positive difference in the world. Guide me to use these gifts wisely."
-      ]
+      color: 'bg-indigo-500'
     },
     morning: {
       icon: Sun,
       name: 'Morning',
       description: 'Prayers to start your day with purpose and hope',
-      color: 'bg-amber-500',
-      prayers: [
-        "As I begin this new day, fill my heart with hope and my mind with clarity. Guide my steps and help me be a source of light to others.",
-        "Grant me strength for today's challenges and wisdom for today's decisions. May I approach each task with patience and purpose.",
-        "Help me to start this day with a grateful heart and an open mind. May I be present in each moment and kind in every interaction."
-      ]
+      color: 'bg-amber-500'
     },
-    evening: {
+    bedtime: {
       icon: Moon,
-      name: 'Evening',
+      name: 'Bedtime',
       description: 'Prayers for reflection, rest, and peaceful sleep',
-      color: 'bg-rose-500',
-      prayers: [
-        "As this day comes to a close, I reflect on the moments of grace and growth. Help me learn from today's experiences and rest in peace.",
-        "Thank you for carrying me through another day. Forgive me for any mistakes I've made and help me do better tomorrow.",
-        "Grant me peaceful sleep and healing rest. May tomorrow bring new opportunities to serve and to love more deeply."
-      ]
+      color: 'bg-rose-500'
     },
     healing: {
       icon: Sparkles,
       name: 'Healing',
       description: 'Prayers for physical, emotional, and spiritual restoration',
-      color: 'bg-emerald-500',
-      prayers: [
-        "Grant healing to all who are suffering - in body, mind, or spirit. Bring comfort to the afflicted and strength to those who care for them.",
-        "Help me heal from past hurts and find the courage to forgive. May I release resentment and embrace peace in my heart.",
-        "Restore what is broken within me and around me. Give me patience with the healing process and hope for better days ahead."
-      ]
+      color: 'bg-emerald-500'
     },
     family: {
       icon: Users,
       name: 'Family & Friends',
       description: 'Prayers for relationships and loved ones',
-      color: 'bg-purple-500',
-      prayers: [
-        "Bless my family with love, understanding, and unity. Help us support each other through life's joys and challenges.",
-        "Watch over my friends and loved ones wherever they may be. Keep them safe, healthy, and surrounded by your love.",
-        "Help me be a better family member and friend. Give me patience, kindness, and the wisdom to know when to speak and when to listen."
-      ]
+      color: 'bg-purple-500'
+    },
+    grace: {
+      icon: Utensils,
+      name: 'Grace',
+      description: 'Dedicated to blessing the meals',
+      color: 'bg-orange-500'
     },
     custom: {
       icon: Send,
       name: 'Create Custom Prayer',
       description: 'Generate personalized prayers for any situation',
-      color: 'bg-gradient-to-r from-indigo-500 to-purple-500',
-      prayers: []
+      color: 'bg-gradient-to-r from-indigo-500 to-purple-500'
     }
+  };
+
+  // Function to generate unique prayers
+  const generateDynamicPrayer = (category) => {
+    const templates = prayerTemplates[category];
+    if (!templates) return "Prayer not found.";
+    
+    const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+    const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+    const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+    
+    return `${randomOpening} ${randomSubject}. ${randomClosing}`;
   };
 
   const occasions = {
@@ -152,9 +308,8 @@ const HelpMePrayApp = () => {
     } else {
       setIsGenerating(true);
       setTimeout(() => {
-        const prayers = prayerCategories[selectedCategory].prayers;
-        const randomPrayer = prayers[Math.floor(Math.random() * prayers.length)];
-        setCurrentPrayer(randomPrayer);
+        const dynamicPrayer = generateDynamicPrayer(selectedCategory);
+        setCurrentPrayer(dynamicPrayer);
         setIsGenerating(false);
       }, 800);
     }
@@ -199,7 +354,7 @@ const HelpMePrayApp = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-6">
-              <Heart size={40} className="text-white" />
+              <span className="text-4xl">🙏</span>
             </div>
             <h1 className="text-5xl font-light bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 tracking-wider">Help Me Pray</h1>
             <p className="text-gray-600 text-center">Find inspiration and guidance through meaningful prayers</p>
@@ -330,7 +485,7 @@ const HelpMePrayApp = () => {
         <div className="text-center mb-8">
           <div className="mb-4">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-4">
-              <Heart size={40} className="text-white" />
+              <span className="text-4xl">🙏</span>
             </div>
           </div>
           <h1 className="text-5xl font-light bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 tracking-wider">Help Me Pray</h1>
