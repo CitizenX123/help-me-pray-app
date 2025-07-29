@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/help-me-pray-app/static/css/main.e6c13ad2.css",
-    "main.js": "/help-me-pray-app/static/js/main.85dc3bf2.js",
+    "main.js": "/help-me-pray-app/static/js/main.56477027.js",
     "static/js/453.4b7a397f.chunk.js": "/help-me-pray-app/static/js/453.4b7a397f.chunk.js",
     "index.html": "/help-me-pray-app/index.html",
     "main.e6c13ad2.css.map": "/help-me-pray-app/static/css/main.e6c13ad2.css.map",
-    "main.85dc3bf2.js.map": "/help-me-pray-app/static/js/main.85dc3bf2.js.map",
+    "main.56477027.js.map": "/help-me-pray-app/static/js/main.56477027.js.map",
     "453.4b7a397f.chunk.js.map": "/help-me-pray-app/static/js/453.4b7a397f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.85dc3bf2.js"
+    "static/js/main.56477027.js"
   ]
 }
