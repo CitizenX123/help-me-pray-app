@@ -1,0 +1,11 @@
+{
+  "name": "help-me-pray-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^6.2.0",
+    "stripe": "^17.4.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "crypto": "^1.0.1"
+  }
+}

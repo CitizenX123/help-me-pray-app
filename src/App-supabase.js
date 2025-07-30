@@ -1,13 +1,218 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings } from 'lucide-react';
+import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown } from 'lucide-react';
 import { supabase } from './supabaseClient';
+// import { SubscriptionProvider } from './SubscriptionContext';
+// import UnifiedUpgradeModal from './UnifiedUpgradeModal';
+// import PremiumUpgradeModal from './PremiumUpgradeModal';
 
-const HelpMePrayApp = () => {
+// Translation objects
+const translations = {
+  en: {
+    appTitle: "Help Me Pray",
+    appSubtitle: "Find inspiration and guidance through meaningful prayers",
+    chooseCategory: "Choose a Category",
+    generatePrayer: "Generate Prayer",
+    generating: "Generating...",
+    listen: "Listen",
+    // Prayer categories
+    gratitude: "Gratitude",
+    morning: "Morning",
+    bedtime: "Bedtime", 
+    healing: "Healing",
+    family: "Family & Friends",
+    grace: "Grace",
+    custom: "Create Custom Prayer",
+    // Prayer descriptions
+    gratitudeDesc: "Prayers for thanksgiving and expressing appreciation",
+    morningDesc: "Prayers to start your day with purpose and hope",
+    bedtimeDesc: "Prayers for reflection, rest, and peaceful sleep",
+    healingDesc: "Prayers for physical, emotional, and spiritual restoration",
+    familyDesc: "Prayers for relationships and loved ones",
+    graceDesc: "Dedicated to blessing the meals",
+    customDesc: "Generate personalized prayers for any situation",
+    // Login/Signup
+    welcomeBack: "Welcome",
+    createAccount: "Create Account",
+    signIn: "Sign In",
+    signUp: "Sign Up",
+    continueWithGoogle: "Continue with Google",
+    continueAsGuest: "🙏 Continue as Guest",
+    fullName: "Full Name",
+    emailAddress: "Email Address",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    enterFullName: "Enter your full name",
+    enterEmail: "Enter your email",
+    enterPassword: "Enter your password",
+    confirmYourPassword: "Confirm your password",
+    alreadyHaveAccount: "Already have an account?",
+    dontHaveAccount: "Don't have an account?",
+    joinCommunity: "Join our prayer community",
+    signInToContinue: "Sign in to begin your prayer journey",
+    creatingAccount: "Creating Account...",
+    signingIn: "Signing In...",
+    // Prayer lengths
+    briefBeautiful: "Brief & Beautiful",
+    perfectlyTimed: "Perfectly Timed", 
+    richMeaningful: "Rich & Meaningful",
+    briefDesc: "A short, focused prayer (1 paragraph)",
+    mediumDesc: "A perfectly timed prayer with good depth (2-3 paragraphs)",
+    comprehensiveDesc: "A rich, meaningful prayer with extensive depth (4-5 paragraphs)",
+    finalClosingShort: "In your holy name we pray, Amen.",
+    finalClosingLong: "We offer this prayer in faith, believing in your goodness and love. In Jesus' name we pray, Amen.",
+    comprehensiveMiddle1: "We come before you with humble hearts, acknowledging your sovereignty and grace in our lives.",
+    comprehensiveMiddle2: "We trust in your perfect timing and your infinite wisdom, knowing that you work all things together for our good.",
+    // Custom prayer templates
+    addictionSelf: "Heavenly Father, I come to you broken and in desperate need of your healing power. Lord, I confess that I cannot overcome this addiction on my own - I need your divine intervention. Break the chains that bind me and set me free from this destructive cycle. Give me strength for each moment of temptation and surround me with people who will support my recovery. I trust in your power to make me new. Amen.",
+    addictionOther: "Compassionate God, I come to you with a heavy heart, lifting up",
+    addictionOther2: "who is battling addiction. Lord, you see the pain and bondage that they are experiencing. I ask for your divine intervention in",
+    addictionOther3: "life. Break the chains that bind",
+    addictionOther4: "and give",
+    addictionOther5: "strength to overcome this destructive cycle. Surround",
+    addictionOther6: "with people who will support",
+    addictionOther7: "recovery journey with love and without judgment. We trust in your power to redeem and restore",
+    generalSelf: "Dear God, I bring my heart and this request before you. Please hear my prayer and respond according to your perfect will and timing. Grant me faith to trust in your goodness, even when I cannot see the way forward. Fill me with your love, peace, and hope. Amen.",
+    generalOther: "Loving Father, I lift up",
+    generalOther2: "to you in prayer. Please hear this prayer and move in",
+    generalOther3: "situation according to your perfect will. Bless",
+    generalOther4: "with your presence and fill",
+    generalOther5: "heart with hope. Surround",
+    generalOther6: "with your love and the support of caring people. Amen.",
+    inappropriateContent: "We're sorry, but your prayer request contains inappropriate content. Please revise your request to focus on positive, respectful language that honors the spirit of prayer.",
+    inappropriateName: "We're sorry, but the name you entered contains inappropriate content. Please use a respectful name.",
+    // Prayer history
+    prayerHistory: "Prayer History",
+    myPrayers: "My Prayers",
+    loadingPrayers: "Loading your prayers...",
+    noPrayers: "You haven't generated any prayers yet. Generate your first prayer to start building your history!",
+    createdOn: "Created on",
+    close: "Close",
+    // Main app interface
+    readyToGenerate: "Ready to generate a",
+    prayer: "prayer",
+    clickGenerate: "Click \"Generate Prayer\" to begin",
+    readyToCreateCustom: "Ready to create your custom prayer",
+    fillFormAndGenerate: "Fill out the form and click \"Generate Prayer\"",
+    thisPlayerIs: "This prayer is for:",
+    myself: "Myself",
+    someoneElse: "Someone else",
+    personName: "Person's name:",
+    enterTheirName: "Enter their name...",
+    specialOccasion: "Special occasion (optional):",
+    selectOccasion: "Select an occasion (optional)",
+    prayerLength: "Prayer length:",
+    whatToPrayAbout: "What would you like to pray about?",
+    describePrayer: "Describe your prayer here...",
+    characters: "characters",
+    mayThisPrayerBring: "May this prayer bring you peace and guidance"
+  },
+  es: {
+    appTitle: "Ayúdame a Orar",
+    appSubtitle: "Encuentra inspiración y guía a través de oraciones significativas",
+    chooseCategory: "Elige una Categoría",
+    generatePrayer: "Generar Oración",
+    generating: "Generando...",
+    listen: "Escuchar",
+    // Prayer categories
+    gratitude: "Gratitud",
+    morning: "Mañana",
+    bedtime: "Noche",
+    healing: "Sanación",
+    family: "Familia y Amigos",
+    grace: "Bendición",
+    custom: "Crear Oración Personalizada",
+    // Prayer descriptions
+    gratitudeDesc: "Oraciones de agradecimiento y expresión de aprecio",
+    morningDesc: "Oraciones para comenzar tu día con propósito y esperanza",
+    bedtimeDesc: "Oraciones para reflexión, descanso y sueño pacífico",
+    healingDesc: "Oraciones para restauración física, emocional y espiritual",
+    familyDesc: "Oraciones para relaciones y seres queridos",
+    graceDesc: "Dedicado a bendecir las comidas",
+    customDesc: "Genera oraciones personalizadas para cualquier situación", 
+    // Login/Signup
+    welcomeBack: "Bienvenido",
+    createAccount: "Crear Cuenta",
+    signIn: "Iniciar Sesión",
+    signUp: "Registrarse",
+    continueWithGoogle: "Continuar con Google",
+    continueAsGuest: "🙏 Continuar como Invitado",
+    fullName: "Nombre Completo",
+    emailAddress: "Dirección de Correo",
+    password: "Contraseña",
+    confirmPassword: "Confirmar Contraseña",
+    enterFullName: "Ingresa tu nombre completo",
+    enterEmail: "Ingresa tu correo electrónico",
+    enterPassword: "Ingresa tu contraseña",
+    confirmYourPassword: "Confirma tu contraseña",
+    alreadyHaveAccount: "¿Ya tienes una cuenta?",
+    dontHaveAccount: "¿No tienes una cuenta?",
+    joinCommunity: "Únete a nuestra comunidad de oración",
+    signInToContinue: "Inicia sesión para comenzar tu viaje de oración",
+    creatingAccount: "Creando Cuenta...",
+    signingIn: "Iniciando Sesión...",
+    // Prayer lengths
+    briefBeautiful: "Breve y Hermosa",
+    perfectlyTimed: "Perfectamente Cronometrada",
+    richMeaningful: "Rica y Significativa",
+    briefDesc: "Una oración corta y enfocada (1 párrafo)",
+    mediumDesc: "Una oración perfectamente cronometrada con buena profundidad (2-3 párrafos)",
+    comprehensiveDesc: "Una oración rica y significativa con profundidad extensa (4-5 párrafos)",
+    finalClosingShort: "En tu santo nombre oramos, Amén.",
+    finalClosingLong: "Ofrecemos esta oración con fe, creyendo en tu bondad y amor. En el nombre de Jesús oramos, Amén.",
+    comprehensiveMiddle1: "Venimos ante ti con corazones humildes, reconociendo tu soberanía y gracia en nuestras vidas.",
+    comprehensiveMiddle2: "Confiamos en tu tiempo perfecto y tu sabiduría infinita, sabiendo que todas las cosas obran para nuestro bien.",
+    // Custom prayer templates
+    addictionSelf: "Padre Celestial, vengo ante ti quebrantado y necesitando desesperadamente tu poder sanador. Señor, confieso que no puedo superar esta adicción por mi cuenta - necesito tu intervención divina. Rompe las cadenas que me atan y libérame de este ciclo destructivo. Dame fuerza para cada momento de tentación y rodéame de personas que apoyen mi recuperación. Confío en tu poder para hacerme nuevo. Amén.",
+    addictionOther: "Dios compasivo, vengo ante ti con el corazón pesado, elevando a",
+    addictionOther2: "quien está luchando contra la adicción. Señor, tú ves el dolor y la esclavitud que está experimentando. Pido tu intervención divina en",
+    addictionOther3: "vida. Rompe las cadenas que atan a",
+    addictionOther4: "y dale",
+    addictionOther5: "fuerza para superar este ciclo destructivo. Rodea a",
+    addictionOther6: "con personas que apoyen",
+    addictionOther7: "camino de recuperación con amor y sin juicio. Confiamos en tu poder para redimir y restaurar a",
+    generalSelf: "Querido Dios, traigo mi corazón y esta petición ante ti. Por favor escucha mi oración y responde de acuerdo a tu perfecta voluntad y tiempo. Concédeme fe para confiar en tu bondad, incluso cuando no puedo ver el camino adelante. Lléname con tu amor, paz y esperanza. Amén.",
+    generalOther: "Padre Amoroso, elevo a",
+    generalOther2: "ante ti en oración. Por favor escucha esta oración y actúa en",
+    generalOther3: "situación de acuerdo a tu perfecta voluntad. Bendice a",
+    generalOther4: "con tu presencia y llena",
+    generalOther5: "corazón con esperanza. Rodea a",
+    generalOther6: "con tu amor y el apoyo de personas que se preocupan. Amén.",
+    inappropriateContent: "Lo sentimos, pero tu petición de oración contiene contenido inapropiado. Por favor revisa tu petición para enfocarte en lenguaje positivo y respetuoso que honre el espíritu de la oración.",
+    inappropriateName: "Lo sentimos, pero el nombre que ingresaste contiene contenido inapropiado. Por favor usa un nombre respetuoso.",
+    // Prayer history
+    prayerHistory: "Historial de Oraciones",
+    myPrayers: "Mis Oraciones",
+    loadingPrayers: "Cargando tus oraciones...",
+    noPrayers: "Aún no has generado ninguna oración. ¡Genera tu primera oración para comenzar a construir tu historial!",
+    createdOn: "Creado el",
+    close: "Cerrar",
+    // Main app interface
+    readyToGenerate: "Listo para generar una oración de",
+    prayer: "oración",
+    clickGenerate: "Haz clic en \"Generar Oración\" para comenzar",
+    readyToCreateCustom: "Listo para crear tu oración personalizada",
+    fillFormAndGenerate: "Completa el formulario y haz clic en \"Generar Oración\"",
+    thisPlayerIs: "Esta oración es para:",
+    myself: "Yo mismo",
+    someoneElse: "Otra persona",
+    personName: "Nombre de la persona:",
+    enterTheirName: "Ingresa su nombre...",
+    specialOccasion: "Ocasión especial (opcional):",
+    selectOccasion: "Selecciona una ocasión (opcional)",
+    prayerLength: "Duración de la oración:",
+    whatToPrayAbout: "¿Por qué te gustaría orar?",
+    describePrayer: "Describe tu oración aquí...",
+    characters: "caracteres",
+    mayThisPrayerBring: "Que esta oración te traiga paz y guía"
+  }
+};
+
+const HelpMePrayApp = ({ user, setUser }) => {
+  // const { isPremium, upgradeToPremiun } = useSubscription();
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
   const [currentPrayer, setCurrentPrayer] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSignUp, setShowSignUp] = useState(false);
   
@@ -25,10 +230,33 @@ const HelpMePrayApp = () => {
   const [fullName, setFullName] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [language, setLanguage] = useState(() => {
+    // Load saved language preference or default to 'en'
+    return localStorage.getItem('helpMePrayLanguage') || 'en';
+  });
+  
+  // Translation helper function
+  const t = (key) => translations[language][key] || translations.en[key];
+  
+  // Function to change language and save preference
+  const changeLanguage = (newLanguage) => {
+    console.log('Changing language to:', newLanguage);
+    setLanguage(newLanguage);
+    localStorage.setItem('helpMePrayLanguage', newLanguage);
+  };
   
   // Prayer sharing state
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareAnonymously, setShareAnonymously] = useState(false);
+  
+  // Prayer uniqueness tracking
+  const [usedPrayers, setUsedPrayers] = useState(new Set());
+  
+  // Prayer history state
+  const [showPrayerHistory, setShowPrayerHistory] = useState(false);
+  const [prayerHistory, setPrayerHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  
   const [recipientEmail, setRecipientEmail] = useState('');
   const [personalMessage, setPersonalMessage] = useState('');
   const [shareSuccess, setShareSuccess] = useState('');
@@ -43,28 +271,142 @@ const HelpMePrayApp = () => {
   const [currentUtterance, setCurrentUtterance] = useState(null);
   const [useHumanVoice, setUseHumanVoice] = useState(true);
   const [humanVoiceType, setHumanVoiceType] = useState('compassionate');
-  const [audioElement, setAudioElement] = useState(null);
+  const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
+  const [googleVoices, setGoogleVoices] = useState([]);
   const [currentAudioBlob, setCurrentAudioBlob] = useState(null);
-  const [currentAudioUrl, setCurrentAudioUrl] = useState(null);
+  const [audioElement, setAudioElement] = useState(null);
+
+  // Subscription and usage tracking state
+  const [userSession, setUserSession] = useState(null);
+  const [isPremium, setIsPremium] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dailyPrayerCount, setDailyPrayerCount] = useState(0);
+  const [guestPrayerCount, setGuestPrayerCount] = useState(0);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Guest prayer count management using localStorage
+  const getGuestPrayerCount = () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const storedData = localStorage.getItem('guestPrayerCount');
+      
+      if (storedData) {
+        const { date, count } = JSON.parse(storedData);
+        if (date === today) {
+          return count;
+        }
+      }
+      
+      // Reset count for new day
+      localStorage.setItem('guestPrayerCount', JSON.stringify({ date: today, count: 0 }));
+      return 0;
+    } catch (error) {
+      console.error('Error getting guest prayer count:', error);
+      return 0;
+    }
+  };
+
+  const incrementGuestPrayerCount = () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const currentCount = getGuestPrayerCount();
+      const newCount = currentCount + 1;
+      localStorage.setItem('guestPrayerCount', JSON.stringify({ date: today, count: newCount }));
+      setGuestPrayerCount(newCount);
+    } catch (error) {
+      console.error('Error incrementing guest prayer count:', error);
+    }
+  };
+
+  // Text cleanup function for prayer formatting
+  const cleanupPrayerText = (text) => {
+    if (!text) return '';
+    
+    let cleaned = text
+      // Fix multiple spaces
+      .replace(/\s+/g, ' ')
+      // Fix spacing around punctuation
+      .replace(/\s*([,.!?;:])\s*/g, '$1 ')
+      // Remove space before periods at end of sentences
+      .replace(/\s+\./g, '.')
+      // Ensure sentences start with capital letters
+      .replace(/(^|[.!?]\s+)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase())
+      // Fix common capitalization issues
+      .replace(/\bgod\b/gi, 'God')
+      .replace(/\bjesus\b/gi, 'Jesus')
+      .replace(/\bchrist\b/gi, 'Christ')
+      .replace(/\blord\b/gi, 'Lord')
+      .replace(/\bamen\b/gi, 'Amen')
+      .replace(/\bholy spirit\b/gi, 'Holy Spirit')
+      .replace(/\bfather\b/gi, 'Father')
+      // Fix apostrophes
+      .replace(/'/g, "'")
+      .replace(/'/g, "'")
+      // Fix quotes
+      .replace(/"/g, '"')
+      .replace(/"/g, '"')
+      // Ensure proper sentence ending
+      .replace(/([^.!?])$/, '$1.')
+      // Clean up any double periods
+      .replace(/\.+/g, '.')
+      // Trim whitespace
+      .trim();
+    
+    // Ensure first letter is capitalized
+    if (cleaned.length > 0) {
+      cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    }
+    
+    return cleaned;
+  };
 
   // Check for existing session on component mount
   useEffect(() => {
     const getSession = async () => {
+      if (!supabase) {
+        setUserSession(null);
+        setIsLoading(false);
+        setLoading(false);
+        return;
+      }
+      
       const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
+      setUserSession(session);
+      
+      if (session?.user) {
+        await checkUserSubscription(session.user.id);
+        await getDailyPrayerCount(session.user.id);
+      } else {
+        // Load guest prayer count if not logged in
+        setGuestPrayerCount(getGuestPrayerCount());
+      }
+      setIsLoading(false);
       setLoading(false);
     };
 
     getSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
+
+  // Watch for user changes from parent component
+  useEffect(() => {
+    if (user && user.id !== 'guest') {
+      // Real authenticated user
+      checkUserSubscription(user.id);
+      getDailyPrayerCount(user.id);
+    } else if (user && user.id === 'guest') {
+      // Guest user
+      setGuestPrayerCount(getGuestPrayerCount());
+    }
+  }, [user]);
+
+  // Auto-upgrade TTS provider for premium users
+  useEffect(() => {
+    if (isPremium && ttsProvider === 'browser') {
+      setTtsProvider('elevenlabs');
+    } else if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
+      setTtsProvider('browser');
+    }
+  }, [isPremium, ttsProvider]);
 
   // Initialize text-to-speech voices
   useEffect(() => {
@@ -265,45 +607,229 @@ const HelpMePrayApp = () => {
     }
   };
 
-  // Function to generate unique prayers with length options
-  const generateDynamicPrayer = (category, length = 'medium') => {
-    const templates = prayerTemplates[category];
+  // Spanish prayer templates
+  const prayerTemplatesSpanish = {
+    gratitude: {
+      openings: [
+        "Padre Celestial,",
+        "Señor,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Querido Señor,",
+        "Dios Todopoderoso,"
+      ],
+      subjects: [
+        "te doy gracias por el regalo de este nuevo día y todas las oportunidades que trae",
+        "estoy agradecido por el amor que me rodea, el techo sobre mi cabeza y la comida en mi mesa",
+        "te agradezco por mi salud, mi familia y mi capacidad de hacer una diferencia positiva",
+        "doy gracias por las alegrías simples y los milagros cotidianos que proporcionas",
+        "te agradezco por tu fuerza durante los tiempos difíciles y tu presencia en los buenos momentos",
+        "aprecio la sabiduría ganada a través de las experiencias de la vida",
+        "te agradezco por la belleza encontrada en los momentos ordinarios"
+      ],
+      closings: [
+        "Ayúdame a nunca dar por sentadas estas bendiciones.",
+        "Que pueda usar estos dones sabiamente y con propósito.",
+        "Guíame para compartir esta abundancia con otros.",
+        "Mantén mi corazón abierto para reconocer los milagros diarios.",
+        "Que la gratitud transforme mi perspectiva de la vida.",
+        "Que el agradecimiento sea mi compañero constante."
+      ]
+    },
+    morning: {
+      openings: [
+        "Señor,",
+        "Padre Celestial,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Querido Señor,",
+        "Dios Todopoderoso,"
+      ],
+      subjects: [
+        "al comenzar este nuevo día, llena mi corazón de esperanza y mi mente de claridad",
+        "concédeme fuerza para los desafíos de hoy y sabiduría para las decisiones de hoy",
+        "ayúdame a comenzar este día con un corazón agradecido y una mente abierta",
+        "guía mis pasos y ayúdame a ser una fuente de luz para otros",
+        "dame paciencia para las dificultades y alegría en las pequeñas victorias",
+        "inspírame a vivir con intención y compasión hoy",
+        "ayúdame a ser consciente de tu presencia durante este día"
+      ],
+      closings: [
+        "Que pueda estar presente en cada momento y ser amable en cada interacción.",
+        "Déjame abordar cada tarea con paciencia y propósito.",
+        "Ayúdame a hacer este día significativo y bendecido.",
+        "Guíame para esparcir positividad donde quiera que vaya hoy.",
+        "Que este día esté lleno de gracia y crecimiento.",
+        "Déjame ser una bendición para todos los que encuentre hoy."
+      ]
+    },
+    bedtime: {
+      openings: [
+        "Señor,",
+        "Padre Celestial,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Querido Dios,",
+        "Padre en el Cielo,"
+      ],
+      subjects: [
+        "al terminar este día, reflexiono sobre los momentos de gracia y crecimiento",
+        "entrego las preocupaciones y cargas de hoy a tu cuidado amoroso",
+        "encuentro paz en tu presencia constante y amor fiel",
+        "entrego mis preocupaciones a ti y confío en tu plan perfecto",
+        "atesoro las bendiciones que este día ha traído y busco tu perdón",
+        "te agradezco por llevarme a través de otro día de vida"
+      ],
+      closings: [
+        "Concédeme un sueño tranquilo y descanso reparador.",
+        "Que mañana traiga nuevas oportunidades para servir y amar.",
+        "Ayúdame a despertar renovado y listo para un nuevo día.",
+        "Que tu paz guarde mi corazón y mente durante la noche.",
+        "Que pueda descansar seguro en tu amor y protección.",
+        "Prepara mi corazón para las posibilidades del mañana."
+      ]
+    },
+    strength: {
+      openings: [
+        "Dios Todopoderoso,",
+        "Señor,",
+        "Padre Celestial,",
+        "Querido Dios,",
+        "Padre Nuestro,",
+        "Dios,"
+      ],
+      subjects: [
+        "en este momento de necesidad, busco tu fuerza y sabiduría",
+        "cuando me siento débil, recuerdo que tu poder se perfecciona en mi debilidad",
+        "ayúdame a encontrar valor en medio de la incertidumbre",
+        "dame la resistencia para perseverar a través de los desafíos",
+        "fortalece mi fe cuando las dudas nublan mi mente",
+        "ayúdame a confiar en tu plan incluso cuando no puedo ver el camino"
+      ],
+      closings: [
+        "Que tu fuerza sea mi refugio y mi roca.",
+        "En ti encuentro el valor para enfrentar cualquier tormenta.",
+        "Ayúdame a caminar en fe, no en temor.",
+        "Que tu paz calme mi espíritu ansioso.",
+        "Dame la gracia para confiar en tu tiempo perfecto.",
+        "Fortalece mi corazón para los días venideros."
+      ]
+    },
+    peace: {
+      openings: [
+        "Príncipe de Paz,",
+        "Señor,",
+        "Padre Celestial,",
+        "Dios,",
+        "Querido Señor,",
+        "Padre Nuestro,"
+      ],
+      subjects: [
+        "en medio del caos de la vida, busco tu paz que sobrepasa todo entendimiento",
+        "calma las tormentas en mi corazón y mente",
+        "ayúdame a encontrar serenidad en tu presencia",
+        "que tu paz fluya a través de mí hacia otros",
+        "en momentos de ansiedad, recuérdame de tu control soberano",
+        "ayúdame a descansar en la seguridad de tu amor"
+      ],
+      closings: [
+        "Que tu paz guarde mi corazón y pensamientos.",
+        "En ti encuentro el descanso que mi alma anhela.",
+        "Ayúdame a ser un portador de tu paz a otros.",
+        "Que la tranquilidad de tu espíritu llene mi ser.",
+        "Dame la serenidad para aceptar lo que no puedo cambiar.",
+        "Que tu paz perfecta reine en mi vida."
+      ]
+    },
+    family: {
+      openings: [
+        "Padre Amoroso,",
+        "Señor,",
+        "Dios,",
+        "Padre Celestial,",
+        "Querido Dios,",
+        "Padre Nuestro,"
+      ],
+      subjects: [
+        "te agradezco por el regalo de la familia y los lazos que nos unen",
+        "bendice a cada miembro de mi familia con salud y felicidad",
+        "ayúdanos a crecer juntos en amor y comprensión",
+        "protege a mis seres queridos donde quiera que estén",
+        "guía nuestras conversaciones y fortalece nuestras relaciones",
+        "que nuestro hogar sea un refugio de paz y amor"
+      ],
+      closings: [
+        "Que el amor una nuestros corazones como uno solo.",
+        "Bendice nuestras tradiciones familiares y crea nuevos recuerdos.",
+        "Ayúdanos a apoyarnos mutuamente en todas las estaciones de la vida.",
+        "Que la gracia abunde en nuestras interacciones diarias.",
+        "Protege y guía a nuestra familia con tu mano amorosa.",
+        "Que nuestro amor familiar refleje tu amor por nosotros."
+      ]
+    }
+  };
+
+  // Function to ensure prayer uniqueness
+  const generateUniquePrayer = (generatorFunction, maxAttempts = 50) => {
+    let attempts = 0;
+    let prayer = '';
+    
+    do {
+      prayer = generatorFunction();
+      attempts++;
+      
+      // If we've tried many times and still getting duplicates, 
+      // clear some old prayers and try again
+      if (attempts > maxAttempts) {
+        const usedArray = Array.from(usedPrayers);
+        // Keep only the most recent 100 prayers to allow some recycling of very old prayers
+        if (usedArray.length > 100) {
+          const recentPrayers = new Set(usedArray.slice(-50));
+          setUsedPrayers(recentPrayers);
+        }
+        break;
+      }
+    } while (usedPrayers.has(prayer) && attempts < maxAttempts);
+    
+    // Add the new prayer to used prayers
+    setUsedPrayers(prev => new Set([...prev, prayer]));
+    
+    return prayer;
+  };
+
+  // Internal prayer generator (called by uniqueness checker)
+  const generatePrayerInternal = (category, length = 'medium') => {
+    const templates = language === 'es' ? prayerTemplatesSpanish[category] : prayerTemplates[category];
     if (!templates) return null;
     
     if (length === 'brief') {
-      // Brief: Opening + Subject only (1 sentence)
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      return `${randomOpening} ${randomSubject}.`;
+      // Brief: One paragraph with multiple sentences - beautiful but concise
+      const connectors = language === 'es' ? 
+        ['Y también', 'Además', 'Asimismo', 'Por favor'] :
+        ['And also', 'Please also', 'Additionally', 'Furthermore'];
       
-    } else if (length === 'medium') {
-      // Standard: 2 paragraphs minimum
       const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
       const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       
       // Ensure different subjects
       while (randomSubject2 === randomSubject1) {
         randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       }
-      while (randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) {
-        randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
       
-      const randomClosing1 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      let randomClosing2 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      while (randomClosing2 === randomClosing1) {
-        randomClosing2 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      }
+      const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
       
-      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${randomSubject3}.
-
-${randomClosing1} ${randomClosing2} In your holy name we pray, Amen.`;
+      return `${randomOpening} ${randomSubject1}. ${randomConnector}, ${randomSubject2}. ${randomClosing} ${t('finalClosingShort')}`;
       
-    } else {
-      // Comprehensive: 2-3 paragraphs
+    } else if (length === 'medium') {
+      // Medium: 2-3 paragraphs (moved from comprehensive) - add transitions and connectors
+      const transitions = language === 'es' ? 
+        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello'] :
+        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence'];
+      
       const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomTransition = transitions[Math.floor(Math.random() * transitions.length)];
       const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
@@ -331,19 +857,92 @@ ${randomClosing1} ${randomClosing2} In your holy name we pray, Amen.`;
         randomClosing3 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
       }
       
-      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. We come before you with humble hearts, acknowledging your sovereignty and grace in our lives.
+      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${t('comprehensiveMiddle1')}
 
-${randomSubject3}. ${randomSubject4}. We trust in your perfect timing and your infinite wisdom, knowing that you work all things together for our good.
+${randomSubject3}. ${randomSubject4}. ${t('comprehensiveMiddle2')}
 
-${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in faith, believing in your goodness and love. In Jesus' name we pray, Amen.`;
+${randomTransition}, ${randomClosing1} ${randomClosing2} ${randomClosing3} ${t('finalClosingLong')}`;
+      
+    } else {
+      // Comprehensive: 4-5 paragraphs (Rich & Meaningful) - extensive prayer
+      const transitions = language === 'es' ? 
+        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello', 'Además', 'También'] :
+        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence', 'Furthermore', 'Moreover'];
+      
+      const reflectionPhrases = language === 'es' ? [
+        'Reflexiono sobre tu bondad infinita y tu amor inagotable',
+        'Medito en tu fidelidad que nunca falla',
+        'Contemplo tu gracia que nos sostiene cada día',
+        'Pienso en tu misericordia que se renueva cada mañana',
+        'Considero tu sabiduría que guía nuestros pasos'
+      ] : [
+        'I reflect on your infinite goodness and unfailing love',
+        'I meditate on your faithfulness that never fails',
+        'I contemplate your grace that sustains us each day',
+        'I think about your mercy that is renewed every morning',
+        'I consider your wisdom that guides our steps'
+      ];
+
+      const gratitudePhrases = language === 'es' ? [
+        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros',
+        'Te doy gracias por tu presencia constante en nuestras vidas',
+        'Reconozco con humildad todos los dones que nos has otorgado',
+        'Mi alma se regocija en tu amor y provisión continua',
+        'Agradezco profundamente por tu cuidado y protección'
+      ] : [
+        'My heart fills with gratitude for all the blessings you pour upon us',
+        'I thank you for your constant presence in our lives',
+        'I humbly acknowledge all the gifts you have bestowed upon us',
+        'My soul rejoices in your love and continuous provision',
+        'I deeply appreciate your care and protection'
+      ];
+      
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomReflection = reflectionPhrases[Math.floor(Math.random() * reflectionPhrases.length)];
+      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
+      
+      // Get 6 different subjects for a longer prayer
+      const subjects = [];
+      while (subjects.length < 6) {
+        const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+        if (!subjects.includes(randomSubject)) {
+          subjects.push(randomSubject);
+        }
+      }
+      
+      // Get 4 different closings
+      const closings = [];
+      while (closings.length < 4) {
+        const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+        if (!closings.includes(randomClosing)) {
+          closings.push(randomClosing);
+        }
+      }
+      
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
+
+${subjects[2]}. ${subjects[3]}. ${randomReflection}.
+
+${randomTransition1}, ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')}
+
+${randomGratitude}. ${randomTransition2}, ${closings[0]} ${closings[1]}
+
+${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     }
+  };
+
+  // Public function that ensures uniqueness
+  const generateDynamicPrayer = (category, length = 'medium') => {
+    return generateUniquePrayer(() => generatePrayerInternal(category, length));
   };
 
   const prayerCategories = {
     gratitude: {
       icon: Heart,
-      name: 'Gratitude',
-      description: 'Prayers for thanksgiving and expressing appreciation',
+      name: t('gratitude'),
+      description: t('gratitudeDesc'),
       color: '#6366f1',
       prayers: [
         "Thank you for the gift of this new day and all the opportunities it brings. Help me to see beauty in the ordinary moments and find joy in simple pleasures.",
@@ -353,8 +952,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     },
     morning: {
       icon: Sun,
-      name: 'Morning',
-      description: 'Prayers to start your day with purpose and hope',
+      name: t('morning'),
+      description: t('morningDesc'),
       color: '#f59e0b',
       prayers: [
         "As I begin this new day, fill my heart with hope and my mind with clarity. Guide my steps and help me be a source of light to others.",
@@ -364,8 +963,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     },
     bedtime: {
       icon: Moon,
-      name: 'Bedtime',
-      description: 'Prayers for reflection, rest, and peaceful sleep',
+      name: t('bedtime'),
+      description: t('bedtimeDesc'),
       color: '#1e293b',
       prayers: [
         "As I prepare for sleep, I reflect on the moments of grace and growth from today. Help me learn from today's experiences and rest in Your peace.",
@@ -375,8 +974,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     },
     healing: {
       icon: Sparkles,
-      name: 'Healing',
-      description: 'Prayers for physical, emotional, and spiritual restoration',
+      name: t('healing'),
+      description: t('healingDesc'),
       color: '#10b981',
       prayers: [
         "Grant healing to all who are suffering - in body, mind, or spirit. Bring comfort to the afflicted and strength to those who care for them.",
@@ -386,8 +985,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     },
     family: {
       icon: Users,
-      name: 'Family & Friends',
-      description: 'Prayers for relationships and loved ones',
+      name: t('family'),
+      description: t('familyDesc'),
       color: '#8b5cf6',
       prayers: [
         "Bless my family with love, understanding, and unity. Help us support each other through life's joys and challenges.",
@@ -397,8 +996,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     },
     grace: {
       icon: Utensils,
-      name: 'Grace',
-      description: 'Dedicated to blessing the meals',
+      name: t('grace'),
+      description: t('graceDesc'),
       color: '#8b4513',
       prayers: [
         "Lord, we thank you for this meal and the hands that prepared it. May this food nourish our bodies and strengthen us to serve you.",
@@ -408,8 +1007,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     },
     custom: {
       icon: Send,
-      name: 'Create Custom Prayer',
-      description: 'Generate personalized prayers for any situation',
+      name: t('custom'),
+      description: t('customDesc'),
       color: 'linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)',
       prayers: []
     }
@@ -420,6 +1019,12 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     e.preventDefault();
     setAuthLoading(true);
     setAuthError('');
+
+    if (!supabase) {
+      setAuthError('Authentication not available in offline mode');
+      setAuthLoading(false);
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email: email,
@@ -446,6 +1051,12 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     setAuthLoading(true);
     setAuthError('');
 
+    if (!supabase) {
+      setAuthError('Authentication not available in offline mode');
+      setAuthLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -470,9 +1081,49 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
   };
 
   const handleSignOut = async () => {
+    if (!supabase) {
+      console.warn('Cannot sign out - authentication not available in offline mode');
+      return;
+    }
+    
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error signing out:', error);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setAuthLoading(true);
+    setAuthError('');
+
+    if (!supabase) {
+      setAuthError('Authentication not available in offline mode');
+      setAuthLoading(false);
+      return;
+    }
+
+    try {
+      // Use the current domain for redirect
+      const redirectUrl = `${window.location.origin}/`;
+      console.log('Google OAuth redirect URL:', redirectUrl);
+      console.log('Current location:', window.location.href);
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+        }
+      });
+
+      if (error) {
+        console.error('OAuth error:', error);
+        setAuthError(`Google sign-in failed: ${error.message}`);
+        setAuthLoading(false);
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setAuthError('An unexpected error occurred. Please try again.');
+      setAuthLoading(false);
     }
   };
 
@@ -505,44 +1156,189 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     return text;
   };
 
-  const generateCustomPrayer = (request, isForSelf, name, length, occasion = '') => {
+  const generateCustomPrayerInternal = (request, isForSelf, name, length, occasion = '') => {
     // Filter the prayer request
     const filteredRequest = filterContent(request);
+    
     if (filteredRequest === null) {
-      return "We're sorry, but your prayer request contains inappropriate content. Please revise your request to focus on positive, respectful language that honors the spirit of prayer.";
+      return t('inappropriateContent');
     }
     
     // Filter the person's name
     const filteredName = name ? filterContent(name) : name;
     if (filteredName === null) {
-      return "We're sorry, but the name you entered contains inappropriate content. Please use a respectful name.";
+      return t('inappropriateName');
     }
     
     let prayerTemplate = "";
 
     if (occasion === 'addiction') {
+      // Create varied addiction prayers
+      const addictionOpenings = language === 'es' ? [
+        'Padre Celestial,',
+        'Dios Todopoderoso,',
+        'Señor de la sanidad,',
+        'Dios compasivo,',
+        'Padre Amoroso,'
+      ] : [
+        'Heavenly Father,',
+        'Almighty God,',
+        'Lord of healing,',
+        'Compassionate God,',
+        'Loving Father,'
+      ];
+
+      const addictionMiddles = language === 'es' ? [
+        'Señor, confieso que no puedo superar esta lucha por mi cuenta - necesito tu intervención divina.',
+        'Reconozco mi necesidad de tu poder transformador en esta batalla.',
+        'Admito mi debilidad y busco tu fuerza sobrenatural.',
+        'Confieso que solo en ti puedo encontrar la libertad verdadera.',
+        'Declaro que tu gracia es suficiente para mi debilidad.'
+      ] : [
+        'Lord, I confess that I cannot overcome this struggle on my own - I need your divine intervention.',
+        'I acknowledge my need for your transforming power in this battle.',
+        'I admit my weakness and seek your supernatural strength.',
+        'I confess that only in you can I find true freedom.',
+        'I declare that your grace is sufficient for my weakness.'
+      ];
+
+      const addictionClosings = language === 'es' ? [
+        'Dame fuerza para cada momento de tentación y rodéame de personas que apoyen mi recuperación.',
+        'Concédeme valor para enfrentar cada día y sabiduría para tomar buenas decisiones.',
+        'Llena mi vida con tu presencia y guía mis pasos hacia la sanidad.',
+        'Ayúdame a encontrar nuevos hábitos saludables y relaciones que me edifiquen.',
+        'Renueva mi mente y transforma mi corazón con tu amor.'
+      ] : [
+        'Give me strength for each moment of temptation and surround me with people who will support my recovery.',
+        'Grant me courage to face each day and wisdom to make good choices.',
+        'Fill my life with your presence and guide my steps toward healing.',
+        'Help me find new healthy habits and relationships that build me up.',
+        'Renew my mind and transform my heart with your love.'
+      ];
+
+      const randomOpening = addictionOpenings[Math.floor(Math.random() * addictionOpenings.length)];
+      const randomMiddle = addictionMiddles[Math.floor(Math.random() * addictionMiddles.length)];  
+      const randomClosing = addictionClosings[Math.floor(Math.random() * addictionClosings.length)];
+
       if (isForSelf) {
-        prayerTemplate = `Heavenly Father, I come to you broken and in desperate need of your healing power. Lord, I confess that I cannot overcome this addiction on my own - I need your divine intervention. Break the chains that bind me and set me free from this destructive cycle. Give me strength for each moment of temptation and surround me with people who will support my recovery. I trust in your power to make me new. Amen.`;
+        if (language === 'es') {
+          prayerTemplate = `${randomOpening} vengo ante ti quebrantado y necesitando desesperadamente tu poder sanador. ${randomMiddle} ${filteredRequest}. Rompe las cadenas que me atan y libérame de este ciclo destructivo. ${randomClosing} Confío en tu poder para hacerme nuevo. Amén.`;
+        } else {
+          prayerTemplate = `${randomOpening} I come to you broken and in desperate need of your healing power. ${randomMiddle} ${filteredRequest}. Break the chains that bind me and set me free from this destructive cycle. ${randomClosing} I trust in your power to make me new. Amen.`;
+        }
       } else {
-        const personRef = filteredName || 'this person';
-        const possessive = filteredName ? filteredName + "'s" : 'their';
-        const objectPronoun = filteredName || 'them';
+        const personRef = filteredName || (language === 'es' ? 'esta persona' : 'this person');
+        const possessive = filteredName ? (language === 'es' ? `de ${filteredName}` : filteredName + "'s") : (language === 'es' ? 'su' : 'their');
+        const objectPronoun = filteredName || (language === 'es' ? 'él/ella' : 'them');
         
-        prayerTemplate = `Compassionate God, I come to you with a heavy heart, lifting up ${personRef} who is battling addiction. Lord, you see the pain and bondage that they are experiencing. I ask for your divine intervention in ${possessive} life. Break the chains that bind ${objectPronoun} and give ${objectPronoun} strength to overcome this destructive cycle. Surround ${objectPronoun} with people who will support ${possessive} recovery journey with love and without judgment. We trust in your power to redeem and restore ${objectPronoun}. Amen.`;
+        if (language === 'es') {
+          prayerTemplate = `${randomOpening} vengo ante ti con el corazón pesado, elevando a ${personRef} quien está luchando con esta situación: ${filteredRequest}. Señor, tú ves el dolor y la lucha que está experimentando. Pido tu intervención divina en la vida ${possessive}. Rompe las cadenas que atan a ${objectPronoun} y dale fuerza para superar estos desafíos. ${randomClosing} Confiamos en tu poder para redimir y restaurar a ${objectPronoun}. Amén.`;
+        } else {
+          prayerTemplate = `${randomOpening} I come to you with a heavy heart, lifting up ${personRef} who is struggling with this situation: ${filteredRequest}. Lord, you see the pain and struggle they are experiencing. I ask for your divine intervention in ${possessive} life. Break the chains that bind ${objectPronoun} and give ${objectPronoun} strength to overcome these challenges. ${randomClosing} We trust in your power to redeem and restore ${objectPronoun}. Amen.`;
+        }
       }
     } else {
+      // Create varied custom prayers
+      const customOpenings = language === 'es' ? [
+        'Querido Dios,',
+        'Padre Celestial,',
+        'Señor,',
+        'Dios Todopoderoso,',
+        'Padre Amoroso,'
+      ] : [
+        'Dear God,',
+        'Heavenly Father,',
+        'Lord,',
+        'Almighty God,',
+        'Loving Father,'
+      ];
+
+      const customMiddles = language === 'es' ? [
+        'Te pido que escuches mi oración y respondas según tu perfecta voluntad y tiempo.',
+        'Confío en tu sabiduría y busco tu guía en esta situación.',
+        'Pongo esta petición en tus manos, sabiendo que tu amor nunca falla.',
+        'Busco tu dirección y confío en tu plan perfecto para mi vida.',
+        'Te presento esta necesidad, creyendo en tu poder y bondad.'
+      ] : [
+        'I ask that you hear my prayer and respond according to your perfect will and timing.',
+        'I trust in your wisdom and seek your guidance in this situation.',
+        'I place this request in your hands, knowing that your love never fails.',
+        'I seek your direction and trust in your perfect plan for my life.',
+        'I bring this need to you, believing in your power and goodness.'
+      ];
+
+      const customClosings = language === 'es' ? [
+        'Concédeme fe para confiar en tu bondad, incluso cuando no puedo ver el camino adelante.',
+        'Dame paciencia mientras espero tu respuesta y sabiduría para reconocerla.',
+        'Fortalece mi fe y ayúdame a descansar en tu amor perfecto.',
+        'Guía mis pasos y llena mi corazón con tu paz.',
+        'Que tu voluntad se haga en mi vida, y que pueda glorificarte en todo.'
+      ] : [
+        'Grant me faith to trust in your goodness, even when I cannot see the way forward.',
+        'Give me patience as I await your answer and wisdom to recognize it.',
+        'Strengthen my faith and help me rest in your perfect love.',
+        'Guide my steps and fill my heart with your peace.',
+        'May your will be done in my life, and may I glorify you in all things.'
+      ];
+
+      const randomOpening = customOpenings[Math.floor(Math.random() * customOpenings.length)];
+      const randomMiddle = customMiddles[Math.floor(Math.random() * customMiddles.length)];
+      const randomClosing = customClosings[Math.floor(Math.random() * customClosings.length)];
+
       if (isForSelf) {
-        prayerTemplate = `Dear God, I bring my heart and this request before you. Please hear my prayer and respond according to your perfect will and timing. Grant me faith to trust in your goodness, even when I cannot see the way forward. Fill me with your love, peace, and hope. Amen.`;
+        if (language === 'es') {
+          prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+        } else {
+          prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+        }
       } else {
-        const personRef = filteredName || 'this person';
-        const possessive = filteredName ? filteredName + "'s" : 'their';
-        const objectPronoun = filteredName || 'them';
+        const personRef = filteredName || (language === 'es' ? 'esta persona' : 'this person');
+        const possessive = filteredName ? (language === 'es' ? `de ${filteredName}` : filteredName + "'s") : (language === 'es' ? 'su' : 'their');
+        const objectPronoun = filteredName || (language === 'es' ? 'él/ella' : 'them');
         
-        prayerTemplate = `Loving Father, I lift up ${personRef} to you in prayer. Please hear this prayer and move in ${possessive} situation according to your perfect will. Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+        if (language === 'es') {
+          prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+        } else {
+          prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+        }
       }
     }
     
     return prayerTemplate;
+  };
+
+  // Public function that ensures uniqueness for custom prayers
+  const generateCustomPrayer = (request, isForSelf, name, length, occasion = '') => {
+    return generateUniquePrayer(() => generateCustomPrayerInternal(request, isForSelf, name, length, occasion));
+  };
+
+  // Prayer history functions
+  const fetchPrayerHistory = async () => {
+    if (!user) return;
+    
+    setLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('prayer_history')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50); // Get last 50 prayers
+      
+      if (error) {
+        console.error('Error fetching prayer history:', error);
+      } else {
+        setPrayerHistory(data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching prayer history:', err);
+    }
+    setLoadingHistory(false);
+  };
+
+  const openPrayerHistory = () => {
+    setShowPrayerHistory(true);
+    fetchPrayerHistory();
   };
 
   // Social sharing functions
@@ -584,12 +1380,29 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     }
   };
 
-  // Text-to-speech functions
+  // Text-to-speech functions  
   const speakPrayer = async (text) => {
-    if (useHumanVoice) {
-      await speakWithHumanVoice(text);
-    } else {
+    // Restrict premium voices to premium users only
+    if ((ttsProvider === 'google' || ttsProvider === 'elevenlabs') && !isPremium) {
       speakWithSystemVoice(text);
+      return;
+    }
+    
+    switch (ttsProvider) {
+      case 'google':
+        await speakWithGoogleCloud(text);
+        break;
+      case 'elevenlabs':
+        if (useHumanVoice) {
+          await speakWithHumanVoice(text);
+        } else {
+          speakWithSystemVoice(text);
+        }
+        break;
+      case 'browser':
+      default:
+        speakWithSystemVoice(text);
+        break;
     }
   };
 
@@ -641,7 +1454,6 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
       setCurrentAudioBlob(audioBlob);
       
       const audioUrl = URL.createObjectURL(audioBlob);
-      setCurrentAudioUrl(audioUrl);
       
       const audio = new Audio(audioUrl);
       setAudioElement(audio);
@@ -741,6 +1553,103 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     setIsPlaying(false);
     setIsPaused(false);
     setCurrentUtterance(null);
+  };
+
+  // Google Cloud Text-to-Speech functions
+  // eslint-disable-next-line no-unused-vars
+  const getGoogleCloudVoices = async () => {
+    try {
+      const response = await fetch('/api/google-voices');
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setGoogleVoices(data.voices);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Google Cloud voices:', error);
+      // Fallback to system voices
+      setTtsProvider('browser');
+    }
+  };
+
+  const speakWithGoogleCloud = async (text) => {
+    try {
+      setIsPlaying(true);
+      setIsPaused(false);
+      
+      const selectedGoogleVoice = language === 'es' 
+        ? googleVoices.spanish?.[0] 
+        : googleVoices.english?.[0];
+      
+      const requestBody = {
+        text,
+        languageCode: language === 'es' ? 'es-US' : 'en-US',
+        voiceName: selectedGoogleVoice?.name || (language === 'es' ? 'es-US-Neural2-A' : 'en-US-Neural2-F'),
+        ssmlGender: 'FEMALE',
+        speakingRate: speechRate
+      };
+
+      const response = await fetch('/api/google-tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Convert base64 audio to blob and play
+          const audioData = atob(data.audioContent);
+          const audioArray = new Uint8Array(audioData.length);
+          for (let i = 0; i < audioData.length; i++) {
+            audioArray[i] = audioData.charCodeAt(i);
+          }
+          
+          const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          
+          const audio = new Audio(audioUrl);
+          setAudioElement(audio);
+          
+          audio.onplay = () => {
+            setIsPlaying(true);
+            setIsPaused(false);
+          };
+          
+          audio.onended = () => {
+            setIsPlaying(false);
+            setIsPaused(false);
+            setAudioElement(null);
+            URL.revokeObjectURL(audioUrl);
+          };
+          
+          audio.onerror = (e) => {
+            console.error('Audio playback error:', e);
+            setIsPlaying(false);
+            setIsPaused(false);
+            setAudioElement(null);
+            URL.revokeObjectURL(audioUrl);
+            // Fallback to system voice
+            speakWithSystemVoice(text);
+          };
+          
+          await audio.play();
+        }
+      } else {
+        throw new Error('Google Cloud TTS API request failed');
+      }
+      
+    } catch (error) {
+      console.error('Google Cloud TTS error:', error);
+      setIsPlaying(false);
+      setIsPaused(false);
+      // Fallback to system voice
+      speakWithSystemVoice(text);
+    }
   };
   
   const socialSharing = {
@@ -921,7 +1830,61 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     }
   };
 
+  // Usage tracking and subscription functions
+  const checkUserSubscription = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .single();
+      
+      if (data && !error) {
+        setIsPremium(true);
+      }
+    } catch (err) {
+      console.log('No active subscription found');
+      setIsPremium(false);
+    }
+  };
+
+  const getDailyPrayerCount = async (userId) => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('prayer_history')
+        .select('id')
+        .eq('user_id', userId)
+        .gte('created_at', today + 'T00:00:00.000Z')
+        .lt('created_at', today + 'T23:59:59.999Z');
+      
+      if (!error) {
+        setDailyPrayerCount(data?.length || 0);
+      }
+    } catch (err) {
+      console.error('Error getting daily prayer count:', err);
+    }
+  };
+
+  const canGeneratePrayer = () => {
+    if (isPremium) {
+      return true;
+    }
+    // Check if user is guest or not logged in
+    if (!userSession || (user && user.id === 'guest')) {
+      return guestPrayerCount < 3;
+    }
+    return dailyPrayerCount < 3;
+  };
+
   const generatePrayer = async () => {
+    // Check if user can generate more prayers
+    if (!canGeneratePrayer()) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     if (selectedCategory === 'custom') {
       if (!customRequest.trim()) return;
       
@@ -929,18 +1892,29 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
       setTimeout(async () => {
         const isForSelf = prayerFor === 'myself';
         const customPrayer = generateCustomPrayer(customRequest, isForSelf, personName, prayerLength, selectedOccasion);
-        setCurrentPrayer(customPrayer);
+        const cleanedPrayer = cleanupPrayerText(customPrayer);
+        setCurrentPrayer(cleanedPrayer);
         
-        // Save to prayer history if user is logged in
-        if (user) {
-          await supabase.from('prayer_history').insert({
-            user_id: user.id,
-            prayer_content: customPrayer,
-            category: 'custom',
-            occasion: selectedOccasion,
-            prayer_for: prayerFor,
-            person_name: personName
-          });
+        // Save to prayer history if user is logged in (but not guest)
+        if (user && user.id !== 'guest' && supabase) {
+          try {
+            const { error } = await supabase.from('prayer_history').insert({
+              user_id: user.id,
+              prayer_content: cleanedPrayer,
+              category: 'custom'
+            });
+            if (error) {
+              console.error('Error saving prayer history:', error);
+            } else {
+              // Update daily prayer count
+              setDailyPrayerCount(prev => prev + 1);
+            }
+          } catch (err) {
+            console.error('Error saving prayer history:', err);
+          }
+        } else {
+          // Increment guest prayer count (for both null user and guest user)
+          incrementGuestPrayerCount();
         }
         
         setIsGenerating(false);
@@ -950,15 +1924,29 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
       setTimeout(async () => {
         // Use dynamic generator for all categories with selected length
         const randomPrayer = generateDynamicPrayer(selectedCategory, prayerLength);
-        setCurrentPrayer(randomPrayer);
+        const cleanedPrayer = cleanupPrayerText(randomPrayer);
+        setCurrentPrayer(cleanedPrayer);
         
-        // Save to prayer history if user is logged in
-        if (user) {
-          await supabase.from('prayer_history').insert({
-            user_id: user.id,
-            prayer_content: randomPrayer,
-            category: selectedCategory
-          });
+        // Save to prayer history if user is logged in (but not guest)
+        if (user && user.id !== 'guest' && supabase) {
+          try {
+            const { error } = await supabase.from('prayer_history').insert({
+              user_id: user.id,
+              prayer_content: cleanedPrayer,
+              category: selectedCategory
+            });
+            if (error) {
+              console.error('Error saving prayer history:', error);
+            } else {
+              // Update daily prayer count
+              setDailyPrayerCount(prev => prev + 1);
+            }
+          } catch (err) {
+            console.error('Error saving prayer history:', err);
+          }
+        } else {
+          // Increment guest prayer count (for both null user and guest user)
+          incrementGuestPrayerCount();
         }
         
         setIsGenerating(false);
@@ -1009,7 +1997,15 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
       >
         <div style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '18px' }}>
-            <IconComponent size={24} />
+            {isCustom ? (
+              <img src="/logo192.png" alt="Praying hands" style={{ 
+                width: '24px', 
+                height: '24px',
+                filter: isSelected ? 'brightness(0) invert(1)' : 'brightness(0)' 
+              }} />
+            ) : (
+              <IconComponent size={24} />
+            )}
             <span style={{ marginLeft: '8px' }}>{category.name}</span>
           </div>
           <div style={{ fontSize: '14px', marginTop: '4px', opacity: 0.9 }}>{category.description}</div>
@@ -1018,35 +2014,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
     );
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #dbeafe, #e0e7ff, #fce7f3)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '80px',
-            height: '80px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            borderRadius: '50%',
-            marginBottom: '-10px'
-          }}>
-            <Heart size={40} color="white" />
-          </div>
-          <p style={{ fontSize: '18px', color: '#6b7280' }}>Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // User state is now managed by parent App component
 
   // Login/Signup Landing Page
   if (!user) {
@@ -1060,6 +2028,35 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
         padding: '16px'
       }}>
         <div style={{ maxWidth: '400px', width: '100%' }}>
+          {/* Language Toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.8)',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#374151',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(4px)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 1)';
+                e.target.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.8)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+            </button>
+          </div>
+          
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <div style={{
@@ -1068,11 +2065,19 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
               justifyContent: 'center',
               width: '80px',
               height: '80px',
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
               borderRadius: '50%',
-              marginBottom: '-10px'
+              backgroundColor: '#8b5cf6',
+              marginBottom: '-10px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
             }}>
-              <Heart size={40} color="white" />
+              <img 
+                src="/logo192.png" 
+                alt="Praying Hands" 
+                style={{
+                  width: '60px',
+                  height: '60px'
+                }}
+              />
             </div>
             <h1 style={{
               fontSize: '48px',
@@ -1083,8 +2088,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
               WebkitTextFillColor: 'transparent',
               marginBottom: '8px',
               letterSpacing: '2px'
-            }}>Help Me Pray</h1>
-            <p style={{ color: '#6b7280', textAlign: 'center' }}>Find inspiration and guidance through meaningful prayers</p>
+            }}>{t('appTitle')}</h1>
+            <p style={{ color: '#6b7280', textAlign: 'center' }}>{t('appSubtitle')}</p>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
               <div style={{
                 width: '96px',
@@ -1105,10 +2110,10 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
           }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
-                {showSignUp ? 'Create Account' : 'Welcome'}
+                {showSignUp ? t('createAccount') : t('welcomeBack')}
               </h2>
               <p style={{ color: '#6b7280', fontSize: '14px' }}>
-                {showSignUp ? 'Join our prayer community' : 'Sign in to begin your prayer journey'}
+                {showSignUp ? t('joinCommunity') : t('signInToContinue')}
               </p>
             </div>
 
@@ -1130,13 +2135,13 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
               {showSignUp && (
                 <div>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
-                    Full Name
+{t('fullName')}
                   </label>
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
+                    placeholder={t('enterFullName')}
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -1157,13 +2162,13 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
-                  Email Address
+{t('emailAddress')}
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('enterEmail')}
                   style={{
                     width: '100%',
                     padding: '12px 16px',
@@ -1183,13 +2188,13 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
-                  Password
+{t('password')}
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('enterPassword')}
                   style={{
                     width: '100%',
                     padding: '12px 16px',
@@ -1210,13 +2215,13 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
               {showSignUp && (
                 <div>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
-                    Confirm Password
+{t('confirmPassword')}
                   </label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm your password"
+                    placeholder={t('confirmYourPassword')}
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -1263,13 +2268,63 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                   }
                 }}
               >
-                {authLoading ? (showSignUp ? 'Creating Account...' : 'Signing In...') : (showSignUp ? 'Create Account' : 'Sign In')}
+                {authLoading ? (showSignUp ? t('creatingAccount') : t('signingIn')) : (showSignUp ? t('createAccount') : t('signIn'))}
+              </button>
+
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', margin: '16px 0' }}>
+                <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
+                <span style={{ padding: '0 16px', color: '#6b7280', fontSize: '14px' }}>or</span>
+                <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
+              </div>
+
+              {/* Google Sign In Button */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={authLoading}
+                style={{
+                  width: '100%',
+                  background: 'white',
+                  color: '#374151',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  border: '1px solid #d1d5db',
+                  cursor: authLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseOver={(e) => {
+                  if (!authLoading) {
+                    e.target.style.background = '#f9fafb';
+                    e.target.style.borderColor = '#9ca3af';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!authLoading) {
+                    e.target.style.background = 'white';
+                    e.target.style.borderColor = '#d1d5db';
+                  }
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+{t('continueWithGoogle')}
               </button>
             </form>
 
             <div style={{ marginTop: '24px', textAlign: 'center' }}>
               <p style={{ color: '#6b7280', fontSize: '14px' }}>
-                {showSignUp ? 'Already have an account?' : "Don't have an account?"}
+                {showSignUp ? t('alreadyHaveAccount') : t('dontHaveAccount')}
                 <button
                   onClick={() => {
                     setShowSignUp(!showSignUp);
@@ -1287,12 +2342,47 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                   onMouseOver={(e) => e.target.style.color = '#4338ca'}
                   onMouseOut={(e) => e.target.style.color = '#6366f1'}
                 >
-                  {showSignUp ? 'Sign In' : 'Sign Up'}
+                  {showSignUp ? t('signIn') : t('signUp')}
                 </button>
               </p>
             </div>
 
-            <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            {/* Guest Access Button */}
+            <div style={{ marginTop: '16px', textAlign: 'center' }}>
+              <button
+                onClick={() => {
+                  setUser({ id: 'guest', email: 'guest@demo.com' });
+                  setUserSession(null);
+                  setShowSignUp(false);
+                  setGuestPrayerCount(getGuestPrayerCount());
+                }}
+                style={{
+                  background: 'transparent',
+                  color: '#6b7280',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontWeight: '400',
+                  border: '1px solid #e5e7eb',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontSize: '14px'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#f9fafb';
+                  e.target.style.color = '#374151';
+                  e.target.style.borderColor = '#d1d5db';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#6b7280';
+                  e.target.style.borderColor = '#e5e7eb';
+                }}
+              >
+{t('continueAsGuest')}
+              </button>
+            </div>
+
+            <div style={{ marginTop: '16px', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
                 <div style={{
                   width: '48px',
@@ -1303,6 +2393,9 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
               </div>
               <p style={{ fontSize: '12px', color: '#6b7280' }}>
                 Create an account to save your prayers
+              </p>
+              <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px', fontStyle: 'italic' }}>
+                Having trouble with Google sign-in on mobile? Try the Guest option above!
               </p>
             </div>
           </div>
@@ -1319,6 +2412,36 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
       padding: '16px'
     }}>
       <div style={{ maxWidth: '1024px', margin: '0 auto' }}>
+        {/* Language Toggle */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <button
+            onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+            style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#374151',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              backdropFilter: 'blur(4px)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 1)';
+              e.target.style.transform = 'scale(1.05)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
+            {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+          </button>
+        </div>
+        
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ marginBottom: '16px' }}>
             <div style={{
@@ -1327,11 +2450,19 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
               justifyContent: 'center',
               width: '80px',
               height: '80px',
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
               borderRadius: '50%',
-              marginBottom: '-10px'
+              backgroundColor: '#8b5cf6',
+              marginBottom: '-10px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
             }}>
-              <Heart size={40} color="white" />
+              <img 
+                src="/logo192.png" 
+                alt="Praying Hands" 
+                style={{
+                  width: '60px',
+                  height: '60px'
+                }}
+              />
             </div>
           </div>
           <h1 style={{
@@ -1342,8 +2473,8 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
             WebkitTextFillColor: 'transparent',
             marginBottom: '8px',
             letterSpacing: '2px'
-          }}>Help Me Pray</h1>
-          <p style={{ color: '#6b7280', textAlign: 'center' }}>Find inspiration and guidance through meaningful prayers</p>
+          }}>{t('appTitle')}</h1>
+          <p style={{ color: '#6b7280', textAlign: 'center' }}>{t('appSubtitle')}</p>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
             <div style={{
               width: '96px',
@@ -1353,32 +2484,43 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
             }}></div>
           </div>
           
-          {/* User info and sign out */}
-          <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+          {/* User info */}
+          <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
               Welcome, {user?.user_metadata?.full_name || user?.email}
             </p>
-            <button
-              onClick={handleSignOut}
-              style={{
-                background: 'none',
-                border: '1px solid #d1d5db',
-                color: '#6b7280',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '12px',
-                cursor: 'pointer'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.backgroundColor = '#f3f4f6';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.backgroundColor = 'transparent';
-              }}
-            >
-              Sign Out
-            </button>
           </div>
+
+          {/* Usage Counter for all non-premium users */}
+          {!isPremium && (
+            <div style={{
+              backgroundColor: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#fef2f2' : '#f0f9ff',
+              border: `1px solid ${(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#fecaca' : '#bae6fd'}`,
+              borderRadius: '8px',
+              padding: '12px 16px',
+              marginTop: '16px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                color: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#dc2626' : '#0369a1',
+                fontSize: '14px',
+                fontWeight: '500'
+              }}>
+                {(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 
+                  ? '⚠️ Daily limit reached' 
+                  : `🎯 ${3 - (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount)} prayers left today`}
+              </div>
+              {(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 && (
+                <div style={{
+                  color: '#6b7280',
+                  fontSize: '12px',
+                  marginTop: '4px'
+                }}>
+                  {(userSession && user?.id !== 'guest') ? 'Upgrade to Premium for unlimited prayers' : 'Sign up for unlimited prayers'}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div style={{ 
@@ -1388,7 +2530,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
         }}>
           {/* Categories */}
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px', textAlign: 'center' }}>Choose a Category</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px', textAlign: 'center' }}>{t('chooseCategory')}</h2>
             {Object.entries(prayerCategories).map(([key, category]) => (
               <CategoryButton key={key} categoryKey={key} category={category} />
             ))}
@@ -1405,8 +2547,20 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
             }}>
               {showCustomForm ? (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', textAlign: 'center', width: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', gap: '12px' }}>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      backgroundColor: '#8b5cf6',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}>
+                      <img src="/logo192.png" alt="Praying hands" style={{ width: '20px', height: '20px' }} />
+                    </div>
+                    <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
                       Create Custom Prayer
                     </h2>
                   </div>
@@ -1414,7 +2568,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                   <div style={{ marginBottom: '24px' }}>
                     {/* Who is this prayer for? */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
                         This prayer is for:
                       </label>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
@@ -1462,7 +2616,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                     {/* Person's name */}
                     {prayerFor === 'someone' && (
                       <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
                           Person's name:
                         </label>
                         <input
@@ -1492,7 +2646,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
 
                     {/* Special occasion */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
                         Special occasion (optional):
                       </label>
                       <select
@@ -1536,7 +2690,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
 
                     {/* Prayer length */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
                         Prayer length:
                       </label>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
@@ -1553,7 +2707,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                             fontSize: '12px'
                           }}
                         >
-                          Brief
+{t('briefBeautiful')}
                         </button>
                         <button
                           onClick={() => setPrayerLength('medium')}
@@ -1568,7 +2722,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                             fontSize: '12px'
                           }}
                         >
-                          Standard
+{t('perfectlyTimed')}
                         </button>
                         <button
                           onClick={() => setPrayerLength('comprehensive')}
@@ -1583,43 +2737,51 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                             fontSize: '12px'
                           }}
                         >
-                          Comprehensive
+{t('richMeaningful')}
                         </button>
                       </div>
                     </div>
 
                     {/* Prayer request */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
                         What would you like to pray about?
                       </label>
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <div>
-                          <textarea
-                            value={customRequest}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Limit input length
-                              if (value.length <= 500) {
-                                setCustomRequest(value);
-                              }
-                            }}
-                            placeholder="Describe your prayer here..."
-                            maxLength={500}
-                            rows={3}
-                            style={{
-                              width: '400px',
-                              padding: '8px 12px',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '8px',
-                              fontSize: '14px',
-                              resize: 'none',
-                              outline: 'none'
-                            }}
-                          />
-                          <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', marginTop: '4px' }}>
-                            {customRequest.length}/500 characters
-                          </div>
+                      <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center',
+                        width: '100%',
+                        margin: '0 auto'
+                      }}>
+                        <textarea
+                          value={customRequest}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Limit input length
+                            if (value.length <= 500) {
+                              setCustomRequest(value);
+                            }
+                          }}
+                          placeholder="Describe your prayer here..."
+                          maxLength={500}
+                          rows={3}
+                          style={{
+                            width: '100%',
+                            maxWidth: '400px',
+                            minWidth: '280px',
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            resize: 'none',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            margin: '0 auto'
+                          }}
+                        />
+                        <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', marginTop: '4px' }}>
+                          {customRequest.length}/500 characters
                         </div>
                       </div>
                     </div>
@@ -1635,7 +2797,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                   
                   {/* Prayer length selection for all categories */}
                   <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
                       Prayer length:
                     </label>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
@@ -1654,7 +2816,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                           transition: 'all 0.2s ease'
                         }}
                       >
-                        Brief
+{t('briefBeautiful')}
                       </button>
                       <button
                         onClick={() => setPrayerLength('medium')}
@@ -1671,7 +2833,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                           transition: 'all 0.2s ease'
                         }}
                       >
-                        Standard
+{t('perfectlyTimed')}
                       </button>
                       <button
                         onClick={() => setPrayerLength('comprehensive')}
@@ -1688,13 +2850,13 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                           transition: 'all 0.2s ease'
                         }}
                       >
-                        Comprehensive
+                        {t('richMeaningful')}
                       </button>
                     </div>
                     <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', textAlign: 'center' }}>
-                      {prayerLength === 'brief' && 'A short, focused prayer (1 sentence)'}
-                      {prayerLength === 'medium' && 'A standard prayer with good depth (2 paragraphs)'}
-                      {prayerLength === 'comprehensive' && 'A detailed, thorough prayer (2-3 paragraphs)'}
+                      {prayerLength === 'brief' && t('briefDesc')}
+                      {prayerLength === 'medium' && t('mediumDesc')}
+                      {prayerLength === 'comprehensive' && t('comprehensiveDesc')}
                     </p>
                   </div>
                 </>
@@ -1738,7 +2900,7 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                       animation: isGenerating ? 'spin 1s linear infinite' : 'none' 
                     }} 
                   />
-                  <span>{isGenerating ? 'Generating...' : 'Generate Prayer'}</span>
+                  <span>{isGenerating ? t('generating') : t('generatePrayer')}</span>
                 </button>
               </div>
 
@@ -2074,6 +3236,125 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                       }}></div>
                       <p style={{ fontSize: '14px', margin: 0 }}>May this prayer bring you peace and guidance</p>
                     </div>
+
+                    {/* Prayer History and Sign Out buttons - also show when prayer is displayed */}
+                    {user && (
+                      <div style={{ 
+                        marginTop: '24px', 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        gap: '12px',
+                        flexWrap: 'wrap'
+                      }}>
+                        <button
+                          onClick={openPrayerHistory}
+                          style={{
+                            background: '#6366f1',
+                            border: 'none',
+                            color: 'white',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseOver={(e) => e.target.style.backgroundColor = '#4f46e5'}
+                          onMouseOut={(e) => e.target.style.backgroundColor = '#6366f1'}
+                        >
+                          {t('prayerHistory')}
+                        </button>
+                        
+                        {/* Premium Status / Upgrade Button */}
+                        {isPremium ? (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                            color: 'white',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            fontWeight: '600'
+                          }}>
+                            <Crown size={14} />
+                            Premium
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setShowUpgradeModal(true)}
+                            style={{
+                              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                              border: 'none',
+                              color: 'white',
+                              padding: '8px 12px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'transform 0.2s'
+                            }}
+                            onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                          >
+                            <Crown size={14} />
+                            Upgrade
+                          </button>
+                        )}
+                        
+                        {/* Guest prayer count display */}
+                        {user && user.id === 'guest' && (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            background: guestPrayerCount >= 3 ? '#fef2f2' : '#f0fdf4',
+                            color: guestPrayerCount >= 3 ? '#b91c1c' : '#15803d',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            border: guestPrayerCount >= 3 ? '1px solid #fecaca' : '1px solid #bbf7d0'
+                          }}>
+                            {guestPrayerCount >= 3 
+                              ? '⚠️ Daily limit reached' 
+                              : '🎯 ' + (3 - guestPrayerCount) + ' prayers left today'}
+                          </div>
+                        )}
+                        
+                        {user && user.id !== 'guest' && (
+                          <button
+                            onClick={handleSignOut}
+                            style={{
+                              background: 'none',
+                              border: '1px solid #d1d5db',
+                              color: '#6b7280',
+                              padding: '12px 20px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              cursor: 'pointer',
+                              minHeight: '44px',
+                              minWidth: '100px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'background-color 0.2s'
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.backgroundColor = '#f9fafb';
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.backgroundColor = 'transparent';
+                            }}
+                          >
+                            Sign Out
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div style={{ textAlign: 'center', color: '#6b7280' }}>
@@ -2088,7 +3369,17 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                       margin: '0 auto 16px',
                       boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                     }}>
-                      {React.createElement(prayerCategories[selectedCategory].icon, { size: 32, color: 'white' })}
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        backgroundColor: prayerCategories[selectedCategory].color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <img src="/logo192.png" alt="Praying hands" style={{ width: '36px', height: '36px' }} />
+                      </div>
                     </div>
                     <p style={{ fontSize: '18px', marginBottom: '8px', textAlign: 'center' }}>
                       Ready to generate a {prayerCategories[selectedCategory].name.toLowerCase()} prayer
@@ -2096,6 +3387,123 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
                     <p style={{ fontSize: '14px', textAlign: 'center', margin: 0 }}>
                       Click "Generate Prayer" to begin
                     </p>
+                    
+                    {/* Prayer History and Sign Out buttons */}
+                    {user && (
+                      <div style={{ 
+                        marginTop: '16px', 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        gap: '12px',
+                        flexWrap: 'wrap'
+                      }}>
+                        <button
+                          onClick={openPrayerHistory}
+                          style={{
+                            background: '#6366f1',
+                            border: 'none',
+                            color: 'white',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseOver={(e) => e.target.style.backgroundColor = '#4f46e5'}
+                          onMouseOut={(e) => e.target.style.backgroundColor = '#6366f1'}
+                        >
+                          {t('prayerHistory')}
+                        </button>
+                        
+                        {/* Premium Status / Upgrade Button */}
+                        {isPremium ? (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                            color: 'white',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            fontWeight: '600'
+                          }}>
+                            <Crown size={14} />
+                            Premium
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setShowUpgradeModal(true)}
+                            style={{
+                              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                              border: 'none',
+                              color: 'white',
+                              padding: '8px 12px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'transform 0.2s'
+                            }}
+                            onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                          >
+                            <Crown size={14} />
+                            Upgrade
+                          </button>
+                        )}
+                        
+                        {/* Guest prayer count display */}
+                        {user && user.id === 'guest' && (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            background: guestPrayerCount >= 3 ? '#fef2f2' : '#f0fdf4',
+                            color: guestPrayerCount >= 3 ? '#b91c1c' : '#15803d',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            border: guestPrayerCount >= 3 ? '1px solid #fecaca' : '1px solid #bbf7d0'
+                          }}>
+                            {guestPrayerCount >= 3 
+                              ? '⚠️ Daily limit reached' 
+                              : '🎯 ' + (3 - guestPrayerCount) + ' prayers left today'}
+                          </div>
+                        )}
+                        
+                        {user && user.id !== 'guest' && (
+                          <button
+                            onClick={handleSignOut}
+                            style={{
+                              background: 'none',
+                              border: '1px solid #d1d5db',
+                              color: '#6b7280',
+                              padding: '12px 20px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              cursor: 'pointer',
+                              minHeight: '44px',
+                              minWidth: '100px',
+                              touchAction: 'manipulation',
+                              WebkitTapHighlightColor: 'transparent'
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.backgroundColor = '#f3f4f6';
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.backgroundColor = 'transparent';
+                            }}
+                          >
+                            Sign Out
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -2481,6 +3889,229 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
         </div>
       )}
 
+      {/* Prayer History Modal */}
+      {showPrayerHistory && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            maxWidth: '800px',
+            width: '100%',
+            maxHeight: '80vh',
+            overflow: 'hidden',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }}>
+            <div style={{
+              padding: '24px',
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <h2 style={{ margin: 0, color: '#1f2937', fontSize: '24px', fontWeight: 'bold' }}>
+                {t('myPrayers')}
+              </h2>
+              <button
+                onClick={() => setShowPrayerHistory(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div style={{
+              padding: '24px',
+              maxHeight: '60vh',
+              overflowY: 'auto'
+            }}>
+              {loadingHistory ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                  {t('loadingPrayers')}
+                </div>
+              ) : prayerHistory.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                  {t('noPrayers')}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {prayerHistory.map((prayer, index) => (
+                    <div key={index} style={{
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '16px',
+                      backgroundColor: '#f9fafb'
+                    }}>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        marginBottom: '8px'
+                      }}>
+                        {t('createdOn')} {new Date(prayer.created_at).toLocaleString()}
+                        {prayer.category && ` • ${prayer.category.charAt(0).toUpperCase() + prayer.category.slice(1)}`}
+                      </div>
+                      <div style={{
+                        whiteSpace: 'pre-wrap',
+                        lineHeight: '1.6',
+                        color: '#374151'
+                      }}>
+                        {prayer.prayer_content}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div style={{
+              padding: '24px',
+              borderTop: '1px solid #e5e7eb',
+              textAlign: 'center'
+            }}>
+              <button
+                onClick={() => setShowPrayerHistory(false)}
+                style={{
+                  backgroundColor: '#6366f1',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+              >
+                {t('close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            maxWidth: '500px',
+            width: '100%',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }}>
+            <div style={{
+              padding: '24px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                backgroundColor: '#fef3c7',
+                color: '#d97706',
+                padding: '12px',
+                borderRadius: '8px',
+                marginBottom: '16px',
+                fontSize: '48px'
+              }}>
+                👑
+              </div>
+              <h2 style={{ margin: '0 0 16px 0', color: '#1f2937', fontSize: '24px', fontWeight: 'bold' }}>
+                Daily Limit Reached
+              </h2>
+              <p style={{ color: '#6b7280', marginBottom: '16px', lineHeight: '1.5' }}>
+                You've used your {dailyPrayerCount}/3 free prayers today. Upgrade to Premium for unlimited prayers and premium voices!
+              </p>
+              
+              <div style={{
+                backgroundColor: '#f8fafc',
+                padding: '16px',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                textAlign: 'left'
+              }}>
+                <h3 style={{ margin: '0 0 12px 0', color: '#1f2937', fontSize: '18px' }}>Premium Benefits:</h3>
+                <ul style={{ margin: 0, paddingLeft: '20px', color: '#4b5563' }}>
+                  <li>✨ Unlimited prayers</li>
+                  <li>🎙️ Premium ElevenLabs voices</li>
+                  <li>📚 Prayer history with search</li>
+                  <li>🌍 Multiple languages</li>
+                  <li>📤 Audio export & sharing</li>
+                </ul>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button
+                  onClick={() => {
+                    setShowUpgradeModal(false);
+                    // TODO: Implement Stripe checkout
+                    alert('Stripe integration coming soon! Check back tomorrow for your free prayers to reset.');
+                  }}
+                  style={{
+                    backgroundColor: '#8b5cf6',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  Upgrade to Premium - $4.99/month
+                </button>
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  style={{
+                    backgroundColor: '#f3f4f6',
+                    color: '#374151',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium Upgrade Modal */}
+      {/* <PremiumUpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      /> */}
+
       <style jsx>{`
         @keyframes spin {
           from { transform: rotate(0deg); }
@@ -2491,4 +4122,91 @@ ${randomClosing1} ${randomClosing2} ${randomClosing3} We offer this prayer in fa
   );
 };
 
-export default HelpMePrayApp;
+// Main App component with subscription context
+let appInitialized = false;
+const App = () => {
+  if (!appInitialized) {
+    console.log('App component initializing...');
+    appInitialized = true;
+  }
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // If Supabase is not configured, run in guest mode
+    if (!supabase) {
+      console.warn('Running in offline mode - no authentication available');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    }).catch((error) => {
+      console.error('Error getting session:', error);
+      setUser(null);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#f3f4f6'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            backgroundColor: '#8b5cf6',
+            marginBottom: '-10px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
+            <img 
+              src="/logo192.png" 
+              alt="Praying Hands" 
+              style={{
+                width: '60px',
+                height: '60px'
+              }}
+            />
+          </div>
+          <p style={{ fontSize: '18px', color: '#6b7280' }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <HelpMePrayApp user={user} setUser={setUser} />
+  );
+};
+
+export default App;

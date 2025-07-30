@@ -2,13 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App-supabase';
+import ErrorBoundary from './ErrorBoundary';
 import reportWebVitals from './reportWebVitals';
+
+console.log('Starting Help Me Pray app...');
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <ErrorBoundary>
     <App />
-  </React.StrictMode>
+  </ErrorBoundary>
 );
 
 // If you want to start measuring performance in your app, pass a function
