@@ -3099,71 +3099,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 </button>
               </div>
 
+
               <div style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {/* EMERGENCY TIER BUTTONS - ALWAYS VISIBLE */}
-                <div style={{ 
-                  width: '100%', 
-                  textAlign: 'center', 
-                  marginBottom: '20px',
-                  border: '5px solid red',
-                  backgroundColor: 'yellow',
-                  padding: '20px'
-                }}>
-                  <h3 style={{ color: 'red', fontSize: '18px', margin: '0 0 10px 0' }}>🚨 VOICE TIER BUTTONS 🚨</h3>
-                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button
-                      onClick={() => {
-                        alert('FREE CLICKED!');
-                        setTtsProvider('browser');
-                      }}
-                      style={{
-                        padding: '15px 25px',
-                        fontSize: '16px',
-                        backgroundColor: 'green',
-                        color: 'white',
-                        border: '3px solid black',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      FREE
-                    </button>
-                    <button
-                      onClick={() => {
-                        alert('STANDARD CLICKED!');
-                        setTtsProvider('google');
-                      }}
-                      style={{
-                        padding: '15px 25px',
-                        fontSize: '16px',
-                        backgroundColor: 'blue',
-                        color: 'white',
-                        border: '3px solid black',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      STANDARD
-                    </button>
-                    <button
-                      onClick={() => {
-                        alert('PREMIUM CLICKED!');
-                        setTtsProvider('elevenlabs');
-                      }}
-                      style={{
-                        padding: '15px 25px',
-                        fontSize: '16px',
-                        backgroundColor: 'purple',
-                        color: 'white',
-                        border: '3px solid black',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      PREMIUM
-                    </button>
-                  </div>
-                  <div style={{ marginTop: '10px', fontSize: '14px', color: 'black' }}>
-                    Current: {ttsProvider}
-                  </div>
-                </div>
 
                 {(currentPrayer && currentPrayer.trim() && !isGenerating) ? (
                   <div style={{ textAlign: 'center', width: '100%', maxWidth: '600px' }}>
@@ -3358,114 +3295,83 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </div>
                         </div>
 
-                        <div style={{ 
-                          marginBottom: '12px',
-                          border: '5px solid orange',
-                          padding: '20px',
-                          backgroundColor: 'lightblue'
-                        }}>
-                          <div style={{ fontSize: '16px', color: 'black', marginBottom: '8px', fontWeight: 'bold' }}>
-                            🔥 TIER BUTTONS SECTION 🔥
-                          </div>
-                          <div style={{ fontSize: '14px', color: 'black', marginBottom: '8px' }}>
-                            DEBUG: useHumanVoice = {useHumanVoice ? 'true' : 'false'}
-                          </div>
+                        {/* Voice Tier Selection */}
+                        <div style={{ marginBottom: '16px' }}>
                           <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                             Choose voice tier:
                           </label>
-                            <div style={{ 
-                              display: 'flex', 
-                              gap: '8px', 
-                              marginBottom: '12px', 
-                              justifyContent: 'center',
-                              border: '3px solid red',
-                              backgroundColor: 'yellow',
-                              padding: '10px',
-                              zIndex: 9999,
-                              position: 'relative'
-                            }}>
-                              <button
-                                onClick={() => {
-                                  alert('FREE button clicked!');
-                                  console.log('Clicking FREE - setting ttsProvider to browser');
-                                  setTtsProvider('browser');
-                                }}
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: '6px',
-                                  border: '3px solid blue',
-                                  background: 'red',
-                                  color: 'white',
-                                  fontSize: '14px',
-                                  cursor: 'pointer',
-                                  zIndex: 10000,
-                                  position: 'relative'
-                                }}
-                              >
-                                Free
-                              </button>
-                              <button
-                                onClick={() => {
-                                  alert('STANDARD button clicked!');
-                                  console.log('Clicking STANDARD - setting ttsProvider to google');
-                                  setTtsProvider('google');
-                                }}
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #d1d5db',
-                                  background: ttsProvider === 'google' ? '#3b82f6' : 'white',
-                                  color: ttsProvider === 'google' ? 'white' : '#374151',
-                                  fontSize: '11px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Standard ($4.99)
-                              </button>
-                              <button
-                                onClick={() => {
-                                  alert('PREMIUM button clicked!');
-                                  console.log('Clicking PREMIUM - setting ttsProvider to elevenlabs');
-                                  setTtsProvider('elevenlabs');
-                                }}
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #d1d5db',
-                                  background: ttsProvider === 'elevenlabs' ? '#6366f1' : 'white',
-                                  color: ttsProvider === 'elevenlabs' ? 'white' : '#374151',
-                                  fontSize: '11px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Premium ($7.99)
-                              </button>
-                            </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                              onClick={() => setTtsProvider('browser')}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                backgroundColor: ttsProvider === 'browser' ? '#10b981' : '#f3f4f6',
+                                color: ttsProvider === 'browser' ? 'white' : '#6b7280',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              Free
+                            </button>
+                            <button
+                              onClick={() => setTtsProvider('google')}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                backgroundColor: ttsProvider === 'google' ? '#3b82f6' : '#f3f4f6',
+                                color: ttsProvider === 'google' ? 'white' : '#6b7280',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              Standard $4.99
+                            </button>
+                            <button
+                              onClick={() => setTtsProvider('elevenlabs')}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                backgroundColor: ttsProvider === 'elevenlabs' ? '#6366f1' : '#f3f4f6',
+                                color: ttsProvider === 'elevenlabs' ? 'white' : '#6b7280',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              Premium $7.99
+                            </button>
+                          </div>
+                        </div>
 
-                            {/* Current ttsProvider state */}
-                            <div style={{ fontSize: '10px', color: '#999', marginBottom: '8px', textAlign: 'center' }}>
-                              DEBUG: ttsProvider = "{ttsProvider}"
+                        {/* FREE TIER: No voice selection */}
+                        {ttsProvider === 'browser' && (
+                          <div style={{
+                            textAlign: 'center',
+                            color: '#6b7280',
+                            fontSize: '14px',
+                            padding: '20px',
+                            backgroundColor: '#f9fafb',
+                            borderRadius: '8px',
+                            border: '1px solid #e5e7eb'
+                          }}>
+                            🎤 Using system voices (Free tier)
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              No voice selection needed
                             </div>
+                          </div>
+                        )}
 
-                            {/* FREE TIER: No voice selection */}
-                            {ttsProvider === 'browser' && (
-                              <div style={{
-                                textAlign: 'center',
-                                color: '#6b7280',
-                                fontSize: '14px',
-                                padding: '20px',
-                                backgroundColor: '#f9fafb',
-                                borderRadius: '8px',
-                                border: '1px solid #e5e7eb'
-                              }}>
-                                🎤 Using system voices (Free tier)
-                                <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                                  No voice selection needed
-                                </div>
-                              </div>
-                            )}
-                            {/* PREMIUM TIER: ElevenLabs Voices */}
-                            {ttsProvider === 'elevenlabs' && (
+                        {/* PREMIUM TIER: ElevenLabs Voices */}
+                        {ttsProvider === 'elevenlabs' && (
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                 {Object.entries(humanVoices).map(([key, voice]) => (
                                   <button
@@ -3549,7 +3455,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             }}>
                               💡 Choose your preferred voice tier above.
                             </div>
-                        </div>
+                        )}
 
                         {!useHumanVoice && (
                           <div style={{ marginBottom: '12px' }}>
