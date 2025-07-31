@@ -273,7 +273,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [availableVoices, setAvailableVoices] = useState([]);
   const [speechRate, setSpeechRate] = useState(1);
-  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
+  const [showVoiceSettings, setShowVoiceSettings] = useState(true);
   const [currentUtterance, setCurrentUtterance] = useState(null);
   const [useHumanVoice, setUseHumanVoice] = useState(true);
   const [humanVoiceType, setHumanVoiceType] = useState('nurturing');
@@ -3100,6 +3100,71 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
               </div>
 
               <div style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* EMERGENCY TIER BUTTONS - ALWAYS VISIBLE */}
+                <div style={{ 
+                  width: '100%', 
+                  textAlign: 'center', 
+                  marginBottom: '20px',
+                  border: '5px solid red',
+                  backgroundColor: 'yellow',
+                  padding: '20px'
+                }}>
+                  <h3 style={{ color: 'red', fontSize: '18px', margin: '0 0 10px 0' }}>🚨 VOICE TIER BUTTONS 🚨</h3>
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                    <button
+                      onClick={() => {
+                        alert('FREE CLICKED!');
+                        setTtsProvider('browser');
+                      }}
+                      style={{
+                        padding: '15px 25px',
+                        fontSize: '16px',
+                        backgroundColor: 'green',
+                        color: 'white',
+                        border: '3px solid black',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      FREE
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('STANDARD CLICKED!');
+                        setTtsProvider('google');
+                      }}
+                      style={{
+                        padding: '15px 25px',
+                        fontSize: '16px',
+                        backgroundColor: 'blue',
+                        color: 'white',
+                        border: '3px solid black',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      STANDARD
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('PREMIUM CLICKED!');
+                        setTtsProvider('elevenlabs');
+                      }}
+                      style={{
+                        padding: '15px 25px',
+                        fontSize: '16px',
+                        backgroundColor: 'purple',
+                        color: 'white',
+                        border: '3px solid black',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      PREMIUM
+                    </button>
+                  </div>
+                  <div style={{ marginTop: '10px', fontSize: '14px', color: 'black' }}>
+                    Current: {ttsProvider}
+                  </div>
+                </div>
+
                 {(currentPrayer && currentPrayer.trim() && !isGenerating) ? (
                   <div style={{ textAlign: 'center', width: '100%', maxWidth: '600px' }}>
                     <div style={{
