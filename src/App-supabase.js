@@ -3301,6 +3301,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center' }}>
                               <button
                                 onClick={() => {
+                                  alert('FREE button clicked!');
                                   console.log('Clicking FREE - setting ttsProvider to browser');
                                   setTtsProvider('browser');
                                 }}
@@ -3318,6 +3319,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               </button>
                               <button
                                 onClick={() => {
+                                  alert('STANDARD button clicked!');
                                   console.log('Clicking STANDARD - setting ttsProvider to google');
                                   setTtsProvider('google');
                                 }}
@@ -3335,6 +3337,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               </button>
                               <button
                                 onClick={() => {
+                                  alert('PREMIUM button clicked!');
                                   console.log('Clicking PREMIUM - setting ttsProvider to elevenlabs');
                                   setTtsProvider('elevenlabs');
                                 }}
