@@ -390,10 +390,39 @@ const HelpMePrayApp = ({ user, setUser }) => {
         return;
       }
       
-      // If we have OAuth tokens in the URL, wait a bit for Supabase to process them
+      // If we have OAuth tokens in the URL, manually set the session
       if (window.location.hash.includes('access_token')) {
-        console.log('OAuth tokens detected in URL, waiting for processing...');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('OAuth tokens detected in URL, manually setting session...');
+        
+        // Parse tokens from URL hash
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        
+        if (accessToken && refreshToken) {
+          console.log('Setting session with tokens...');
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          console.log('Set session result:', data);
+          console.log('Set session error:', error);
+          
+          if (data.session) {
+            console.log('Session set successfully:', data.session.user.email);
+            setUserSession(data.session);
+            if (data.session?.user) {
+              await checkUserSubscription(data.session.user.id);
+              await getDailyPrayerCount(data.session.user.id);
+            }
+            setIsLoading(false);
+            setLoading(false);
+            
+            // Clean up URL hash
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+          }
+        }
       }
       
       try {
