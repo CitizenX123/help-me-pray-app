@@ -31,7 +31,7 @@ const translations = {
     healingDesc: "Prayers for physical, emotional, and spiritual restoration",
     familyDesc: "Prayers for relationships and loved ones",
     graceDesc: "Dedicated to blessing the meals",
-    bibleVersesDesc: "Prayers inspired by nurturing Bible verses from NLT",
+    bibleVersesDesc: "Prayers inspired by nurturing Bible verses",
     customDesc: "Generate personalized prayers for any situation",
     // Login/Signup
     welcomeBack: "Welcome",
@@ -132,7 +132,7 @@ const translations = {
     healingDesc: "Oraciones para restauración física, emocional y espiritual",
     familyDesc: "Oraciones para relaciones y seres queridos",
     graceDesc: "Dedicado a bendecir las comidas",
-    bibleVersesDesc: "Oraciones inspiradas en versículos bíblicos nutritivos de NLT",
+    bibleVersesDesc: "Oraciones inspiradas en versículos bíblicos nutritivos",
     customDesc: "Genera oraciones personalizadas para cualquier situación", 
     // Login/Signup
     welcomeBack: "Bienvenido",
