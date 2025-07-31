@@ -3790,7 +3790,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         width: '48px',
                         height: '48px',
                         borderRadius: '50%',
-                        backgroundColor: prayerCategories[selectedCategory].color,
+                        backgroundColor: selectedCategory === 'custom' ? '#6366f1' : prayerCategories[selectedCategory].color,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
