@@ -3298,7 +3298,17 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                               Choose voice tier:
                             </label>
-                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center' }}>
+                            <div style={{ 
+                              display: 'flex', 
+                              gap: '8px', 
+                              marginBottom: '12px', 
+                              justifyContent: 'center',
+                              border: '3px solid red',
+                              backgroundColor: 'yellow',
+                              padding: '10px',
+                              zIndex: 9999,
+                              position: 'relative'
+                            }}>
                               <button
                                 onClick={() => {
                                   alert('FREE button clicked!');
@@ -3308,11 +3318,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 style={{
                                   padding: '6px 12px',
                                   borderRadius: '6px',
-                                  border: '1px solid #d1d5db',
-                                  background: ttsProvider === 'browser' ? '#22c55e' : 'white',
-                                  color: ttsProvider === 'browser' ? 'white' : '#374151',
-                                  fontSize: '11px',
-                                  cursor: 'pointer'
+                                  border: '3px solid blue',
+                                  background: 'red',
+                                  color: 'white',
+                                  fontSize: '14px',
+                                  cursor: 'pointer',
+                                  zIndex: 10000,
+                                  position: 'relative'
                                 }}
                               >
                                 Free
