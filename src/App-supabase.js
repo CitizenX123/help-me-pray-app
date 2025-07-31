@@ -3293,7 +3293,22 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </div>
                         </div>
 
-                        {useHumanVoice && ttsProvider !== 'browser' ? (
+                        {ttsProvider === 'browser' && useHumanVoice ? (
+                          <div style={{
+                            textAlign: 'center',
+                            color: '#6b7280',
+                            fontSize: '14px',
+                            padding: '20px',
+                            backgroundColor: '#f9fafb',
+                            borderRadius: '8px',
+                            border: '1px solid #e5e7eb'
+                          }}>
+                            🎤 Using system voices (Free tier)
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              Upgrade to Standard or Premium for more voice options
+                            </div>
+                          </div>
+                        ) : useHumanVoice && (ttsProvider === 'elevenlabs' || ttsProvider === 'google') ? (
                           <div style={{ marginBottom: '12px' }}>
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                               Choose voice tier:
