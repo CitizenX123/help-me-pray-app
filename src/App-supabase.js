@@ -3357,67 +3357,79 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 Premium ($7.99)
                               </button>
                             </div>
-                            <div style={{ marginBottom: '8px', fontSize: '10px', color: '#666' }}>
-                              Debug: ttsProvider = {ttsProvider}
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                              {ttsProvider === 'elevenlabs' ? (
-                                Object.entries(humanVoices).map(([key, voice]) => (
-                                <button
-                                  key={key}
-                                  onClick={() => setHumanVoiceType(key)}
-                                  style={{
-                                    padding: '12px',
-                                    backgroundColor: humanVoiceType === key ? '#eef2ff' : '#ffffff',
-                                    border: humanVoiceType === key ? '2px solid #6366f1' : '1px solid #e5e7eb',
-                                    borderRadius: '6px',
-                                    textAlign: 'left',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s'
-                                  }}
-                                >
-                                  <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
-                                    {voice.name}
-                                  </div>
-                                  <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                    {voice.description}
-                                  </div>
-                                </button>
-                              ))
-                              ) : ttsProvider === 'google' ? (
-                                Object.entries(googleCloudVoices).map(([key, voice]) => (
-                                <button
-                                  key={key}
-                                  onClick={() => setGoogleVoiceType(key)}
-                                  style={{
-                                    padding: '12px',
-                                    backgroundColor: googleVoiceType === key ? '#dbeafe' : '#ffffff',
-                                    border: googleVoiceType === key ? '2px solid #3b82f6' : '1px solid #e5e7eb',
-                                    borderRadius: '6px',
-                                    textAlign: 'left',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s'
-                                  }}
-                                >
-                                  <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
-                                    {voice.name}
-                                  </div>
-                                  <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                    {voice.description}
-                                  </div>
-                                </button>
-                              ))
-                              ) : (
-                                <div style={{ 
-                                  textAlign: 'center', 
-                                  color: '#6b7280', 
-                                  fontSize: '12px',
-                                  gridColumn: '1 / -1',
-                                  padding: '20px'
-                                }}>
-                                  Using system voices (Free tier)
+                            {/* PREMIUM TIER: ElevenLabs Voices */}
+                            {ttsProvider === 'elevenlabs' && (
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                {Object.entries(humanVoices).map(([key, voice]) => (
+                                  <button
+                                    key={key}
+                                    onClick={() => setHumanVoiceType(key)}
+                                    style={{
+                                      padding: '12px',
+                                      backgroundColor: humanVoiceType === key ? '#eef2ff' : '#ffffff',
+                                      border: humanVoiceType === key ? '2px solid #6366f1' : '1px solid #e5e7eb',
+                                      borderRadius: '6px',
+                                      textAlign: 'left',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s'
+                                    }}
+                                  >
+                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
+                                      {voice.name}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                                      {voice.description}
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* STANDARD TIER: Google Cloud TTS Voices */}
+                            {ttsProvider === 'google' && (
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                {Object.entries(googleCloudVoices).map(([key, voice]) => (
+                                  <button
+                                    key={key}
+                                    onClick={() => setGoogleVoiceType(key)}
+                                    style={{
+                                      padding: '12px',
+                                      backgroundColor: googleVoiceType === key ? '#dbeafe' : '#ffffff',
+                                      border: googleVoiceType === key ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                                      borderRadius: '6px',
+                                      textAlign: 'left',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s'
+                                    }}
+                                  >
+                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
+                                      {voice.name}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                                      {voice.description}
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* FREE TIER: No voice selection */}
+                            {ttsProvider === 'browser' && (
+                              <div style={{
+                                textAlign: 'center',
+                                color: '#6b7280',
+                                fontSize: '14px',
+                                padding: '20px',
+                                backgroundColor: '#f9fafb',
+                                borderRadius: '8px',
+                                border: '1px solid #e5e7eb'
+                              }}>
+                                🎤 Using system voices (Free tier)
+                                <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                                  Choose Standard or Premium for more voice options
                                 </div>
-                              )}
+                              </div>
+                            )}
                             </div>
                             <div style={{ 
                               fontSize: '11px', 
