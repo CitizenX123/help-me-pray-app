@@ -277,17 +277,67 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [currentUtterance, setCurrentUtterance] = useState(null);
   const [useHumanVoice, setUseHumanVoice] = useState(true);
   const [humanVoiceType, setHumanVoiceType] = useState('nurturing');
+  const [googleVoiceType, setGoogleVoiceType] = useState('warm');
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
-  const [googleVoices, setGoogleVoices] = useState({
-    english: [
-      { name: 'en-US-Neural2-F', displayName: 'Google Cloud Female', gender: 'FEMALE' },
-      { name: 'en-US-Neural2-D', displayName: 'Google Cloud Male', gender: 'MALE' }
-    ],
-    spanish: [
-      { name: 'es-US-Neural2-A', displayName: 'Google Cloud Española', gender: 'FEMALE' },
-      { name: 'es-US-Neural2-B', displayName: 'Google Cloud Español', gender: 'MALE' }
-    ]
-  });
+  // Google Cloud TTS voices to match ElevenLabs selection
+  const googleCloudVoices = {
+    warm: {
+      name: 'Grace - Warm',
+      description: 'Gentle, soothing American voice',
+      voiceName: 'en-US-Neural2-F',
+      languageCode: 'en-US',
+      gender: 'FEMALE'
+    },
+    confident: {
+      name: 'David - Confident', 
+      description: 'Strong, reassuring male voice',
+      voiceName: 'en-US-Neural2-D',
+      languageCode: 'en-US',
+      gender: 'MALE'
+    },
+    gentle: {
+      name: 'Emma - Gentle',
+      description: 'Soft, caring female voice',
+      voiceName: 'en-US-Neural2-H',
+      languageCode: 'en-US', 
+      gender: 'FEMALE'
+    },
+    steady: {
+      name: 'Michael - Steady',
+      description: 'Calm, dependable voice',
+      voiceName: 'en-US-Neural2-I',
+      languageCode: 'en-US',
+      gender: 'MALE'
+    },
+    serena: {
+      name: 'Serena - Peaceful',
+      description: 'Tranquil, meditative voice',
+      voiceName: 'en-US-Neural2-G',
+      languageCode: 'en-US',
+      gender: 'FEMALE'
+    },
+    brian: {
+      name: 'Brian - Thoughtful',
+      description: 'Reflective, wise voice',
+      voiceName: 'en-US-Neural2-J',
+      languageCode: 'en-US',
+      gender: 'MALE'
+    },
+    aria: {
+      name: 'Aria - Uplifting',
+      description: 'Inspiring, hopeful voice',
+      voiceName: 'en-US-Neural2-C',
+      languageCode: 'en-US',
+      gender: 'FEMALE'
+    },
+    compassionate: {
+      name: 'Samuel - Compassionate',
+      description: 'Understanding, empathetic voice',
+      voiceName: 'en-US-Neural2-A',
+      languageCode: 'en-US',
+      gender: 'MALE'
+    }
+  };
   const [currentAudioBlob, setCurrentAudioBlob] = useState(null);
   const [audioElement, setAudioElement] = useState(null);
 
@@ -1726,15 +1776,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       setIsPlaying(true);
       setIsPaused(false);
       
-      const selectedGoogleVoice = language === 'es' 
-        ? googleVoices.spanish?.[0] 
-        : googleVoices.english?.[0];
+      const selectedGoogleVoice = googleCloudVoices[googleVoiceType];
       
       const requestBody = {
         text,
-        languageCode: language === 'es' ? 'es-US' : 'en-US',
-        voiceName: selectedGoogleVoice?.name || (language === 'es' ? 'es-US-Neural2-A' : 'en-US-Neural2-F'),
-        ssmlGender: 'FEMALE',
+        languageCode: selectedGoogleVoice.languageCode,
+        voiceName: selectedGoogleVoice.voiceName,
+        ssmlGender: selectedGoogleVoice.gender,
         speakingRate: speechRate
       };
 
@@ -3296,11 +3344,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 Premium ($7.99)
                               </button>
                             </div>
-                            <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
-                              {ttsProvider === 'elevenlabs' ? 'Choose ElevenLabs voice:' : 'Using Google Cloud TTS'}
-                            </label>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                              {Object.entries(humanVoices).map(([key, voice]) => (
+                              {ttsProvider === 'elevenlabs' ? (
+                                Object.entries(humanVoices).map(([key, voice]) => (
                                 <button
                                   key={key}
                                   onClick={() => setHumanVoiceType(key)}
@@ -3321,7 +3367,41 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                     {voice.description}
                                   </div>
                                 </button>
-                              ))}
+                              ))
+                              ) : ttsProvider === 'google' ? (
+                                Object.entries(googleCloudVoices).map(([key, voice]) => (
+                                <button
+                                  key={key}
+                                  onClick={() => setGoogleVoiceType(key)}
+                                  style={{
+                                    padding: '12px',
+                                    backgroundColor: googleVoiceType === key ? '#dbeafe' : '#ffffff',
+                                    border: googleVoiceType === key ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                                    borderRadius: '6px',
+                                    textAlign: 'left',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                  }}
+                                >
+                                  <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
+                                    {voice.name}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                                    {voice.description}
+                                  </div>
+                                </button>
+                              ))
+                              ) : (
+                                <div style={{ 
+                                  textAlign: 'center', 
+                                  color: '#6b7280', 
+                                  fontSize: '12px',
+                                  gridColumn: '1 / -1',
+                                  padding: '20px'
+                                }}>
+                                  Using system voices (Free tier)
+                                </div>
+                              )}
                             </div>
                             <div style={{ 
                               fontSize: '11px', 
