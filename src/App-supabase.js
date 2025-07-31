@@ -22,7 +22,7 @@ const translations = {
     healing: "Healing",
     family: "Family & Friends",
     grace: "Grace",
-    bibleVerses: "Bible Verses",
+    bibleVerses: "Bible",
     custom: "Create Custom Prayer",
     // Prayer descriptions
     gratitudeDesc: "Prayers for thanksgiving and expressing appreciation",
@@ -31,7 +31,7 @@ const translations = {
     healingDesc: "Prayers for physical, emotional, and spiritual restoration",
     familyDesc: "Prayers for relationships and loved ones",
     graceDesc: "Dedicated to blessing the meals",
-    bibleVersesDesc: "Prayers inspired by nurturing Bible verses",
+    bibleVersesDesc: "Prayers inspired by Scripture",
     customDesc: "Generate personalized prayers for any situation",
     // Login/Signup
     welcomeBack: "Welcome",
@@ -123,7 +123,7 @@ const translations = {
     healing: "Sanación",
     family: "Familia y Amigos",
     grace: "Bendición",
-    bibleVerses: "Versículos Bíblicos",
+    bibleVerses: "Biblia",
     custom: "Crear Oración Personalizada",
     // Prayer descriptions
     gratitudeDesc: "Oraciones de agradecimiento y expresión de aprecio",
@@ -132,7 +132,7 @@ const translations = {
     healingDesc: "Oraciones para restauración física, emocional y espiritual",
     familyDesc: "Oraciones para relaciones y seres queridos",
     graceDesc: "Dedicado a bendecir las comidas",
-    bibleVersesDesc: "Oraciones inspiradas en versículos bíblicos nutritivos",
+    bibleVersesDesc: "Oraciones inspiradas en las Escrituras",
     customDesc: "Genera oraciones personalizadas para cualquier situación", 
     // Login/Signup
     welcomeBack: "Bienvenido",
@@ -1216,7 +1216,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       icon: Book,
       name: t('bibleVerses'),
       description: t('bibleVersesDesc'),
-      color: '#008B8B',
+      color: '#B8860B',
       prayers: []
     },
     custom: {
