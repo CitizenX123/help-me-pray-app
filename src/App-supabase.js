@@ -1549,7 +1549,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       setIsPlaying(true);
       setIsPaused(false);
 
+      console.log('humanVoiceType:', humanVoiceType);
+      console.log('Available humanVoices keys:', Object.keys(humanVoices));
       const voiceConfig = humanVoices[humanVoiceType];
+      console.log('voiceConfig:', voiceConfig);
+      if (!voiceConfig) {
+        throw new Error(`Voice configuration not found for: ${humanVoiceType}`);
+      }
       console.log('Using voice config:', voiceConfig.name);
       
       // Truncate text for demo if too long (ElevenLabs has character limits)
