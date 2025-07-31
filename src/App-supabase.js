@@ -1108,16 +1108,20 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
   };
 
   const handleGoogleSignIn = async () => {
+    console.log('Google sign-in clicked!');
     setAuthLoading(true);
     setAuthError('');
 
+    console.log('Supabase client:', supabase);
     if (!supabase) {
+      console.log('Supabase not available');
       setAuthError('Authentication not available in offline mode');
       setAuthLoading(false);
       return;
     }
 
     try {
+      console.log('Starting OAuth flow...');
       // Always use current domain for redirect - let Supabase handle it
       const redirectUrl = `${window.location.origin}/`;
       console.log('Google OAuth redirect URL:', redirectUrl);
