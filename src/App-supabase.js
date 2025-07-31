@@ -278,7 +278,16 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [useHumanVoice, setUseHumanVoice] = useState(true);
   const [humanVoiceType, setHumanVoiceType] = useState('compassionate');
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
-  const [googleVoices, setGoogleVoices] = useState([]);
+  const [googleVoices, setGoogleVoices] = useState({
+    english: [
+      { name: 'en-US-Neural2-F', displayName: 'Google Cloud Female', gender: 'FEMALE' },
+      { name: 'en-US-Neural2-D', displayName: 'Google Cloud Male', gender: 'MALE' }
+    ],
+    spanish: [
+      { name: 'es-US-Neural2-A', displayName: 'Google Cloud Española', gender: 'FEMALE' },
+      { name: 'es-US-Neural2-B', displayName: 'Google Cloud Español', gender: 'MALE' }
+    ]
+  });
   const [currentAudioBlob, setCurrentAudioBlob] = useState(null);
   const [audioElement, setAudioElement] = useState(null);
 
