@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown } from 'lucide-react';
+import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book } from 'lucide-react';
 import { supabase } from './supabaseClient';
 // Force cache bust v2.3
 // import { SubscriptionProvider } from './SubscriptionContext';
@@ -22,6 +22,7 @@ const translations = {
     healing: "Healing",
     family: "Family & Friends",
     grace: "Grace",
+    bibleVerses: "Bible Verses",
     custom: "Create Custom Prayer",
     // Prayer descriptions
     gratitudeDesc: "Prayers for thanksgiving and expressing appreciation",
@@ -30,6 +31,7 @@ const translations = {
     healingDesc: "Prayers for physical, emotional, and spiritual restoration",
     familyDesc: "Prayers for relationships and loved ones",
     graceDesc: "Dedicated to blessing the meals",
+    bibleVersesDesc: "Prayers inspired by nurturing Bible verses from NLT",
     customDesc: "Generate personalized prayers for any situation",
     // Login/Signup
     welcomeBack: "Welcome",
@@ -121,6 +123,7 @@ const translations = {
     healing: "Sanación",
     family: "Familia y Amigos",
     grace: "Bendición",
+    bibleVerses: "Versículos Bíblicos",
     custom: "Crear Oración Personalizada",
     // Prayer descriptions
     gratitudeDesc: "Oraciones de agradecimiento y expresión de aprecio",
@@ -129,6 +132,7 @@ const translations = {
     healingDesc: "Oraciones para restauración física, emocional y espiritual",
     familyDesc: "Oraciones para relaciones y seres queridos",
     graceDesc: "Dedicado a bendecir las comidas",
+    bibleVersesDesc: "Oraciones inspiradas en versículos bíblicos nutritivos de NLT",
     customDesc: "Genera oraciones personalizadas para cualquier situación", 
     // Login/Signup
     welcomeBack: "Bienvenido",
@@ -924,6 +928,84 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Internal prayer generator (called by uniqueness checker)
   const generatePrayerInternal = (category, length = 'medium') => {
+    // Special handling for Bible Verses category
+    if (category === 'bibleVerses') {
+      const bibleVerses = [
+        {
+          verse: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+          reference: "Romans 8:28 (NLT)",
+          theme: "God's sovereignty and purpose",
+          prayer: "Heavenly Father, thank you for this beautiful promise that you are working in all circumstances of our lives. When we face uncertainty or difficulty, help us remember that you have a purpose and plan. Give us the faith to trust in your goodness even when we cannot see the outcome. May we find peace knowing that you are weaving all things together for our good and your glory. In Jesus' name, Amen."
+        },
+        {
+          verse: "The Lord your God is with you, the Mighty Warrior who saves. He will take great delight in you; in his love he will no longer rebuke you, but will rejoice over you with singing.",
+          reference: "Zephaniah 3:17 (NLT)",
+          theme: "God's love and presence",
+          prayer: "Lord, what a wonderful truth that you delight in us and rejoice over us with singing! When we feel alone or unworthy, remind us of your constant presence and unconditional love. Help us to hear your songs of joy over our lives, even in the quiet moments. Fill our hearts with the assurance that we are treasured by you, our Mighty Warrior and Savior. Amen."
+        },
+        {
+          verse: "Cast all your anxiety on him because he cares for you.",
+          reference: "1 Peter 5:7 (NLT)",
+          theme: "God's care and peace",
+          prayer: "Caring Father, we come to you carrying the weight of our worries and fears. This verse reminds us that we don't have to bear these burdens alone. You invite us to cast our anxieties on you because you truly care for us. Help us to let go of the things that trouble our hearts and minds. Replace our anxiety with your perfect peace, and help us to trust in your loving care for every detail of our lives. Amen."
+        },
+        {
+          verse: "For I know the plans I have for you,\" declares the Lord, \"plans to prosper you and not to harm you, plans to give you hope and a future.",
+          reference: "Jeremiah 29:11 (NLT)",
+          theme: "God's plans and hope",
+          prayer: "Gracious God, thank you for having plans for our lives that are filled with hope and purpose. When we are uncertain about the future or questioning our path, help us to remember that you have good plans for us. Give us patience to wait for your timing and wisdom to follow your guidance. May we find courage in knowing that our future is secure in your loving hands. Amen."
+        },
+        {
+          verse: "He heals the brokenhearted and bandages their wounds.",
+          reference: "Psalm 147:3 (NLT)",
+          theme: "God's healing and comfort",
+          prayer: "Healing God, you see every broken heart and every wound that life has inflicted upon us. This verse assures us that you are the great healer who tenderly cares for our pain. Come and heal the places in our hearts that are broken. Bandage our wounds with your love and mercy. Help us to find comfort in your presence and hope in your promise of restoration. Thank you for being close to the brokenhearted. Amen."
+        },
+        {
+          verse: "Be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.",
+          reference: "Joshua 1:9 (NLT)",
+          theme: "God's presence and courage",
+          prayer: "Mighty God, when we face challenges that seem overwhelming, this verse reminds us to be strong and courageous. Help us to remember that we are never alone because you are always with us. When fear tries to paralyze us or discouragement weighs us down, fill us with your strength and courage. May we walk boldly into each day knowing that you go before us and beside us wherever we go. Amen."
+        },
+        {
+          verse: "Give all your worries and cares to God, for he cares about you.",
+          reference: "1 Peter 5:7 (NLT)",
+          theme: "God's care and provision",
+          prayer: "Loving Father, you invite us to bring all our worries and cares to you because you truly care about every aspect of our lives. Help us to release our grip on the things that burden us and place them in your capable hands. Teach us to trust in your care and provision. When anxiety tries to overwhelm us, remind us of this beautiful invitation to find rest in you. Thank you for caring about both our big concerns and our smallest worries. Amen."
+        },
+        {
+          verse: "And I am convinced that nothing can ever separate us from God's love. Neither death nor life, neither angels nor demons, neither our fears for today nor our worries about tomorrow—not even the powers of hell can separate us from God's love.",
+          reference: "Romans 8:38 (NLT)",
+          theme: "God's unending love",
+          prayer: "Faithful God, what an incredible promise that nothing can separate us from your love! When we feel distant from you or doubt our worth, help us to remember this unshakeable truth. No mistake we've made, no fear we carry, no circumstance we face can diminish your love for us. Give us confidence to rest in this eternal love that surrounds us always. May we live with the freedom and joy that comes from knowing we are forever held in your love. Amen."
+        }
+      ];
+
+      const randomVerse = bibleVerses[Math.floor(Math.random() * bibleVerses.length)];
+      
+      if (length === 'brief') {
+        return `"${randomVerse.verse}" - ${randomVerse.reference}
+        
+This verse reminds us of ${randomVerse.theme}. ${randomVerse.prayer}`;
+      } else if (length === 'medium') {
+        return `"${randomVerse.verse}" - ${randomVerse.reference}
+        
+This beautiful verse speaks to us about ${randomVerse.theme}. In times of uncertainty and challenge, God's Word provides the foundation we need for hope and strength.
+
+${randomVerse.prayer}`;
+      } else {
+        return `"${randomVerse.verse}" - ${randomVerse.reference}
+        
+This powerful verse illuminates the truth about ${randomVerse.theme}. Throughout Scripture, we see God's consistent character of love, faithfulness, and care for His people. When we meditate on His Word, our hearts are strengthened and our faith is renewed.
+
+The wisdom found in this passage reminds us that God's truth is unchanging and His promises are sure. In a world full of uncertainty, we can anchor our souls in the eternal truths of His Word.
+
+${randomVerse.prayer}
+
+May this verse continue to speak to your heart throughout the day, bringing you the peace and assurance that comes from knowing God's heart toward you.`;
+      }
+    }
+
     const templates = language === 'es' ? prayerTemplatesSpanish[category] : prayerTemplates[category];
     if (!templates) return null;
     
@@ -1129,6 +1211,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         "God, bless this food to our bodies and our fellowship to your glory. Use us to be a blessing to others as you have blessed us.",
         "Our Father, we are grateful for your provision and the abundance before us. Help us to always remember those in need."
       ]
+    },
+    bibleVerses: {
+      icon: Book,
+      name: t('bibleVerses'),
+      description: t('bibleVersesDesc'),
+      color: '#7c2d12',
+      prayers: []
     },
     custom: {
       icon: Send,
