@@ -2,7 +2,6 @@
   "name": "help-me-pray-app",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://citizenx123.github.io/help-me-pray-app",
   "dependencies": {
     "@capacitor/android": "^7.4.2",
     "@capacitor/cli": "^7.4.2",

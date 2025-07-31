@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown } from 'lucide-react';
 import { supabase } from './supabaseClient';
+// Force cache bust v2.0
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
 // import PremiumUpgradeModal from './PremiumUpgradeModal';
@@ -210,6 +211,11 @@ const translations = {
 const HelpMePrayApp = ({ user, setUser }) => {
   // const { isPremium, upgradeToPremiun } = useSubscription();
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
+  
+  // Clear prayer when category changes to force icon display
+  useEffect(() => {
+    setCurrentPrayer('');
+  }, [selectedCategory]);
   const [currentPrayer, setCurrentPrayer] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -279,6 +285,15 @@ const HelpMePrayApp = ({ user, setUser }) => {
   // Subscription and usage tracking state
   const [userSession, setUserSession] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
+  
+  // Set premium status for Google logged-in users
+  useEffect(() => {
+    if (user && user.id !== 'guest') {
+      setIsPremium(true); // Google logged-in users get premium features
+    } else {
+      setIsPremium(false);
+    }
+  }, [user]);
   const [isLoading, setIsLoading] = useState(true);
   const [dailyPrayerCount, setDailyPrayerCount] = useState(0);
   const [guestPrayerCount, setGuestPrayerCount] = useState(0);
@@ -402,7 +417,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   // Auto-upgrade TTS provider for premium users
   useEffect(() => {
     if (isPremium && ttsProvider === 'browser') {
-      setTtsProvider('elevenlabs');
+      setTtsProvider('elevenlabs'); // Back to ElevenLabs until Netlify Functions are deployed
     } else if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
       setTtsProvider('browser');
     }
@@ -1103,7 +1118,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     }
 
     try {
-      // Use the current domain for redirect
+      // Always use current domain for redirect - let Supabase handle it
       const redirectUrl = `${window.location.origin}/`;
       console.log('Google OAuth redirect URL:', redirectUrl);
       console.log('Current location:', window.location.href);
@@ -1351,18 +1366,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
   
   // Human-like voice configurations
   const humanVoices = {
-    compassionate: {
-      name: 'Compassionate Reader',
-      description: 'Warm, gentle voice perfect for prayers',
-      voiceId: 'pNInz6obpgDQGcFmaJgB', // Adam (ElevenLabs)
-      stability: 0.5,
-      similarity_boost: 0.8,
-      style: 0.0,
-      use_speaker_boost: true
-    },
     nurturing: {
-      name: 'Nurturing Guide',
-      description: 'Soft, caring maternal voice',
+      name: 'Maria - Nurturing',
+      description: 'Soft, caring Latina voice with bilingual warmth',
       voiceId: 'EXAVITQu4vr4xnSDxMaL', // Bella (ElevenLabs)
       stability: 0.6,
       similarity_boost: 0.7,
@@ -1370,10 +1376,64 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       use_speaker_boost: true
     },
     peaceful: {
-      name: 'Peaceful Spirit',
-      description: 'Calm, meditative voice for reflection',
+      name: 'David - Peaceful',
+      description: 'Calm, meditative British voice for reflection',
       voiceId: 'ErXwobaYiN019PkySvjV', // Antoni (ElevenLabs)
       stability: 0.7,
+      similarity_boost: 0.6,
+      style: 0.0,
+      use_speaker_boost: true
+    },
+    soulful: {
+      name: 'Grace - Soulful',
+      description: 'Rich, expressive African American voice',
+      voiceId: '21m00Tcm4TlvDq8ikWAM', // Rachel (ElevenLabs)
+      stability: 0.6,
+      similarity_boost: 0.8,
+      style: 0.2,
+      use_speaker_boost: true
+    },
+    gentle: {
+      name: 'Aisha - Gentle',
+      description: 'Soft, melodic voice with Middle Eastern influence',
+      voiceId: 'XB0fDUnXU5powFXDhCwa', // Charlotte (ElevenLabs)
+      stability: 0.6,
+      similarity_boost: 0.8,
+      style: 0.0,
+      use_speaker_boost: true
+    },
+    serene: {
+      name: 'Lin - Serene',
+      description: 'Calm, centered voice with Asian tranquility',
+      voiceId: 'IKne3meq5aSn9XLyUdCD', // Charlie (ElevenLabs)
+      stability: 0.8,
+      similarity_boost: 0.6,
+      style: 0.0,
+      use_speaker_boost: true
+    },
+    aria: {
+      name: 'Aria - Melodic',
+      description: 'Beautiful, lyrical voice with operatic warmth',
+      voiceId: '9BWtsMINqrJLrRacOk9x', // Aria (ElevenLabs)
+      stability: 0.6,
+      similarity_boost: 0.8,
+      style: 0.2,
+      use_speaker_boost: true
+    },
+    brian: {
+      name: 'Brian - Steady',
+      description: 'Strong, reliable masculine voice for guidance',
+      voiceId: 'nPczCjzI2devNBz1zQrb', // Brian (ElevenLabs)
+      stability: 0.7,
+      similarity_boost: 0.7,
+      style: 0.1,
+      use_speaker_boost: true
+    },
+    serena: {
+      name: 'Serena - Peaceful',
+      description: 'Tranquil, soothing voice for inner peace',
+      voiceId: 'pMsXgVXv3BLzUgSXRplE', // Serena (ElevenLabs)
+      stability: 0.8,
       similarity_boost: 0.6,
       style: 0.0,
       use_speaker_boost: true
@@ -1382,8 +1442,11 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
   // Text-to-speech functions  
   const speakPrayer = async (text) => {
+    console.log('speakPrayer called with provider:', ttsProvider, 'isPremium:', isPremium);
+    
     // Restrict premium voices to premium users only
     if ((ttsProvider === 'google' || ttsProvider === 'elevenlabs') && !isPremium) {
+      console.log('Non-premium user trying premium voice, falling back to system');
       speakWithSystemVoice(text);
       return;
     }
@@ -1411,6 +1474,12 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       console.log('Attempting human voice with:', humanVoiceType);
       console.log('API Key available:', !!process.env.REACT_APP_ELEVENLABS_API_KEY);
       
+      // Check if API key is configured
+      console.log('ElevenLabs API Key:', process.env.REACT_APP_ELEVENLABS_API_KEY ? 'Present' : 'Missing');
+      if (!process.env.REACT_APP_ELEVENLABS_API_KEY || process.env.REACT_APP_ELEVENLABS_API_KEY === 'your_elevenlabs_key_here') {
+        throw new Error('Premium voices are temporarily unavailable. Please contact support to enable this feature.');
+      }
+      
       setIsPlaying(true);
       setIsPaused(false);
 
@@ -1420,6 +1489,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       // Truncate text for demo if too long (ElevenLabs has character limits)
       const truncatedText = text.length > 2500 ? text.substring(0, 2500) + '...' : text;
       
+      console.log('Making ElevenLabs API request to voice:', voiceConfig.voiceId);
       const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceConfig.voiceId, {
         method: 'POST',
         headers: {
@@ -1482,7 +1552,11 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       
     } catch (error) {
       console.error('Human voice failed, falling back to system voice:', error);
-      alert(`Human voice error: ${error.message}. Using system voice as fallback.`);
+      if (error.message.includes('temporarily unavailable')) {
+        alert(`${error.message} Using system voice instead.`);
+      } else {
+        alert(`Premium voice error: ${error.message}. Using system voice as fallback.`);
+      }
       setIsPlaying(false);
       setIsPaused(false);
       // Fallback to system voice
@@ -1576,6 +1650,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
   const speakWithGoogleCloud = async (text) => {
     try {
+      console.log('Attempting Google Cloud TTS...');
       setIsPlaying(true);
       setIsPaused(false);
       
@@ -1591,13 +1666,15 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         speakingRate: speechRate
       };
 
-      const response = await fetch('/api/google-tts', {
+      console.log('Making Google TTS API request with:', requestBody);
+      const response = await fetch('/.netlify/functions/google-tts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody)
       });
+      console.log('Google TTS API response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
@@ -2905,7 +2982,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
               </div>
 
               <div style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {currentPrayer ? (
+                {(currentPrayer && currentPrayer.trim() && !isGenerating) ? (
                   <div style={{ textAlign: 'center', width: '100%', maxWidth: '600px' }}>
                     <div style={{
                       background: 'linear-gradient(135deg, #eef2ff, #f3e8ff, #fef7f7)',
@@ -3103,7 +3180,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                               Choose a compassionate voice:
                             </label>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                               {Object.entries(humanVoices).map(([key, voice]) => (
                                 <button
                                   key={key}
@@ -3305,24 +3382,35 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </button>
                         )}
                         
-                        {/* Guest prayer count display */}
+                        {/* Guest sign out button */}
                         {user && user.id === 'guest' && (
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            background: guestPrayerCount >= 3 ? '#fef2f2' : '#f0fdf4',
-                            color: guestPrayerCount >= 3 ? '#b91c1c' : '#15803d',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            border: guestPrayerCount >= 3 ? '1px solid #fecaca' : '1px solid #bbf7d0'
-                          }}>
-                            {guestPrayerCount >= 3 
-                              ? '⚠️ Daily limit reached' 
-                              : '🎯 ' + (3 - guestPrayerCount) + ' prayers left today'}
-                          </div>
+                          <button
+                            onClick={handleSignOut}
+                            style={{
+                              background: 'none',
+                              border: '1px solid #d1d5db',
+                              color: '#6b7280',
+                              padding: '8px 12px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.backgroundColor = '#f9fafb';
+                              e.target.style.borderColor = '#9ca3af';
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.borderColor = '#d1d5db';
+                            }}
+                          >
+                            Sign Out
+                          </button>
                         )}
                         
                         {user && user.id !== 'guest' && (
@@ -3378,7 +3466,12 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}>
-                        <img src="/logo192.png" alt="Praying hands" style={{ width: '36px', height: '36px' }} />
+                        {(selectedCategory === 'gratitude' || !selectedCategory) && <Heart size={36} color="white" />}
+                        {selectedCategory === 'morning' && <Sun size={36} color="white" />}
+                        {selectedCategory === 'bedtime' && <Moon size={36} color="white" />}
+                        {selectedCategory === 'healing' && <Sparkles size={36} color="white" />}
+                        {selectedCategory === 'family' && <Users size={36} color="white" />}
+                        {selectedCategory === 'grace' && <Utensils size={36} color="white" />}
                       </div>
                     </div>
                     <p style={{ fontSize: '18px', marginBottom: '8px', textAlign: 'center' }}>
@@ -3456,24 +3549,35 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </button>
                         )}
                         
-                        {/* Guest prayer count display */}
+                        {/* Guest sign out button */}
                         {user && user.id === 'guest' && (
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            background: guestPrayerCount >= 3 ? '#fef2f2' : '#f0fdf4',
-                            color: guestPrayerCount >= 3 ? '#b91c1c' : '#15803d',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            border: guestPrayerCount >= 3 ? '1px solid #fecaca' : '1px solid #bbf7d0'
-                          }}>
-                            {guestPrayerCount >= 3 
-                              ? '⚠️ Daily limit reached' 
-                              : '🎯 ' + (3 - guestPrayerCount) + ' prayers left today'}
-                          </div>
+                          <button
+                            onClick={handleSignOut}
+                            style={{
+                              background: 'none',
+                              border: '1px solid #d1d5db',
+                              color: '#6b7280',
+                              padding: '8px 12px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.backgroundColor = '#f9fafb';
+                              e.target.style.borderColor = '#9ca3af';
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.borderColor = '#d1d5db';
+                            }}
+                          >
+                            Sign Out
+                          </button>
                         )}
                         
                         {user && user.id !== 'guest' && (
@@ -3487,7 +3591,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               borderRadius: '6px',
                               fontSize: '14px',
                               cursor: 'pointer',
-                              minHeight: '44px',
+                              minHeight: '44px', 
                               minWidth: '100px',
                               touchAction: 'manipulation',
                               WebkitTapHighlightColor: 'transparent'
