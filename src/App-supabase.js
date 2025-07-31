@@ -3250,7 +3250,40 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         {useHumanVoice ? (
                           <div style={{ marginBottom: '12px' }}>
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
-                              Choose a compassionate voice:
+                              Choose voice tier:
+                            </label>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                              <button
+                                onClick={() => setTtsProvider('google')}
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  border: '1px solid #d1d5db',
+                                  background: ttsProvider === 'google' ? '#3b82f6' : 'white',
+                                  color: ttsProvider === 'google' ? 'white' : '#374151',
+                                  fontSize: '11px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Standard ($4.99)
+                              </button>
+                              <button
+                                onClick={() => setTtsProvider('elevenlabs')}
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  border: '1px solid #d1d5db',
+                                  background: ttsProvider === 'elevenlabs' ? '#6366f1' : 'white',
+                                  color: ttsProvider === 'elevenlabs' ? 'white' : '#374151',
+                                  fontSize: '11px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Premium ($7.99)
+                              </button>
+                            </div>
+                            <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                              {ttsProvider === 'elevenlabs' ? 'Choose ElevenLabs voice:' : 'Using Google Cloud TTS'}
                             </label>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                               {Object.entries(humanVoices).map(([key, voice]) => (
