@@ -1216,7 +1216,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       icon: Book,
       name: t('bibleVerses'),
       description: t('bibleVersesDesc'),
-      color: '#7c2d12',
+      color: '#800020',
       prayers: []
     },
     custom: {
@@ -3801,6 +3801,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         {selectedCategory === 'healing' && <Sparkles size={36} color="white" />}
                         {selectedCategory === 'family' && <Users size={36} color="white" />}
                         {selectedCategory === 'grace' && <Utensils size={36} color="white" />}
+                        {selectedCategory === 'bibleVerses' && <Book size={36} color="white" />}
                       </div>
                     </div>
                     <p style={{ fontSize: '18px', marginBottom: '8px', textAlign: 'center' }}>
