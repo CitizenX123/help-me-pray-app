@@ -526,11 +526,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   }, [user]);
 
-  // Auto-upgrade TTS provider for premium users
+  // Only restrict non-premium users from premium features
   useEffect(() => {
-    if (isPremium && ttsProvider === 'browser') {
-      setTtsProvider('elevenlabs'); // Back to ElevenLabs until Netlify Functions are deployed
-    } else if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
+    if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
       setTtsProvider('browser');
     }
   }, [isPremium, ttsProvider]);
@@ -3295,7 +3293,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </div>
                         </div>
 
-                        {useHumanVoice ? (
+                        {useHumanVoice && ttsProvider !== 'browser' ? (
                           <div style={{ marginBottom: '12px' }}>
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                               Choose voice tier:
