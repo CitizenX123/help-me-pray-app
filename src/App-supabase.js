@@ -1758,7 +1758,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setGoogleVoices(data.voices);
+          // setGoogleVoices(data.voices); // This function doesn't exist, removing
         }
       }
     } catch (error) {
