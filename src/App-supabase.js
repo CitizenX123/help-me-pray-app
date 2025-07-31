@@ -3252,7 +3252,21 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                               Choose voice tier:
                             </label>
-                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center' }}>
+                              <button
+                                onClick={() => setTtsProvider('browser')}
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  border: '1px solid #d1d5db',
+                                  background: ttsProvider === 'browser' ? '#22c55e' : 'white',
+                                  color: ttsProvider === 'browser' ? 'white' : '#374151',
+                                  fontSize: '11px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Free
+                              </button>
                               <button
                                 onClick={() => setTtsProvider('google')}
                                 style={{
