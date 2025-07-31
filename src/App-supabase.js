@@ -378,25 +378,40 @@ const HelpMePrayApp = ({ user, setUser }) => {
   // Check for existing session on component mount
   useEffect(() => {
     const getSession = async () => {
+      console.log('Getting session...');
       if (!supabase) {
+        console.log('No supabase client');
         setUserSession(null);
         setIsLoading(false);
         setLoading(false);
         return;
       }
       
-      const { data: { session } } = await supabase.auth.getSession();
-      setUserSession(session);
-      
-      if (session?.user) {
-        await checkUserSubscription(session.user.id);
-        await getDailyPrayerCount(session.user.id);
-      } else {
-        // Load guest prayer count if not logged in
-        setGuestPrayerCount(getGuestPrayerCount());
+      try {
+        console.log('Calling supabase.auth.getSession()');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        console.log('Session result:', session);
+        console.log('Session error:', error);
+        
+        setUserSession(session);
+        
+        if (session?.user) {
+          console.log('User found:', session.user.email);
+          await checkUserSubscription(session.user.id);
+          await getDailyPrayerCount(session.user.id);
+        } else {
+          console.log('No session user found');
+          // Load guest prayer count if not logged in
+          setGuestPrayerCount(getGuestPrayerCount());
+        }
+        setIsLoading(false);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error getting session:', error);
+        setUserSession(null);
+        setIsLoading(false);
+        setLoading(false);
       }
-      setIsLoading(false);
-      setLoading(false);
     };
 
     getSession();
