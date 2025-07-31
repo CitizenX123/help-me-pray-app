@@ -1216,7 +1216,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       icon: Book,
       name: t('bibleVerses'),
       description: t('bibleVersesDesc'),
-      color: '#800020',
+      color: '#00FFFF',
       prayers: []
     },
     custom: {
