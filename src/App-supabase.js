@@ -276,7 +276,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [currentUtterance, setCurrentUtterance] = useState(null);
   const [useHumanVoice, setUseHumanVoice] = useState(true);
-  const [humanVoiceType, setHumanVoiceType] = useState('compassionate');
+  const [humanVoiceType, setHumanVoiceType] = useState('nurturing');
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
   const [googleVoices, setGoogleVoices] = useState({
     english: [
