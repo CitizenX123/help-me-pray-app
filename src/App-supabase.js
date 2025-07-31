@@ -3293,8 +3293,16 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </div>
                         </div>
 
-                        <div style={{ marginBottom: '12px' }}>
-                          <div style={{ fontSize: '10px', color: '#999', marginBottom: '8px' }}>
+                        <div style={{ 
+                          marginBottom: '12px',
+                          border: '5px solid orange',
+                          padding: '20px',
+                          backgroundColor: 'lightblue'
+                        }}>
+                          <div style={{ fontSize: '16px', color: 'black', marginBottom: '8px', fontWeight: 'bold' }}>
+                            🔥 TIER BUTTONS SECTION 🔥
+                          </div>
+                          <div style={{ fontSize: '14px', color: 'black', marginBottom: '8px' }}>
                             DEBUG: useHumanVoice = {useHumanVoice ? 'true' : 'false'}
                           </div>
                           <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
