@@ -379,12 +379,21 @@ const HelpMePrayApp = ({ user, setUser }) => {
   useEffect(() => {
     const getSession = async () => {
       console.log('Getting session...');
+      console.log('Current URL:', window.location.href);
+      console.log('URL hash:', window.location.hash);
+      
       if (!supabase) {
         console.log('No supabase client');
         setUserSession(null);
         setIsLoading(false);
         setLoading(false);
         return;
+      }
+      
+      // If we have OAuth tokens in the URL, wait a bit for Supabase to process them
+      if (window.location.hash.includes('access_token')) {
+        console.log('OAuth tokens detected in URL, waiting for processing...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
       try {
