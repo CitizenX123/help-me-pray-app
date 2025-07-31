@@ -3293,22 +3293,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </div>
                         </div>
 
-                        {ttsProvider === 'browser' && useHumanVoice ? (
-                          <div style={{
-                            textAlign: 'center',
-                            color: '#6b7280',
-                            fontSize: '14px',
-                            padding: '20px',
-                            backgroundColor: '#f9fafb',
-                            borderRadius: '8px',
-                            border: '1px solid #e5e7eb'
-                          }}>
-                            🎤 Using system voices (Free tier)
-                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                              Upgrade to Standard or Premium for more voice options
-                            </div>
-                          </div>
-                        ) : useHumanVoice && (ttsProvider === 'elevenlabs' || ttsProvider === 'google') ? (
+                        {useHumanVoice && (
                           <div style={{ marginBottom: '12px' }}>
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
                               Choose voice tier:
@@ -3357,6 +3342,24 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 Premium ($7.99)
                               </button>
                             </div>
+
+                            {/* FREE TIER: No voice selection */}
+                            {ttsProvider === 'browser' && (
+                              <div style={{
+                                textAlign: 'center',
+                                color: '#6b7280',
+                                fontSize: '14px',
+                                padding: '20px',
+                                backgroundColor: '#f9fafb',
+                                borderRadius: '8px',
+                                border: '1px solid #e5e7eb'
+                              }}>
+                                🎤 Using system voices (Free tier)
+                                <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                                  No voice selection needed
+                                </div>
+                              </div>
+                            )}
                             {/* PREMIUM TIER: ElevenLabs Voices */}
                             {ttsProvider === 'elevenlabs' && (
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -3443,7 +3446,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               💡 Human-like voices provide natural, compassionate speech perfect for prayers. Falls back to system voice if unavailable.
                             </div>
                           </div>
-                        ) : (
+                        )}
+
+                        {!useHumanVoice && (
                           <div style={{ marginBottom: '12px' }}>
                             <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
                               Select System Voice:
