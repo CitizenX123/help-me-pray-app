@@ -3344,6 +3344,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 Premium ($7.99)
                               </button>
                             </div>
+                            <div style={{ marginBottom: '8px', fontSize: '10px', color: '#666' }}>
+                              Debug: ttsProvider = {ttsProvider}
+                            </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                               {ttsProvider === 'elevenlabs' ? (
                                 Object.entries(humanVoices).map(([key, voice]) => (
