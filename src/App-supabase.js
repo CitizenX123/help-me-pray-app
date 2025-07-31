@@ -3455,7 +3455,6 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             }}>
                               💡 Choose your preferred voice tier above.
                             </div>
-                        )}
 
                         {!useHumanVoice && (
                           <div style={{ marginBottom: '12px' }}>
