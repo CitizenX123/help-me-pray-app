@@ -3802,6 +3802,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         {selectedCategory === 'family' && <Users size={36} color="white" />}
                         {selectedCategory === 'grace' && <Utensils size={36} color="white" />}
                         {selectedCategory === 'bibleVerses' && <Book size={36} color="white" />}
+                        {selectedCategory === 'custom' && (
+                          <img src="/logo192.png" alt="Praying hands" style={{ 
+                            width: '36px', 
+                            height: '36px',
+                            filter: 'brightness(0) invert(1)'
+                          }} />
+                        )}
                       </div>
                     </div>
                     <p style={{ fontSize: '18px', marginBottom: '8px', textAlign: 'center' }}>
