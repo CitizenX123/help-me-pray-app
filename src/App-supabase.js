@@ -3300,7 +3300,10 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             </label>
                             <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center' }}>
                               <button
-                                onClick={() => setTtsProvider('browser')}
+                                onClick={() => {
+                                  console.log('Clicking FREE - setting ttsProvider to browser');
+                                  setTtsProvider('browser');
+                                }}
                                 style={{
                                   padding: '6px 12px',
                                   borderRadius: '6px',
@@ -3314,7 +3317,10 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 Free
                               </button>
                               <button
-                                onClick={() => setTtsProvider('google')}
+                                onClick={() => {
+                                  console.log('Clicking STANDARD - setting ttsProvider to google');
+                                  setTtsProvider('google');
+                                }}
                                 style={{
                                   padding: '6px 12px',
                                   borderRadius: '6px',
@@ -3328,7 +3334,10 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 Standard ($4.99)
                               </button>
                               <button
-                                onClick={() => setTtsProvider('elevenlabs')}
+                                onClick={() => {
+                                  console.log('Clicking PREMIUM - setting ttsProvider to elevenlabs');
+                                  setTtsProvider('elevenlabs');
+                                }}
                                 style={{
                                   padding: '6px 12px',
                                   borderRadius: '6px',
@@ -3341,6 +3350,11 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               >
                                 Premium ($7.99)
                               </button>
+                            </div>
+
+                            {/* Current ttsProvider state */}
+                            <div style={{ fontSize: '10px', color: '#999', marginBottom: '8px', textAlign: 'center' }}>
+                              DEBUG: ttsProvider = "{ttsProvider}"
                             </div>
 
                             {/* FREE TIER: No voice selection */}
