@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown } from 'lucide-react';
 import { supabase } from './supabaseClient';
-// Force cache bust v2.1
+// Force cache bust v2.2
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
 // import PremiumUpgradeModal from './PremiumUpgradeModal';
