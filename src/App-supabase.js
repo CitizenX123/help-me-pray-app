@@ -2283,8 +2283,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '18px' }}>
             {isCustom ? (
               <img src="/logo192.png" alt="Praying hands" style={{ 
-                width: '24px', 
-                height: '24px',
+                width: '29px', 
+                height: '29px',
                 filter: isSelected ? 'brightness(0) invert(1)' : 'brightness(0)' 
               }} />
             ) : (
@@ -2358,8 +2358,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 src="/logo192.png" 
                 alt="Praying Hands" 
                 style={{
-                  width: '60px',
-                  height: '60px'
+                  width: '72px',
+                  height: '72px'
                 }}
               />
             </div>
@@ -2743,8 +2743,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 src="/logo192.png" 
                 alt="Praying Hands" 
                 style={{
-                  width: '60px',
-                  height: '60px'
+                  width: '72px',
+                  height: '72px'
                 }}
               />
             </div>
@@ -2842,7 +2842,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                       justifyContent: 'center',
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                     }}>
-                      <img src="/logo192.png" alt="Praying hands" style={{ width: '20px', height: '20px' }} />
+                      <img src="/logo192.png" alt="Praying hands" style={{ width: '24px', height: '24px' }} />
                     </div>
                     <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
                       Create Custom Prayer
@@ -3804,8 +3804,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         {selectedCategory === 'bibleVerses' && <Book size={36} color="white" />}
                         {selectedCategory === 'custom' && (
                           <img src="/logo192.png" alt="Praying hands" style={{ 
-                            width: '36px', 
-                            height: '36px',
+                            width: '43px', 
+                            height: '43px',
                             filter: 'brightness(0) invert(1)'
                           }} />
                         )}
