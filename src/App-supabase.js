@@ -3293,11 +3293,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           </div>
                         </div>
 
-                        {useHumanVoice && (
-                          <div style={{ marginBottom: '12px' }}>
-                            <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
-                              Choose voice tier:
-                            </label>
+                        <div style={{ marginBottom: '12px' }}>
+                          <div style={{ fontSize: '10px', color: '#999', marginBottom: '8px' }}>
+                            DEBUG: useHumanVoice = {useHumanVoice ? 'true' : 'false'}
+                          </div>
+                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                            Choose voice tier:
+                          </label>
                             <div style={{ 
                               display: 'flex', 
                               gap: '8px', 
@@ -3462,7 +3464,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                                 </div>
                               </div>
                             )}
-                            </div>
+                            
                             <div style={{ 
                               fontSize: '11px', 
                               color: '#9ca3af', 
@@ -3472,10 +3474,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               borderRadius: '4px',
                               border: '1px solid #f3f4f6'
                             }}>
-                              💡 Human-like voices provide natural, compassionate speech perfect for prayers. Falls back to system voice if unavailable.
+                              💡 Choose your preferred voice tier above.
                             </div>
-                          </div>
-                        )}
+                        </div>
 
                         {!useHumanVoice && (
                           <div style={{ marginBottom: '12px' }}>
