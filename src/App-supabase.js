@@ -932,7 +932,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
     if (category === 'bibleVerses') {
       const bibleVerses = [
         {
-          verse: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+          verse: "And we know that God causes everything to work together for the good of those who love God and are called according to his purpose for them.",
           reference: "Romans 8:28 (NLT)",
           theme: "God's sovereignty and purpose",
           prayer: "Heavenly Father, thank you for this beautiful promise that you are working in all circumstances of our lives. When we face uncertainty or difficulty, help us remember that you have a purpose and plan. Give us the faith to trust in your goodness even when we cannot see the outcome. May we find peace knowing that you are weaving all things together for our good and your glory. In Jesus' name, Amen."
@@ -944,10 +944,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           prayer: "Lord, what a wonderful truth that you delight in us and rejoice over us with singing! When we feel alone or unworthy, remind us of your constant presence and unconditional love. Help us to hear your songs of joy over our lives, even in the quiet moments. Fill our hearts with the assurance that we are treasured by you, our Mighty Warrior and Savior. Amen."
         },
         {
-          verse: "Cast all your anxiety on him because he cares for you.",
+          verse: "Give all your worries and cares to God, for he cares about you.",
           reference: "1 Peter 5:7 (NLT)",
           theme: "God's care and peace",
-          prayer: "Caring Father, we come to you carrying the weight of our worries and fears. This verse reminds us that we don't have to bear these burdens alone. You invite us to cast our anxieties on you because you truly care for us. Help us to let go of the things that trouble our hearts and minds. Replace our anxiety with your perfect peace, and help us to trust in your loving care for every detail of our lives. Amen."
+          prayer: "Caring Father, we come to you carrying the weight of our worries and fears. This verse reminds us that we don't have to bear these burdens alone. You invite us to give our worries and cares to you because you truly care for us. Help us to let go of the things that trouble our hearts and minds. Replace our anxiety with your perfect peace, and help us to trust in your loving care for every detail of our lives. Amen."
         },
         {
           verse: "For I know the plans I have for you,\" declares the Lord, \"plans to prosper you and not to harm you, plans to give you hope and a future.",
@@ -968,14 +968,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
           prayer: "Mighty God, when we face challenges that seem overwhelming, this verse reminds us to be strong and courageous. Help us to remember that we are never alone because you are always with us. When fear tries to paralyze us or discouragement weighs us down, fill us with your strength and courage. May we walk boldly into each day knowing that you go before us and beside us wherever we go. Amen."
         },
         {
-          verse: "Give all your worries and cares to God, for he cares about you.",
-          reference: "1 Peter 5:7 (NLT)",
-          theme: "God's care and provision",
-          prayer: "Loving Father, you invite us to bring all our worries and cares to you because you truly care about every aspect of our lives. Help us to release our grip on the things that burden us and place them in your capable hands. Teach us to trust in your care and provision. When anxiety tries to overwhelm us, remind us of this beautiful invitation to find rest in you. Thank you for caring about both our big concerns and our smallest worries. Amen."
+          verse: "Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.",
+          reference: "Philippians 4:6 (NLT)",
+          theme: "Prayer and gratitude over worry",
+          prayer: "Gracious God, you call us to bring everything to you in prayer rather than carrying the burden of worry. Help us to remember that you want to hear about all our needs, both big and small. Teach us to approach you with thankful hearts, remembering all the ways you have provided for us in the past. When worry tries to overwhelm us, redirect our hearts to pray and give thanks. Thank you for the peace that comes from trusting in you. Amen."
         },
         {
-          verse: "And I am convinced that nothing can ever separate us from God's love. Neither death nor life, neither angels nor demons, neither our fears for today nor our worries about tomorrow—not even the powers of hell can separate us from God's love.",
-          reference: "Romans 8:38 (NLT)",
+          verse: "And I am convinced that nothing can ever separate us from God's love. Neither death nor life, neither angels nor demons, neither our fears for today nor our worries about tomorrow—not even the powers of hell can separate us from God's love. Nothing in all creation will ever be able to separate us from the love of God that is revealed in Christ Jesus our Lord.",
+          reference: "Romans 8:38-39 (NLT)",
           theme: "God's unending love",
           prayer: "Faithful God, what an incredible promise that nothing can separate us from your love! When we feel distant from you or doubt our worth, help us to remember this unshakeable truth. No mistake we've made, no fear we carry, no circumstance we face can diminish your love for us. Give us confidence to rest in this eternal love that surrounds us always. May we live with the freedom and joy that comes from knowing we are forever held in your love. Amen."
         }
