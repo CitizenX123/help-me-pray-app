@@ -2801,6 +2801,19 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             </p>
           </div>
 
+          {/* HIGHLY VISIBLE DEBUG */}
+          <div style={{ 
+            backgroundColor: 'red', 
+            color: 'white', 
+            padding: '10px', 
+            textAlign: 'center', 
+            fontSize: '16px', 
+            fontWeight: 'bold',
+            margin: '10px 0'
+          }}>
+            GOOGLE DEBUG: isPremium={isPremium ? 'TRUE' : 'FALSE'} | Prayer={currentPrayer ? 'EXISTS' : 'NONE'} | UserID={user?.id}
+          </div>
+
           {/* Usage Counter for all non-premium users */}
           {!isPremium && (
             <div style={{
