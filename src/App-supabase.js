@@ -4594,6 +4594,7 @@ let appInitialized = false;
 const App = () => {
   if (!appInitialized) {
     console.log('App component initializing...');
+  console.log('FORCE DEPLOYMENT - Google button fix active');
     appInitialized = true;
   }
   const [user, setUser] = useState(null);
