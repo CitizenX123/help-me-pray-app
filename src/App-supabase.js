@@ -396,6 +396,75 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   };
 
+  // Download prayer as image function
+  const downloadPrayerImage = async () => {
+    if (!currentPrayer) {
+      alert('Please generate a prayer first!');
+      return;
+    }
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      canvas.width = 800;
+      canvas.height = 1000;
+      
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#6366f1');
+      gradient.addColorStop(1, '#8b5cf6');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Add prayer text
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.textAlign = 'center';
+      
+      // Word wrap the text
+      const words = currentPrayer.split(' ');
+      const lines = [];
+      let currentLine = '';
+      const maxWidth = canvas.width - 100;
+      
+      for (let word of words) {
+        const testLine = currentLine + word + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && currentLine !== '') {
+          lines.push(currentLine.trim());
+          currentLine = word + ' ';
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine.trim());
+      
+      // Draw each line
+      const lineHeight = 35;
+      const startY = (canvas.height - (lines.length * lineHeight)) / 2;
+      
+      lines.forEach((line, index) => {
+        ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
+      });
+      
+      // Add branding
+      ctx.font = '16px Arial';
+      ctx.fillText('🙏 Help Me Pray', canvas.width / 2, canvas.height - 50);
+      
+      // Download the image
+      const link = document.createElement('a');
+      link.download = `prayer-${Date.now()}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+      
+    } catch (error) {
+      console.error('Error generating prayer image:', error);
+      alert('Error generating image. Please try again.');
+    }
+  };
+
   // Text cleanup function for prayer formatting
   const cleanupPrayerText = (text) => {
     if (!text) return '';
@@ -3693,6 +3762,32 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         flexWrap: 'wrap'
                       }}>
                         <button
+                          onClick={downloadPrayerImage}
+                          disabled={!currentPrayer}
+                          style={{
+                            background: currentPrayer ? '#059669' : '#999',
+                            border: 'none',
+                            color: 'white',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            cursor: currentPrayer ? 'pointer' : 'not-allowed',
+                            transition: 'background-color 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}
+                          onMouseOver={(e) => {
+                            if (currentPrayer) e.target.style.backgroundColor = '#047857';
+                          }}
+                          onMouseOut={(e) => {
+                            if (currentPrayer) e.target.style.backgroundColor = '#059669';
+                          }}
+                        >
+                          📸 Download Image
+                        </button>
+                        
+                        <button
                           onClick={openPrayerHistory}
                           style={{
                             background: '#6366f1',
@@ -3867,6 +3962,32 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         gap: '12px',
                         flexWrap: 'wrap'
                       }}>
+                        <button
+                          onClick={downloadPrayerImage}
+                          disabled={!currentPrayer}
+                          style={{
+                            background: currentPrayer ? '#059669' : '#999',
+                            border: 'none',
+                            color: 'white',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            cursor: currentPrayer ? 'pointer' : 'not-allowed',
+                            transition: 'background-color 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}
+                          onMouseOver={(e) => {
+                            if (currentPrayer) e.target.style.backgroundColor = '#047857';
+                          }}
+                          onMouseOut={(e) => {
+                            if (currentPrayer) e.target.style.backgroundColor = '#059669';
+                          }}
+                        >
+                          📸 Download Image
+                        </button>
+                        
                         <button
                           onClick={openPrayerHistory}
                           style={{
