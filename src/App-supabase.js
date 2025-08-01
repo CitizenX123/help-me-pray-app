@@ -1295,6 +1295,18 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
   };
 
   const handleSignOut = async () => {
+    // Handle guest user sign out
+    if (user && user.id === 'guest') {
+      console.log('Guest user signing out');
+      setUser(null);
+      setUserSession(null);
+      setIsPremium(false);
+      setCurrentPrayer('');
+      setGuestPrayerCount(0);
+      return;
+    }
+    
+    // Handle Google user sign out
     if (!supabase) {
       console.warn('Cannot sign out - authentication not available in offline mode');
       return;
@@ -1303,6 +1315,12 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error signing out:', error);
+    } else {
+      // Clear user state after successful sign out
+      setUser(null);
+      setUserSession(null);
+      setIsPremium(false);
+      setCurrentPrayer('');
     }
   };
 
