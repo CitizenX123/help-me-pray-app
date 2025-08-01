@@ -12,10 +12,25 @@ console.log('REACT_APP_SUPABASE_ANON_KEY first 50 chars:', supabaseKey ? supabas
 // Check if environment variables are properly configured
 if (!supabaseUrl || supabaseUrl === 'your_supabase_url_here' || !supabaseKey || supabaseKey === 'your_supabase_anon_key_here') {
   console.warn('Supabase environment variables not configured. Running in offline mode.');
+  console.warn('URL present:', !!supabaseUrl);
+  console.warn('Key present:', !!supabaseKey);
+  console.warn('URL value:', supabaseUrl);
 }
 
-export const supabase = supabaseUrl && supabaseKey && 
-  supabaseUrl !== 'your_supabase_url_here' && 
-  supabaseKey !== 'your_supabase_anon_key_here' 
-    ? createClient(supabaseUrl, supabaseKey) 
-    : null
+let supabaseClient = null;
+
+try {
+  if (supabaseUrl && supabaseKey && 
+      supabaseUrl !== 'your_supabase_url_here' && 
+      supabaseKey !== 'your_supabase_anon_key_here') {
+    supabaseClient = createClient(supabaseUrl, supabaseKey);
+    console.log('Supabase client created successfully');
+  } else {
+    console.warn('Supabase client not created - environment variables missing or invalid');
+  }
+} catch (error) {
+  console.error('Error creating Supabase client:', error);
+  supabaseClient = null;
+}
+
+export const supabase = supabaseClient
