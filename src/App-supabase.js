@@ -2116,6 +2116,14 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
   // Usage tracking and subscription functions
   const checkUserSubscription = async (userId) => {
+    // Google logged-in users automatically get premium features
+    // Don't check subscription table for them
+    if (user && user.id !== 'guest') {
+      console.log('Google user detected - automatically granting premium access');
+      setIsPremium(true);
+      return;
+    }
+    
     try {
       const { data, error } = await supabase
         .from('user_subscriptions')
