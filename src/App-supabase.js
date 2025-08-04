@@ -1367,7 +1367,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   };
 
   // Function to ensure prayer uniqueness
-  const generateUniquePrayer = (generatorFunction, maxAttempts = 50) => {
+  const generateUniquePrayer = (generatorFunction, maxAttempts = 100) => {
     let attempts = 0;
     let prayer = '';
     
@@ -1376,13 +1376,58 @@ const HelpMePrayApp = ({ user, setUser }) => {
       attempts++;
       
       // If we've tried many times and still getting duplicates, 
-      // clear some old prayers and try again
+      // add timestamp-based uniqueness and try again
+      if (attempts > 30 && usedPrayers.has(prayer)) {
+        // Add subtle timestamp-based variation to ensure uniqueness
+        const timeVariations = language === 'es' ? [
+          ' En este momento especial',
+          ' En esta hora sagrada',
+          ' En este tiempo de gracia',
+          ' En esta ocasión bendita',
+          ' En este instante de oración'
+        ] : [
+          ' In this special moment',
+          ' In this sacred hour', 
+          ' In this time of grace',
+          ' In this blessed occasion',
+          ' In this moment of prayer'
+        ];
+        
+        const timeVariation = timeVariations[Math.floor(Math.random() * timeVariations.length)];
+        const prayerParts = prayer.split('.');
+        if (prayerParts.length > 1) {
+          prayerParts[0] = prayerParts[0] + timeVariation;
+          prayer = prayerParts.join('.');
+        }
+      }
+      
+      // If we've tried many times and still getting duplicates, 
+      // clear some old prayers and continue
       if (attempts > maxAttempts) {
         const usedArray = Array.from(usedPrayers);
-        // Keep only the most recent 100 prayers to allow some recycling of very old prayers
-        if (usedArray.length > 100) {
-          const recentPrayers = new Set(usedArray.slice(-50));
+        // Keep only the most recent 50 prayers to allow some recycling
+        if (usedArray.length > 150) {
+          const recentPrayers = new Set(usedArray.slice(-75));
           setUsedPrayers(recentPrayers);
+        }
+        // Force uniqueness by adding a subtle variation
+        if (usedPrayers.has(prayer)) {
+          const uniqueEndings = language === 'es' ? [
+            ' Que así sea según tu voluntad perfecta.',
+            ' Todo esto te lo pedimos con fe.',
+            ' Confiamos en tu amor infinito.',
+            ' En tu santo nombre oramos.',
+            ' Bendice esta oración, Señor.'
+          ] : [
+            ' May this be according to your perfect will.',
+            ' We ask all this in faith.',
+            ' We trust in your infinite love.',
+            ' In your holy name we pray.',
+            ' Bless this prayer, Lord.'
+          ];
+          
+          const uniqueEnding = uniqueEndings[Math.floor(Math.random() * uniqueEndings.length)];
+          prayer = prayer.replace(/\s*Amén\.?\s*$/, '') + uniqueEnding + ' Amen.';
         }
         break;
       }
