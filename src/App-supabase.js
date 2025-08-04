@@ -3174,18 +3174,6 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             </p>
           </div>
 
-          {/* HIGHLY VISIBLE DEBUG */}
-          <div style={{ 
-            backgroundColor: 'red', 
-            color: 'white', 
-            padding: '10px', 
-            textAlign: 'center', 
-            fontSize: '16px', 
-            fontWeight: 'bold',
-            margin: '10px 0'
-          }}>
-            GOOGLE DEBUG: isPremium={isPremium ? 'TRUE' : 'FALSE'} | Prayer={currentPrayer ? 'EXISTS' : 'NONE'} | UserID={user?.id}
-          </div>
 
           {/* Usage Counter for all non-premium users */}
           {!isPremium && (
@@ -4157,15 +4145,11 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               background: '#dc2626',
                               border: 'none',
                               color: 'white',
-                              padding: '8px 12px',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
-                              fontWeight: '500',
                               cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              transition: 'all 0.2s ease'
+                              transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
                               e.target.style.backgroundColor = '#b91c1c';
@@ -4362,15 +4346,11 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               background: '#dc2626',
                               border: 'none',
                               color: 'white',
-                              padding: '8px 12px',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
-                              fontWeight: '500',
                               cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              transition: 'all 0.2s ease'
+                              transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
                               e.target.style.backgroundColor = '#b91c1c';
