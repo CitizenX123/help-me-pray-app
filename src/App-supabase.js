@@ -819,6 +819,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
       .replace(/([^.!?])$/, '$1.')
       // Clean up any double periods
       .replace(/\.+/g, '.')
+      // Clean up periods with spaces between them
+      .replace(/\.\s*\.\s*/g, '.')
+      // Remove trailing periods before Amen
+      .replace(/\.\s*Amen\.$/g, ' Amen.')
       // Trim whitespace
       .trim();
     
@@ -1798,11 +1802,14 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       return t('inappropriateContent');
     }
     
-    // Filter the person's name
+    // Filter the person's name and extract first name only
     const filteredName = name ? filterContent(name) : name;
     if (filteredName === null) {
       return t('inappropriateName');
     }
+    
+    // Extract first name only for more personal prayers
+    const firstName = filteredName ? filteredName.split(' ')[0] : filteredName;
     
     let prayerTemplate = "";
 
@@ -1861,9 +1868,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           prayerTemplate = `${randomOpening} I come to you broken and in desperate need of your healing power. ${randomMiddle} ${filteredRequest}. Break the chains that bind me and set me free from this destructive cycle. ${randomClosing} I trust in your power to make me new. Amen.`;
         }
       } else {
-        const personRef = filteredName || (language === 'es' ? 'esta persona' : 'this person');
-        const possessive = filteredName ? (language === 'es' ? `de ${filteredName}` : filteredName + "'s") : (language === 'es' ? 'su' : 'their');
-        const objectPronoun = filteredName || (language === 'es' ? 'él/ella' : 'them');
+        const personRef = firstName || (language === 'es' ? 'esta persona' : 'this person');
+        const possessive = firstName ? (language === 'es' ? `de ${firstName}` : firstName + "'s") : (language === 'es' ? 'su' : 'their');
+        const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
         
         if (language === 'es') {
           prayerTemplate = `${randomOpening} vengo ante ti con el corazón pesado, elevando a ${personRef} quien está luchando con esta situación: ${filteredRequest}. Señor, tú ves el dolor y la lucha que está experimentando. Pido tu intervención divina en la vida ${possessive}. Rompe las cadenas que atan a ${objectPronoun} y dale fuerza para superar estos desafíos. ${randomClosing} Confiamos en tu poder para redimir y restaurar a ${objectPronoun}. Amén.`;
@@ -1921,19 +1928,67 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
       if (isForSelf) {
         if (language === 'es') {
-          prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+          if (length === 'rich') {
+            prayerTemplate = `${randomOpening} vengo ante ti con humildad y un corazón abierto, presentando este pedido: ${filteredRequest}. ${randomMiddle} 
+            
+            Señor, reconozco que tu sabiduría supera mi entendimiento, y confío en que conoces no solo lo que pido, sino también lo que realmente necesito. Ayúdame a someter mi voluntad a la tuya, sabiendo que tus planes para mí son de bien y no de mal.
+            
+            ${randomClosing} Te pido que durante este tiempo de espera, me enseñes paciencia y me fortalezcas en la fe. Que pueda ser un testimonio de tu bondad para otros que también están esperando respuestas tuyas.
+            
+            Lléname con tu amor, paz y esperanza mientras espero tu respuesta perfecta en tu tiempo perfecto. Que mi vida refleje tu gloria sin importar el resultado. Amén.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} Te pido sabiduría para entender tu voluntad y fuerza para aceptar tu respuesta. ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+          } else {
+            prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+          }
         } else {
-          prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+          if (length === 'rich') {
+            prayerTemplate = `${randomOpening} I come before you with humility and an open heart, presenting this request: ${filteredRequest}. ${randomMiddle}
+            
+            Lord, I recognize that your wisdom surpasses my understanding, and I trust that you know not only what I'm asking for, but also what I truly need. Help me to submit my will to yours, knowing that your plans for me are for good and not for harm.
+            
+            ${randomClosing} I ask that during this time of waiting, you would teach me patience and strengthen me in faith. May I be a testimony of your goodness to others who are also waiting for answers from you.
+            
+            Fill me with your love, peace, and hope as I await your perfect answer in your perfect timing. May my life reflect your glory regardless of the outcome. Amen.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} I ask for wisdom to understand your will and strength to accept your answer. ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+          } else {
+            prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+          }
         }
       } else {
-        const personRef = filteredName || (language === 'es' ? 'esta persona' : 'this person');
-        const possessive = filteredName ? (language === 'es' ? `de ${filteredName}` : filteredName + "'s") : (language === 'es' ? 'su' : 'their');
-        const objectPronoun = filteredName || (language === 'es' ? 'él/ella' : 'them');
+        const personRef = firstName || (language === 'es' ? 'esta persona' : 'this person');
+        const possessive = firstName ? (language === 'es' ? `de ${firstName}` : firstName + "'s") : (language === 'es' ? 'su' : 'their');
+        const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
         
         if (language === 'es') {
-          prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+          if (length === 'rich') {
+            prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con gran cariño y preocupación, presentando este pedido: ${filteredRequest}. ${randomMiddle}
+            
+            Padre, tú conoces cada detalle de la vida ${possessive}, cada lucha y cada necesidad. Te pido que obres en ${possessive} situación con tu poder sobrenatural y tu amor infinito. Que ${objectPronoun} pueda sentir tu presencia tangible durante este tiempo.
+            
+            Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza renovada. ${randomClosing} Te pido también que me uses como instrumento de tu amor para apoyar a ${objectPronoun} durante este tiempo.
+            
+            Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan verdaderamente. Que tu voluntad perfecta se cumpla en ${possessive} vida. Amén.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Te pido sabiduría para ${objectPronoun} y fortaleza durante este tiempo. Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+          } else {
+            prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+          }
         } else {
-          prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+          if (length === 'rich') {
+            prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with great care and concern, presenting this request: ${filteredRequest}. ${randomMiddle}
+            
+            Father, you know every detail of ${possessive} life, every struggle and every need. I ask that you work in ${possessive} situation with your supernatural power and infinite love. May ${objectPronoun} feel your tangible presence during this time.
+            
+            Bless ${objectPronoun} with your presence and fill ${possessive} heart with renewed hope. ${randomClosing} I also ask that you use me as an instrument of your love to support ${objectPronoun} during this time.
+            
+            Surround ${objectPronoun} with your love and the support of people who truly care. May your perfect will be accomplished in ${possessive} life. Amen.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} I ask for wisdom for ${objectPronoun} and strength during this time. Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+          } else {
+            prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+          }
         }
       }
     }
