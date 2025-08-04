@@ -428,7 +428,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
               // Orange dawn
               ['#FFF8DC', '#FFEAA7', '#FDCB6E', '#E17055', '#D63031'],
               // Coral morning
-              ['#FFF5EE', '#FFEEE6', '#FFD700', '#FF8C00', '#FF4500']
+              ['#FFEBEE', '#FFCDD2', '#EF9A9A', '#E57373', '#EF5350']
             ];
             
             const morningColors = morningVariations[Math.floor(randomSeed * morningVariations.length)];
@@ -506,13 +506,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
             // Photo-realistic forest
             const forestVariations = [
               // Morning forest
-              ['#F0F8FF', '#E0FFFF', '#98FB98', '#90EE90', '#228B22'],
-              // Deep woodland
-              ['#F5FFFA', '#F0FFF0', '#90EE90', '#32CD32', '#006400'],
+              ['#E6F3FF', '#B8E6B8', '#90EE90', '#228B22', '#006400'],
               // Misty forest
-              ['#F8F8FF', '#E6E6FA', '#9ACD32', '#8FBC8F', '#556B2F'],
+              ['#F0F8FF', '#E0E0E0', '#90EE90', '#2E8B57', '#1C4C2E'],
               // Autumn forest
-              ['#FFF8DC', '#FFEFD5', '#DEB887', '#D2691E', '#8B4513']
+              ['#FFF8DC', '#F0E68C', '#CD853F', '#8B4513', '#654321'],
+              // Deep forest
+              ['#DFEBC4', '#B8D4A1', '#97B881', '#6B8E23', '#556B2F']
             ];
             
             const forestColors = forestVariations[Math.floor(randomSeed * forestVariations.length)];
@@ -527,14 +527,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
           case 'gratitude':
             // Photo-realistic golden fields
             const gratitudeVariations = [
-              // Wheat field golden hour
-              ['#FFFACD', '#F0E68C', '#DEB887', '#D2691E', '#B8860B'],
-              // Harvest sunset
-              ['#FFE4B5', '#FFEAA7', '#FDCB6E', '#E17055', '#D63031'],
-              // Golden prairie
-              ['#FFF8DC', '#F5DEB3', '#DEB887', '#CD853F', '#A0522D'],
-              // Sunflower field
-              ['#FFFFE0', '#FFFACD', '#F0E68C', '#DAA520', '#B8860B']
+              // Warm golden field
+              ['#FFD700', '#FFA500', '#FF8C00', '#DAA520', '#B8860B'],
+              // Sunset amber field
+              ['#FFEBCD', '#DEB887', '#D2691E', '#A0522D', '#8B4513'],
+              // Harvest gold field
+              ['#FFFACD', '#F0E68C', '#BDB76B', '#8B7D6B', '#696969'],
+              // Wheat field
+              ['#F5DEB3', '#DEB887', '#D2B48C', '#BC9A6A', '#8B7D6B']
             ];
             
             const gratitudeColors = gratitudeVariations[Math.floor(randomSeed * gratitudeVariations.length)];
@@ -550,13 +550,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
             // Photo-realistic ancient landscape
             const bibleVariations = [
               // Desert sunset
-              ['#F5DEB3', '#DEB887', '#D2691E', '#CD853F', '#A0522D'],
-              // Holy land golden
-              ['#FFFACD', '#F0E68C', '#BDB76B', '#9ACD32', '#8B7355'],
+              ['#F4A460', '#CD853F', '#D2691E', '#8B4513', '#654321'],
               // Ancient stone
-              ['#F5F5DC', '#DDD8C7', '#C0B283', '#A0956B', '#8B7765'],
-              // Olive grove
-              ['#F0F8FF', '#E6E6FA', '#9ACD32', '#8FBC8F', '#556B2F']
+              ['#F5DEB3', '#DEB887', '#BC9A6A', '#8B7355', '#696969'],
+              // Holy land
+              ['#FFEFD5', '#FFE4B5', '#DEB887', '#D2B48C', '#BC9A6A'],
+              // Mountain desert
+              ['#FDF5E6', '#F5DEB3', '#D2B48C', '#A0522D', '#8B4513']
             ];
             
             const bibleColors = bibleVariations[Math.floor(randomSeed * bibleVariations.length)];
@@ -569,155 +569,54 @@ const HelpMePrayApp = ({ user, setUser }) => {
             break;
             
           default:
-            // Simple gradient fallback
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(1, '#4682B4');
-            ctx.fillStyle = gradient;
+            // Default ocean scene
+            const oceanVariations = [
+              // Tropical ocean
+              ['#87CEEB', '#20B2AA', '#008B8B', '#006400', '#2F4F4F'],
+              // Deep ocean
+              ['#4682B4', '#1E90FF', '#0000CD', '#000080', '#191970'],
+              // Sunset ocean
+              ['#FFE4B5', '#20B2AA', '#008B8B', '#2F4F4F', '#000000'],
+              // Stormy ocean
+              ['#708090', '#2F4F4F', '#1C1C1C', '#000000', '#000000']
+            ];
+            
+            const oceanColors = oceanVariations[Math.floor(randomSeed * oceanVariations.length)];
+            const oceanGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            oceanColors.forEach((color, index) => {
+              oceanGradient.addColorStop(index / (oceanColors.length - 1), color);
+            });
+            ctx.fillStyle = oceanGradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            break;
         }
+        
+        // Add photo-realistic texture to all backgrounds
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.02 + randomSeed * 0.03})`;
+        for (let i = 0; i < 500 + randomSeed * 1000; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const size = Math.random() * 2;
+          const opacity = Math.random() * 0.3;
+          ctx.globalAlpha = opacity;
+          ctx.fillRect(x, y, size, size);
+        }
+        ctx.globalAlpha = 1;
       };
-
-      // Create the background
+      
       createPhotoRealisticBackground();
       
-      // Add elegant category title at the top
-      let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
+      // Add subtle depth overlay for better text contrast
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Extract creative titles for Bible verses
-      if (selectedCategory === 'bibleVerses') {
-        const versePatterns = [
-          {match: /plans to prosper you/i, title: "Plans to Prosper You"},
-          {match: /plans.*hope.*future/i, title: "Hope and a Future"},
-          {match: /fear not|do not fear/i, title: "Fear Not"},
-          {match: /trust in the lord/i, title: "Trust in the Lord"},
-          {match: /peace.*understanding/i, title: "Peace Beyond Understanding"},
-          {match: /love.*never fails/i, title: "Love Never Fails"},
-          {match: /refuge.*strength/i, title: "Refuge and Strength"},
-          {match: /light.*darkness/i, title: "Light in Darkness"},
-          {match: /joy.*morning/i, title: "Joy Comes in the Morning"},
-          {match: /good shepherd/i, title: "The Good Shepherd"},
-          {match: /valley.*shadow/i, title: "Through the Valley"},
-          {match: /rest.*weary/i, title: "Rest for the Weary"},
-          {match: /grace.*sufficient/i, title: "Sufficient Grace"},
-          {match: /new mercies/i, title: "New Mercies"},
-          {match: /eagles.*wings/i, title: "Wings Like Eagles"},
-          {match: /mountains.*faith/i, title: "Faith Moves Mountains"},
-          {match: /living water/i, title: "Living Water"},
-          {match: /bread of life/i, title: "Bread of Life"},
-          {match: /narrow.*gate/i, title: "The Narrow Gate"},
-          {match: /pearl.*great price/i, title: "Pearl of Great Price"},
-        ];
-        
-        for (let pattern of versePatterns) {
-          if (pattern.match.test(currentPrayer)) {
-            categoryTitle = pattern.title;
-            break;
-          }
-        }
-      }
-      
-      // Category-specific title styling
+      // Setup text with drop shadow
+      ctx.font = '28px Georgia, serif';
       ctx.textAlign = 'center';
-      ctx.font = 'normal 48px Georgia, serif';
-      
-      // Add elegant styling based on category
-      switch(selectedCategory) {
-        case 'morning':
-          // Golden sunrise colors
-          const morningTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          morningTitleGradient.addColorStop(0, '#FFD700');
-          morningTitleGradient.addColorStop(1, '#FFA500');
-          ctx.fillStyle = morningTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          break;
-          
-        case 'bedtime':
-          // Soft moonlight silver
-          const bedtimeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bedtimeTitleGradient.addColorStop(0, '#E6E6FA');
-          bedtimeTitleGradient.addColorStop(1, '#C0C0C0');
-          ctx.fillStyle = bedtimeTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-          
-        case 'healing':
-          // Natural forest green
-          const healingTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          healingTitleGradient.addColorStop(0, '#98FB98');
-          healingTitleGradient.addColorStop(1, '#228B22');
-          ctx.fillStyle = healingTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-          
-        case 'gratitude':
-          // Warm golden wheat
-          const gratitudeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          gratitudeTitleGradient.addColorStop(0, '#F0E68C');
-          gratitudeTitleGradient.addColorStop(1, '#DAA520');
-          ctx.fillStyle = gratitudeTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          break;
-          
-        case 'family':
-          // Peaceful blue waters
-          const familyTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          familyTitleGradient.addColorStop(0, '#87CEEB');
-          familyTitleGradient.addColorStop(1, '#4682B4');
-          ctx.fillStyle = familyTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-          
-        case 'bibleVerses':
-          // Ancient parchment
-          const bibleTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bibleTitleGradient.addColorStop(0, '#F5DEB3');
-          bibleTitleGradient.addColorStop(1, '#D2691E');
-          ctx.fillStyle = bibleTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          break;
-          
-        default:
-          ctx.fillStyle = 'white';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 4;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-      }
-      
-      // Draw the category title with proper spacing from top
-      ctx.fillText(categoryTitle, canvas.width / 2, 90);
-      
-      // Reset shadow for prayer text
+      ctx.fillStyle = 'white';
       ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
       ctx.shadowBlur = 4;
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
-      
-      // Prayer text styling - positioned lower to avoid title overlap
-      ctx.font = 'normal 28px Georgia, serif';
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
       
       // Word wrap the text
       const words = currentPrayer.split(' ');
@@ -737,23 +636,791 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Calculate proper spacing - reserve space for title (90px) and branding (80px)
-      const availableHeight = canvas.height - 170; // Total minus reserved space
+      // Calculate proper positioning to avoid overlap
       const lineHeight = 38;
-      const totalTextHeight = lines.length * lineHeight;
-      const startY = 140 + (availableHeight - totalTextHeight) / 2;
+      const titleHeight = 90; // Space reserved for title
+      const brandingHeight = 80; // Space reserved for branding
+      const availableHeight = canvas.height - titleHeight - brandingHeight;
+      const textBlockHeight = lines.length * lineHeight;
+      const startY = titleHeight + (availableHeight - textBlockHeight) / 2;
+      
+      // Draw each line of prayer text
+      lines.forEach((line, index) => {
+        ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
+      });
+      
+      // Add elegant category title at the top
+      let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
+      
+      // For Bible verses, extract inspirational phrase from the verse
+      if (selectedCategory === 'bibleVerses') {
+        // Extract inspirational phrases from common Bible verses
+        const versePatterns = [
+          {match: /plans to prosper you/i, title: "Plans to Prosper You"},
+          {match: /plans.*hope.*future/i, title: "Hope and a Future"},
+          {match: /all things.*together.*good/i, title: "All Things for Good"},
+          {match: /fearfully.*wonderfully made/i, title: "Fearfully & Wonderfully Made"},
+          {match: /love.*never fails/i, title: "Love Never Fails"},
+          {match: /peace.*understanding/i, title: "Peace That Surpasses"},
+          {match: /strength.*weary/i, title: "Strength for the Weary"},
+          {match: /light.*darkness/i, title: "Light in the Darkness"},
+          {match: /refuge.*fortress/i, title: "My Refuge & Fortress"},
+          {match: /good shepherd/i, title: "The Good Shepherd"},
+          {match: /living water/i, title: "Living Water"},
+          {match: /bread of life/i, title: "Bread of Life"},
+          {match: /way.*truth.*life/i, title: "The Way, Truth & Life"}
+        ];
+        
+        // Find matching pattern in the prayer text
+        for (let pattern of versePatterns) {
+          if (pattern.match.test(currentPrayer)) {
+            categoryTitle = pattern.title;
+            break;
+          }
+        }
+        
+        // If no specific pattern matches, use a generic inspirational title
+        if (categoryTitle === prayerCategories[selectedCategory]?.name || categoryTitle === 'Prayer') {
+          const genericTitles = [
+            "God's Promise", "Divine Truth", "Sacred Word", "Eternal Hope",
+            "Blessed Assurance", "Living Promise", "Holy Scripture", "Divine Love"
+          ];
+          const randomSeed = Math.random();
+          categoryTitle = genericTitles[Math.floor(randomSeed * genericTitles.length)];
+        }
+      }
+      
+      // Category-specific title styling
+      ctx.textAlign = 'center';
+      ctx.font = 'normal 48px Georgia, serif';
+      
+      // Add elegant styling based on category
+      switch(selectedCategory) {
+        case 'morning':
+          // Golden sunrise colors
+          const morningTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          morningTitleGradient.addColorStop(0, '#FFD700');
+          morningTitleGradient.addColorStop(1, '#FFA500');
+          ctx.fillStyle = morningTitleGradient;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+          break;
+          
+        case 'bedtime':
+          // Soft moonlight silver
+          const bedtimeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          bedtimeTitleGradient.addColorStop(0, '#F5F5DC');
+          bedtimeTitleGradient.addColorStop(1, '#D3D3D3');
+          ctx.fillStyle = bedtimeTitleGradient;
+          ctx.shadowColor = 'rgba(25, 25, 112, 0.8)';
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'healing':
+          // Natural forest green
+          const healingTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          healingTitleGradient.addColorStop(0, '#98FB98');
+          healingTitleGradient.addColorStop(1, '#90EE90');
+          ctx.fillStyle = healingTitleGradient;
+          ctx.shadowColor = 'rgba(0, 100, 0, 0.6)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'gratitude':
+          // Warm golden wheat
+          const gratitudeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          gratitudeTitleGradient.addColorStop(0, '#FFD700');
+          gratitudeTitleGradient.addColorStop(1, '#DAA520');
+          ctx.fillStyle = gratitudeTitleGradient;
+          ctx.shadowColor = 'rgba(139, 69, 19, 0.7)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+          break;
+          
+        case 'family':
+          // Peaceful blue waters
+          const familyTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          familyTitleGradient.addColorStop(0, '#E0F6FF');
+          familyTitleGradient.addColorStop(1, '#87CEEB');
+          ctx.fillStyle = familyTitleGradient;
+          ctx.shadowColor = 'rgba(70, 130, 180, 0.8)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'bibleVerses':
+          // Ancient parchment
+          const bibleTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          bibleTitleGradient.addColorStop(0, '#F5DEB3');
+          bibleTitleGradient.addColorStop(1, '#DEB887');
+          ctx.fillStyle = bibleTitleGradient;
+          ctx.shadowColor = 'rgba(139, 69, 19, 0.8)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+          break;
+          
+        default:
+          // Clean white with subtle shadow
+          ctx.fillStyle = 'white';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+      }
+      
+      ctx.fillText(categoryTitle, canvas.width / 2, 90);
+      
+      // Add branding with logo
+      ctx.font = '18px Georgia, serif';
+      ctx.fillStyle = 'white';
+      ctx.fillText('Help Me Pray', canvas.width / 2, canvas.height - 60);
+      
+      // Reset shadow for clean download
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Download the image
+      const link = document.createElement('a');
+      link.download = `prayer-${Date.now()}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+      
+    } catch (error) {
+      console.error('Error generating prayer image:', error);
+      alert('Error generating image. Please try again.');
+    }
+  };
+  
+  // Text cleanup function for prayer formatting
+  const cleanupPrayerText = (text) => {
+    if (!text) return '';
+    
+    let cleaned = text
+      // Fix multiple spaces
+      .replace(/\s+/g, ' ')
+      // Fix spacing around punctuation
+      .replace(/\s*([,.!?;:])\s*/g, '$1 ')
+      // Remove extra spaces at beginning and end
+      .trim();
+      
+    return cleaned;
+  };
+  
+  const handleGoogleAuth = async () => {
+    try {
+      setAuthLoading(true);
+      setAuthError('');
+
+      if (!supabase) {
+        setAuthError('Authentication not available in offline mode');
+        setAuthLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        setAuthError(error.message);
+      }
+    } catch (error) {
+      setAuthError('Failed to authenticate with Google');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError('');
+
+    if (!supabase) {
+      setAuthError('Authentication not available in offline mode');
+      setAuthLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      setAuthError(error.message);
+    } else {
+      setEmail('');
+      setPassword('');
+    }
+    setAuthLoading(false);
+  };
+
+  // Text cleanup function for prayer formatting
+  const cleanupPrayerText = (text) => {
+    if (!text) return '';
+    
+    let cleaned = text
+            const lakeVariation = Math.floor(randomSeed * 3);
+            
+            // Dynamic sky with realistic perspective
+            const lakeGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.6);
+            if (lakeVariation === 0) {
+              // Golden hour
+              lakeGradient.addColorStop(0, '#FFE4B5');
+              lakeGradient.addColorStop(0.3, '#F0E68C');
+              lakeGradient.addColorStop(0.6, '#87CEEB');
+              lakeGradient.addColorStop(1, '#4682B4');
+            } else if (lakeVariation === 1) {
+              // Serene blue
+              lakeGradient.addColorStop(0, '#E0F6FF');
+              lakeGradient.addColorStop(0.3, '#87CEEB');
+              lakeGradient.addColorStop(0.6, '#4682B4');
+              lakeGradient.addColorStop(1, '#2E8B57');
+            } else {
+              // Misty morning
+              lakeGradient.addColorStop(0, '#F5F5F5');
+              lakeGradient.addColorStop(0.3, '#D3D3D3');
+              lakeGradient.addColorStop(0.6, '#A9A9A9');
+              lakeGradient.addColorStop(1, '#696969');
+            }
+            ctx.fillStyle = lakeGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Realistic mountain backdrop with atmospheric perspective
+            const mountainLayers = 4;
+            for (let layer = 0; layer < mountainLayers; layer++) {
+              const distance = layer / mountainLayers;
+              const opacity = 0.8 - (distance * 0.4);
+              const hue = lakeVariation === 0 ? 60 : lakeVariation === 1 ? 200 : 0;
+              const sat = 20 - (distance * 15);
+              const light = 60 + (distance * 20);
+              
+              ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${opacity})`;
+              
+              ctx.beginPath();
+              ctx.moveTo(0, canvas.height * (0.3 + layer * 0.05));
+              for (let i = 1; i <= 8; i++) {
+                const x = (i * canvas.width) / 8;
+                const baseY = canvas.height * (0.25 + layer * 0.05);
+                const peakHeight = (randomSeed + Math.sin(i + layer)) * 100;
+                const y = baseY + peakHeight;
+                ctx.lineTo(x, y);
+              }
+              ctx.lineTo(canvas.width, canvas.height * 0.7);
+              ctx.lineTo(0, canvas.height * 0.7);
+              ctx.fill();
+            }
+            
+            // Realistic water with reflections and ripples
+            const waterY = canvas.height * (0.65 + randomSeed * 0.1);
+            const waterGradient = ctx.createLinearGradient(0, waterY, 0, canvas.height);
+            waterGradient.addColorStop(0, 'rgba(70, 130, 180, 0.8)');
+            waterGradient.addColorStop(0.3, 'rgba(30, 144, 255, 0.6)');
+            waterGradient.addColorStop(1, 'rgba(0, 100, 200, 0.9)');
+            ctx.fillStyle = waterGradient;
+            ctx.fillRect(0, waterY, canvas.width, canvas.height - waterY);
+            
+            // Water ripples and reflections
+            const rippleCount = 8 + Math.floor(randomSeed * 6);
+            for (let i = 0; i < rippleCount; i++) {
+              const rippleX = Math.random() * canvas.width;
+              const rippleY = waterY + (Math.random() * (canvas.height - waterY));
+              const rippleRadius = 20 + (Math.random() * 60);
+              const rippleAlpha = 0.1 + (Math.random() * 0.2);
+              
+              ctx.strokeStyle = `rgba(255, 255, 255, ${rippleAlpha})`;
+              ctx.lineWidth = 1 + Math.random();
+              ctx.beginPath();
+              ctx.arc(rippleX, rippleY, rippleRadius, 0, Math.PI * 2);
+              ctx.stroke();
+            }
+            
+            // Shoreline details with random vegetation
+            const shorelinePoints = [];
+            for (let i = 0; i <= 15; i++) {
+              shorelinePoints.push({
+                x: (i * canvas.width) / 15,
+                y: waterY + Math.sin(i + randomSeed * 10) * 15
+              });
+            }
+            
+            ctx.fillStyle = 'rgba(34, 139, 34, 0.7)';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            shorelinePoints.forEach(point => {
+              ctx.lineTo(point.x, point.y);
+            });
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.fill();
+            
+            // Random trees and vegetation along shoreline
+            const treeCount = 5 + Math.floor(randomSeed * 8);
+            for (let i = 0; i < treeCount; i++) {
+              const treeX = (i / treeCount) * canvas.width + (randomSeed * 50);
+              const treeY = waterY - 20 + (Math.random() * 40);
+              const treeHeight = 40 + (randomSeed * 30);
+              const treeWidth = 15 + (randomSeed * 10);
+              
+              // Tree trunk
+              ctx.fillStyle = 'rgba(101, 67, 33, 0.8)';
+              ctx.fillRect(treeX - 3, treeY, 6, treeHeight * 0.7);
+              
+              // Tree foliage
+              const foliageGradient = ctx.createRadialGradient(treeX, treeY - treeHeight * 0.3, 0, treeX, treeY - treeHeight * 0.3, treeWidth);
+              foliageGradient.addColorStop(0, 'rgba(34, 139, 34, 0.9)');
+              foliageGradient.addColorStop(1, 'rgba(0, 100, 0, 0.6)');
+              ctx.fillStyle = foliageGradient;
+              ctx.beginPath();
+              ctx.arc(treeX, treeY - treeHeight * 0.3, treeWidth, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            break;
+            
+          case 'healing':
+            // Photo-realistic forest with natural lighting
+            const healingVariation = Math.floor(randomSeed * 3);
+            
+            // Forest atmosphere with depth
+            const forestGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.8);
+            if (healingVariation === 0) {
+              // Morning forest
+              forestGradient.addColorStop(0, '#E6F3FF');
+              forestGradient.addColorStop(0.3, '#B8E6B8');
+              forestGradient.addColorStop(0.7, '#228B22');
+              forestGradient.addColorStop(1, '#006400');
+            } else if (healingVariation === 1) {
+              // Misty forest
+              forestGradient.addColorStop(0, '#F0F8FF');
+              forestGradient.addColorStop(0.4, '#E0E0E0');
+              forestGradient.addColorStop(0.8, '#90EE90');
+              forestGradient.addColorStop(1, '#2E8B57');
+            } else {
+              // Autumn forest
+              forestGradient.addColorStop(0, '#FFF8DC');
+              forestGradient.addColorStop(0.3, '#F0E68C');
+              forestGradient.addColorStop(0.7, '#CD853F');
+              forestGradient.addColorStop(1, '#8B4513');
+            }
+            ctx.fillStyle = forestGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Realistic sun rays through canopy
+            const rayCount = 8 + Math.floor(randomSeed * 6);
+            for (let i = 0; i < rayCount; i++) {
+              const rayX = (i / rayCount) * canvas.width + (randomSeed * 100);
+              const rayWidth = 20 + (randomSeed * 40);
+              const rayAlpha = 0.1 + (randomSeed * 0.2);
+              
+              const rayGradient = ctx.createLinearGradient(rayX - rayWidth/2, 0, rayX + rayWidth/2, 0);
+              rayGradient.addColorStop(0, 'rgba(255, 255, 224, 0)');
+              rayGradient.addColorStop(0.5, `rgba(255, 255, 224, ${rayAlpha})`);
+              rayGradient.addColorStop(1, 'rgba(255, 255, 224, 0)');
+              ctx.fillStyle = rayGradient;
+              ctx.fillRect(rayX - rayWidth/2, 0, rayWidth, canvas.height * 0.8);
+            }
+            
+            // Layered trees with realistic depth
+            const treeDepths = [0.2, 0.4, 0.6, 0.8];
+            treeDepths.forEach((depth, layerIndex) => {
+              const treeCount = 6 + Math.floor(randomSeed * 8);
+              const opacity = 1 - (depth * 0.3);
+              const scale = 1 - (depth * 0.4);
+              
+              for (let i = 0; i < treeCount; i++) {
+                const treeX = (i / treeCount) * canvas.width * 1.2 - canvas.width * 0.1;
+                const baseY = canvas.height * (0.4 + depth * 0.4);
+                const treeHeight = (80 + randomSeed * 120) * scale;
+                const trunkWidth = (8 + randomSeed * 6) * scale;
+                
+                // Tree trunk with texture
+                const trunkGradient = ctx.createLinearGradient(treeX - trunkWidth/2, baseY, treeX + trunkWidth/2, baseY);
+                trunkGradient.addColorStop(0, `rgba(101, 67, 33, ${opacity * 0.6})`);
+                trunkGradient.addColorStop(0.5, `rgba(139, 102, 41, ${opacity})`);
+                trunkGradient.addColorStop(1, `rgba(101, 67, 33, ${opacity * 0.8})`);
+                ctx.fillStyle = trunkGradient;
+                ctx.fillRect(treeX - trunkWidth/2, baseY, trunkWidth, treeHeight * 0.6);
+                
+                // Tree canopy with natural variation
+                const canopyLayers = 3;
+                for (let layer = 0; layer < canopyLayers; layer++) {
+                  const canopyY = baseY - treeHeight * (0.2 + layer * 0.2);
+                  const canopyRadius = (40 + randomSeed * 30) * scale * (1 - layer * 0.2);
+                  
+                  const canopyGradient = ctx.createRadialGradient(treeX, canopyY, 0, treeX, canopyY, canopyRadius);
+                  const greenIntensity = healingVariation === 2 ? 150 : 220;
+                  canopyGradient.addColorStop(0, `rgba(34, ${greenIntensity}, 34, ${opacity})`);
+                  canopyGradient.addColorStop(0.7, `rgba(0, ${greenIntensity - 50}, 0, ${opacity * 0.8})`);
+                  canopyGradient.addColorStop(1, `rgba(0, ${greenIntensity - 100}, 0, ${opacity * 0.3})`);
+                  ctx.fillStyle = canopyGradient;
+                  ctx.beginPath();
+                  ctx.arc(treeX, canopyY, canopyRadius, 0, Math.PI * 2);
+                  ctx.fill();
+                }
+              }
+            });
+            
+            // Forest floor details
+            const floorGradient = ctx.createLinearGradient(0, canvas.height * 0.8, 0, canvas.height);
+            floorGradient.addColorStop(0, 'rgba(34, 139, 34, 0.3)');
+            floorGradient.addColorStop(1, 'rgba(0, 100, 0, 0.7)');
+            ctx.fillStyle = floorGradient;
+            ctx.fillRect(0, canvas.height * 0.8, canvas.width, canvas.height * 0.2);
+            break;
+            
+          case 'gratitude':
+            // Photo-realistic golden hour field
+            const gratitudeVariation = Math.floor(randomSeed * 3);
+            
+            const gratitudeGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (gratitudeVariation === 0) {
+              // Warm golden
+              gratitudeGradient.addColorStop(0, '#FFD700');
+              gratitudeGradient.addColorStop(0.3, '#FFA500');
+              gratitudeGradient.addColorStop(0.7, '#FF8C00');
+              gratitudeGradient.addColorStop(1, '#DAA520');
+            } else if (gratitudeVariation === 1) {
+              // Sunset amber
+              gratitudeGradient.addColorStop(0, '#FFEBCD');
+              gratitudeGradient.addColorStop(0.4, '#DEB887');
+              gratitudeGradient.addColorStop(0.8, '#D2691E');
+              gratitudeGradient.addColorStop(1, '#A0522D');
+            } else {
+              // Harvest gold
+              gratitudeGradient.addColorStop(0, '#FFFACD');
+              gratitudeGradient.addColorStop(0.3, '#F0E68C');
+              gratitudeGradient.addColorStop(0.7, '#BDB76B');
+              gratitudeGradient.addColorStop(1, '#8B7D6B');
+            }
+            ctx.fillStyle = gratitudeGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Realistic wheat field with wind movement
+            const fieldY = canvas.height * (0.6 + randomSeed * 0.1);
+            const wheatGradient = ctx.createLinearGradient(0, fieldY, 0, canvas.height);
+            wheatGradient.addColorStop(0, 'rgba(218, 165, 32, 0.8)');
+            wheatGradient.addColorStop(0.5, 'rgba(184, 134, 11, 0.9)');
+            wheatGradient.addColorStop(1, 'rgba(160, 115, 10, 1)');
+            ctx.fillStyle = wheatGradient;
+            
+            // Rolling wheat field terrain
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for (let x = 0; x <= canvas.width; x += 10) {
+              const waveHeight = Math.sin(x * 0.01 + randomSeed * 10) * 20;
+              const y = fieldY + waveHeight;
+              ctx.lineTo(x, y);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.fill();
+            
+            // Individual wheat stalks with natural movement
+            const stalkCount = 100 + Math.floor(randomSeed * 80);
+            for (let i = 0; i < stalkCount; i++) {
+              const stalkX = Math.random() * canvas.width;
+              const stalkBaseY = fieldY + Math.sin(stalkX * 0.01) * 20;
+              const stalkHeight = 30 + (Math.random() * 40);
+              const stalkSway = Math.sin(stalkX * 0.05 + timeStamp * 0.002) * 5;
+              
+              ctx.strokeStyle = `rgba(139, 69, 19, ${0.6 + Math.random() * 0.4})`;
+              ctx.lineWidth = 1 + Math.random();
+              ctx.beginPath();
+              ctx.moveTo(stalkX, stalkBaseY);
+              ctx.lineTo(stalkX + stalkSway, stalkBaseY - stalkHeight);
+              ctx.stroke();
+              
+              // Wheat head
+              ctx.fillStyle = `rgba(218, 165, 32, ${0.7 + Math.random() * 0.3})`;
+              ctx.beginPath();
+              ctx.ellipse(stalkX + stalkSway, stalkBaseY - stalkHeight, 2, 6, 0, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            break;
+            
+          case 'bibleVerses':
+            // Photo-realistic ancient landscape
+            const bibleVariation = Math.floor(randomSeed * 3);
+            
+            const bibleGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (bibleVariation === 0) {
+              // Desert sunset
+              bibleGradient.addColorStop(0, '#F4A460');
+              bibleGradient.addColorStop(0.4, '#CD853F');
+              bibleGradient.addColorStop(0.8, '#D2691E');
+              bibleGradient.addColorStop(1, '#8B4513');
+            } else if (bibleVariation === 1) {
+              // Ancient stone
+              bibleGradient.addColorStop(0, '#F5DEB3');
+              bibleGradient.addColorStop(0.5, '#DEB887');
+              bibleGradient.addColorStop(1, '#BC9A6A');
+            } else {
+              // Holy land
+              bibleGradient.addColorStop(0, '#FFEFD5');
+              bibleGradient.addColorStop(0.4, '#FFE4B5');
+              bibleGradient.addColorStop(0.8, '#DEB887');
+              bibleGradient.addColorStop(1, '#D2B48C');
+            }
+            ctx.fillStyle = bibleGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Realistic ancient hills with erosion patterns
+            const hillLayers = 5;
+            for (let layer = 0; layer < hillLayers; layer++) {
+              const distance = layer / hillLayers;
+              const opacity = 0.9 - (distance * 0.3);
+              const hillHeight = 0.3 + (layer * 0.08);
+              
+              ctx.fillStyle = `rgba(139, 69, 19, ${opacity})`;
+              ctx.beginPath();
+              ctx.moveTo(0, canvas.height);
+              
+              for (let x = 0; x <= canvas.width; x += 20) {
+                const erosion = Math.sin(x * 0.03 + layer) * 15;
+                const baseY = canvas.height * hillHeight;
+                const y = baseY + erosion + (Math.sin(x * 0.01 + randomSeed * 10) * 30);
+                ctx.lineTo(x, y);
+              }
+              ctx.lineTo(canvas.width, canvas.height);
+              ctx.fill();
+            }
+            
+            // Ancient olive trees with realistic detail
+            const oliveCount = 4 + Math.floor(randomSeed * 6);
+            for (let i = 0; i < oliveCount; i++) {
+              const treeX = (i / oliveCount) * canvas.width + (randomSeed * 100);
+              const treeY = canvas.height * (0.4 + randomSeed * 0.2);
+              const treeAge = randomSeed; // Affects tree character
+              
+              // Gnarled trunk
+              const trunkHeight = 40 + (treeAge * 30);
+              const trunkWidth = 6 + (treeAge * 4);
+              
+              ctx.strokeStyle = `rgba(101, 67, 33, 0.9)`;
+              ctx.lineWidth = trunkWidth;
+              ctx.beginPath();
+              ctx.moveTo(treeX, treeY);
+              
+              // Twisted trunk segments
+              for (let segment = 1; segment <= 4; segment++) {
+                const segmentY = treeY - (segment * trunkHeight / 4);
+                const twist = Math.sin(segment + treeAge * 10) * 10;
+                ctx.lineTo(treeX + twist, segmentY);
+              }
+              ctx.stroke();
+              
+              // Olive foliage - silvery green
+              const foliageClusters = 3 + Math.floor(treeAge * 4);
+              for (let cluster = 0; cluster < foliageClusters; cluster++) {
+                const clusterX = treeX + (Math.sin(cluster + treeAge) * 25);
+                const clusterY = treeY - trunkHeight * 0.7 + (Math.cos(cluster) * 15);
+                const clusterSize = 12 + (Math.random() * 15);
+                
+                const foliageGradient = ctx.createRadialGradient(clusterX, clusterY, 0, clusterX, clusterY, clusterSize);
+                foliageGradient.addColorStop(0, 'rgba(107, 142, 35, 0.8)');
+                foliageGradient.addColorStop(0.7, 'rgba(85, 107, 47, 0.6)');
+                foliageGradient.addColorStop(1, 'rgba(85, 107, 47, 0.3)');
+                ctx.fillStyle = foliageGradient;
+                ctx.beginPath();
+                ctx.arc(clusterX, clusterY, clusterSize, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+            break;
+            
+          default:
+            // Default ocean scene with photo-realistic rendering
+            const oceanGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            oceanGradient.addColorStop(0, '#87CEEB');
+            oceanGradient.addColorStop(0.7, '#20B2AA');
+            oceanGradient.addColorStop(1, '#008B8B');
+            ctx.fillStyle = oceanGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Photo-realistic waves with foam and depth
+            const waveCount = 12 + Math.floor(randomSeed * 8);
+            for (let i = 0; i < waveCount; i++) {
+              const waveY = canvas.height * (0.6 + i * 0.03);
+              const waveAmplitude = 15 + (randomSeed * 10);
+              const waveFrequency = 0.01 + (randomSeed * 0.005);
+              
+              ctx.strokeStyle = `rgba(255, 255, 255, ${0.6 - i * 0.04})`;
+              ctx.lineWidth = 2 + (randomSeed * 2);
+              ctx.beginPath();
+              
+              for (let x = 0; x <= canvas.width; x += 5) {
+                const y = waveY + Math.sin(x * waveFrequency + timeStamp * 0.001 + i) * waveAmplitude;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+              }
+              ctx.stroke();
+            }
+        }
+      };
+      
+      createPhotoRealisticBackground();
+      
+      // Add semi-transparent overlay for better text contrast
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Setup text with drop shadow
+      ctx.font = '28px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      // Word wrap the text
+      const words = currentPrayer.split(' ');
+      const lines = [];
+      let currentLine = '';
+      const maxWidth = canvas.width - 120;
+      
+      for (let word of words) {
+        const testLine = currentLine + word + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && currentLine !== '') {
+          lines.push(currentLine.trim());
+          currentLine = word + ' ';
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine.trim());
+      
+      // Draw each line
+      const lineHeight = 38;
+      const startY = (canvas.height - (lines.length * lineHeight)) / 2;
       
       lines.forEach((line, index) => {
         ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
       });
       
-      // Add branding
-      ctx.font = '16px Arial';
-      ctx.fillText('🙏 Help Me Pray', canvas.width / 2, canvas.height - 50);
+      // Add elegant category title at the top
+      let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
+      if (selectedCategory === 'bibleVerses') {
+        categoryTitle = 'Bible Verse Prayer';
+      }
       
-      // Download the image with descriptive filename
+      // Category-specific title styling
+      ctx.textAlign = 'center';
+      ctx.font = 'normal 48px Georgia, serif';
+      
+      // Add elegant styling based on category
+      switch(selectedCategory) {
+        case 'morning':
+          // Golden sunrise colors
+          const morningTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          morningTitleGradient.addColorStop(0, '#FFD700');
+          morningTitleGradient.addColorStop(1, '#FFA500');
+          ctx.fillStyle = morningTitleGradient;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+          break;
+          
+        case 'bedtime':
+          // Soft moonlight silver
+          const bedtimeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          bedtimeTitleGradient.addColorStop(0, '#F5F5DC');
+          bedtimeTitleGradient.addColorStop(1, '#D3D3D3');
+          ctx.fillStyle = bedtimeTitleGradient;
+          ctx.shadowColor = 'rgba(25, 25, 112, 0.8)';
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'healing':
+          // Natural forest green
+          const healingTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          healingTitleGradient.addColorStop(0, '#98FB98');
+          healingTitleGradient.addColorStop(1, '#90EE90');
+          ctx.fillStyle = healingTitleGradient;
+          ctx.shadowColor = 'rgba(0, 100, 0, 0.6)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'gratitude':
+          // Warm golden wheat
+          const gratitudeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          gratitudeTitleGradient.addColorStop(0, '#FFD700');
+          gratitudeTitleGradient.addColorStop(1, '#DAA520');
+          ctx.fillStyle = gratitudeTitleGradient;
+          ctx.shadowColor = 'rgba(139, 69, 19, 0.7)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+          break;
+          
+        case 'family':
+          // Peaceful blue waters
+          const familyTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          familyTitleGradient.addColorStop(0, '#E0F6FF');
+          familyTitleGradient.addColorStop(1, '#87CEEB');
+          ctx.fillStyle = familyTitleGradient;
+          ctx.shadowColor = 'rgba(70, 130, 180, 0.8)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'bibleVerses':
+          // Ancient parchment
+          const bibleTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
+          bibleTitleGradient.addColorStop(0, '#F5DEB3');
+          bibleTitleGradient.addColorStop(1, '#DEB887');
+          ctx.fillStyle = bibleTitleGradient;
+          ctx.shadowColor = 'rgba(139, 69, 19, 0.8)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+          break;
+          
+        default:
+          // Clean white with subtle shadow
+          ctx.fillStyle = 'white';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+      }
+      
+      ctx.fillText(categoryTitle, canvas.width / 2, 90);
+      
+      // Add branding with logo
+      ctx.font = '18px Georgia, serif';
+      ctx.fillStyle = 'white';
+      ctx.fillText('Help Me Pray', canvas.width / 2, canvas.height - 60);
+      
+      // Reset shadow for clean download
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Download the image
       const link = document.createElement('a');
-      link.download = `${categoryTitle.replace(/\s+/g, '_')}_Prayer.png`;
+      link.download = `prayer-${Date.now()}.png`;
       link.href = canvas.toDataURL();
       link.click();
       
@@ -3169,17 +3836,6 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           </div>
 
           {/* HIGHLY VISIBLE DEBUG */}
-          <div style={{ 
-            backgroundColor: 'red', 
-            color: 'white', 
-            padding: '10px', 
-            textAlign: 'center', 
-            fontSize: '16px', 
-            fontWeight: 'bold',
-            margin: '10px 0'
-          }}>
-            GOOGLE DEBUG: isPremium={isPremium ? 'TRUE' : 'FALSE'} | Prayer={currentPrayer ? 'EXISTS' : 'NONE'} | UserID={user?.id}
-          </div>
 
           {/* Usage Counter for all non-premium users */}
           {!isPremium && (
@@ -4148,26 +4804,20 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
-                              padding: '8px 12px',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
-                              fontWeight: '500',
                               cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              transition: 'all 0.2s ease'
+                              transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f9fafb';
-                              e.target.style.borderColor = '#9ca3af';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
-                              e.target.style.borderColor = '#d1d5db';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
@@ -4178,25 +4828,20 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
-                              padding: '12px 20px',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
                               cursor: 'pointer',
-                              minHeight: '44px',
-                              minWidth: '100px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
                               transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f9fafb';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
@@ -4349,26 +4994,20 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
-                              padding: '8px 12px',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
-                              fontWeight: '500',
                               cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              transition: 'all 0.2s ease'
+                              transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f9fafb';
-                              e.target.style.borderColor = '#9ca3af';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
-                              e.target.style.borderColor = '#d1d5db';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
@@ -4379,23 +5018,20 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
-                              padding: '12px 20px',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
                               cursor: 'pointer',
-                              minHeight: '44px', 
-                              minWidth: '100px',
-                              touchAction: 'manipulation',
-                              WebkitTapHighlightColor: 'transparent'
+                              transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f3f4f6';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
