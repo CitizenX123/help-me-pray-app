@@ -11,7 +11,7 @@ test.describe('Image Generation and Download', () => {
     // Generate a prayer
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Check if download button is enabled
     const downloadButton = page.locator('button:has-text("Download Image")');
@@ -41,7 +41,7 @@ test.describe('Image Generation and Download', () => {
     // Generate prayer
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // After generating prayer, download button should be enabled
     await expect(downloadButton).not.toBeDisabled();
@@ -61,7 +61,7 @@ test.describe('Image Generation and Download', () => {
       
       // Generate prayer
       await page.click('button:has-text("Generate Prayer")');
-      await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+      await page.waitForSelector('text=Amen', { timeout: 30000 });
       
       // Download button should be enabled for each category
       const downloadButton = page.locator('button:has-text("Download Image")');
@@ -78,7 +78,7 @@ test.describe('Image Generation and Download', () => {
     // Generate a morning prayer (should use sunrise photos)
     await page.click('button:has-text("Morning")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Download button should be available (indicates successful image generation)
     const downloadButton = page.locator('button:has-text("Download Image")');
@@ -87,7 +87,7 @@ test.describe('Image Generation and Download', () => {
     // Test bedtime prayer (should use night sky photos)
     await page.click('button:has-text("Bedtime")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     await expect(downloadButton).not.toBeDisabled();
   });
@@ -101,7 +101,7 @@ test.describe('Image Generation and Download', () => {
     // Generate prayer
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // The prayer should show proper footer text in the app
     await expect(page.locator('text=May this prayer bring you peace and guidance')).toBeVisible();

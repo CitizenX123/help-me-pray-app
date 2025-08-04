@@ -1427,7 +1427,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
           ];
           
           const uniqueEnding = uniqueEndings[Math.floor(Math.random() * uniqueEndings.length)];
-          prayer = prayer.replace(/\s*Amén\.?\s*$/, '') + uniqueEnding + ' Amen.';
+          prayer = prayer.replace(/\s*Am[eé]n\.?\s*$/i, '') + uniqueEnding + ' Amen.';
         }
         break;
       }

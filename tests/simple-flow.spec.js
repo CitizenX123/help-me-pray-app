@@ -26,8 +26,8 @@ test.describe('Simple App Flow', () => {
     // Click generate prayer
     await page.click('button:has-text("Generate Prayer")');
     
-    // Wait for prayer to be generated - look for "May this prayer" text
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    // Wait for prayer to be generated - look for "Amen" text
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Should see sign out button
     await expect(page.locator('button:has-text("Sign Out")')).toBeVisible();

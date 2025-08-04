@@ -193,7 +193,7 @@ test.describe('Safari Debugging Tests', () => {
     
     // Wait for prayer generation (this is where Safari might freeze)
     try {
-      await page.waitForSelector('text=May this prayer', { timeout: 45000 });
+      await page.waitForSelector('text=Amen', { timeout: 30000 });
       
       // If we get here, prayer generation worked
       console.log('✅ Prayer generation completed successfully in Safari');

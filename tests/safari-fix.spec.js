@@ -38,7 +38,7 @@ test.describe('Safari Fix Tests', () => {
       await page.click('button:has-text("Generate Prayer")');
       
       // Wait for the potentially problematic async operation
-      await page.waitForSelector('text=May this prayer', { timeout: 60000 });
+      await page.waitForSelector('text=Amen', { timeout: 30000 });
       
       console.log('✅ Prayer generation completed without freeze');
       

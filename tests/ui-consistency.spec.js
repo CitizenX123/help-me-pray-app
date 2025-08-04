@@ -17,7 +17,7 @@ test.describe('UI Consistency Tests', () => {
     
     // Generate prayer to see the large icon
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Check large praying hands icon in the generated prayer area
     const largeIcon = page.locator('img[alt="Praying Hands"][style*="width: 36px"]');
@@ -33,7 +33,7 @@ test.describe('UI Consistency Tests', () => {
     // Generate a prayer to access the sign out button
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Check sign out button styling
     const signOutButton = page.locator('button:has-text("Sign Out")');
@@ -61,7 +61,7 @@ test.describe('UI Consistency Tests', () => {
     // Generate a prayer
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     const signOutButton = page.locator('button:has-text("Sign Out")');
     
@@ -102,7 +102,7 @@ test.describe('UI Consistency Tests', () => {
     // Generate a prayer
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Check if download button is available (indicates image generation works)
     const downloadButton = page.locator('button:has-text("Download Image")');
@@ -127,7 +127,7 @@ test.describe('UI Consistency Tests', () => {
     // Generate prayer on mobile
     await page.click('button:has-text("Gratitude")');
     await page.click('button:has-text("Generate Prayer")');
-    await page.waitForSelector('text=May this prayer', { timeout: 30000 });
+    await page.waitForSelector('text=Amen', { timeout: 30000 });
     
     // Sign out button should still be visible and properly styled on mobile
     const signOutButton = page.locator('button:has-text("Sign Out")');
