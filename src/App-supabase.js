@@ -668,7 +668,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
       ctx.textAlign = 'center';
       
       // Clean prayer text and word wrap
-      const cleanPrayer = currentPrayer.replace(/🙏/g, '').trim();
+      const cleanPrayer = currentPrayer
+        .replace(/🙏/g, '') // Remove emoji
+        .replace(/\.+/g, '.') // Fix multiple periods
+        .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
+        .trim();
       const words = cleanPrayer.split(' ');
       const lines = [];
       let currentLine = '';
@@ -694,7 +698,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       lines.forEach((line, index) => {
         // Clean the line to remove any unwanted emojis or characters
-        const cleanLine = line.replace(/🙏/g, '').trim();
+        const cleanLine = line
+          .replace(/🙏/g, '') // Remove emoji
+          .replace(/\.+/g, '.') // Fix multiple periods
+          .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
+          .trim();
         ctx.fillText(cleanLine, canvas.width / 2, startY + (index * lineHeight));
       });
       
@@ -710,18 +718,27 @@ const HelpMePrayApp = ({ user, setUser }) => {
             logoImg.onerror = reject;
           });
           
-          // Position logo and text at the bottom
+          // Position logo and text at the bottom (properly centered)
           const brandingY = canvas.height - 30;
           const logoSize = 20;
+          const brandingText = 'Help Me Pray App';
+          
+          // Measure text width for proper centering
+          ctx.font = '16px Arial';
+          const textWidth = ctx.measureText(brandingText).width;
+          const spacing = 8; // Space between logo and text
+          const totalWidth = logoSize + spacing + textWidth;
+          
+          // Center the entire branding group
+          const startX = (canvas.width - totalWidth) / 2;
           
           // Draw logo
-          ctx.drawImage(logoImg, canvas.width / 2 - 60, brandingY - logoSize / 2, logoSize, logoSize);
+          ctx.drawImage(logoImg, startX, brandingY - logoSize / 2, logoSize, logoSize);
           
           // Draw text next to logo
-          ctx.font = '16px Arial';
           ctx.fillStyle = 'white';
           ctx.textAlign = 'left';
-          ctx.fillText('Help Me Pray App', canvas.width / 2 - 35, brandingY + 5);
+          ctx.fillText(brandingText, startX + logoSize + spacing, brandingY + 5);
           
         } catch (error) {
           // Fallback to text-only branding if logo fails to load
