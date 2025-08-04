@@ -1498,87 +1498,28 @@ May this verse continue to speak to your heart throughout the day, bringing you 
       return `${randomOpening} ${randomSubject1}. ${randomConnector}, ${randomSubject2}. ${randomClosing} ${t('finalClosingShort')}`;
       
     } else if (length === 'medium') {
-      // Medium: 2-3 paragraphs (moved from comprehensive) - add transitions and connectors
+      // Medium: 2-3 substantial paragraphs - Perfectly Timed
       const transitions = language === 'es' ? 
         ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello'] :
         ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence'];
       
+      const expandingPhrases = language === 'es' ? [
+        'Te pedimos con corazones llenos de esperanza',
+        'Con fe inquebrantable nos acercamos a ti',
+        'Reconocemos tu amor infinito y tu gracia eterna',
+        'Sabemos que tu sabiduría supera nuestro entendimiento'
+      ] : [
+        'We ask with hearts full of hope and expectation',
+        'With unwavering faith we come before your throne',
+        'We acknowledge your infinite love and eternal grace',
+        'We know that your wisdom surpasses our understanding'
+      ];
+      
       const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
       const randomTransition = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject4 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+      const randomExpanding = expandingPhrases[Math.floor(Math.random() * expandingPhrases.length)];
       
-      // Ensure different subjects
-      while (randomSubject2 === randomSubject1) {
-        randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
-      while (randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) {
-        randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
-      while (randomSubject4 === randomSubject1 || randomSubject4 === randomSubject2 || randomSubject4 === randomSubject3) {
-        randomSubject4 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
-      
-      const randomClosing1 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      let randomClosing2 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      let randomClosing3 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      
-      while (randomClosing2 === randomClosing1) {
-        randomClosing2 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      }
-      while (randomClosing3 === randomClosing1 || randomClosing3 === randomClosing2) {
-        randomClosing3 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      }
-      
-      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${t('comprehensiveMiddle1')}
-
-${randomSubject3}. ${randomSubject4}. ${t('comprehensiveMiddle2')}
-
-${randomTransition}, ${randomClosing1} ${randomClosing2} ${randomClosing3} ${t('finalClosingLong')}`;
-      
-    } else {
-      // Comprehensive: 4-5 paragraphs (Rich & Meaningful) - extensive prayer
-      const transitions = language === 'es' ? 
-        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello', 'Además', 'También'] :
-        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence', 'Furthermore', 'Moreover'];
-      
-      const reflectionPhrases = language === 'es' ? [
-        'Reflexiono sobre tu bondad infinita y tu amor inagotable',
-        'Medito en tu fidelidad que nunca falla',
-        'Contemplo tu gracia que nos sostiene cada día',
-        'Pienso en tu misericordia que se renueva cada mañana',
-        'Considero tu sabiduría que guía nuestros pasos'
-      ] : [
-        'I reflect on your infinite goodness and unfailing love',
-        'I meditate on your faithfulness that never fails',
-        'I contemplate your grace that sustains us each day',
-        'I think about your mercy that is renewed every morning',
-        'I consider your wisdom that guides our steps'
-      ];
-
-      const gratitudePhrases = language === 'es' ? [
-        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros',
-        'Te doy gracias por tu presencia constante en nuestras vidas',
-        'Reconozco con humildad todos los dones que nos has otorgado',
-        'Mi alma se regocija en tu amor y provisión continua',
-        'Agradezco profundamente por tu cuidado y protección'
-      ] : [
-        'My heart fills with gratitude for all the blessings you pour upon us',
-        'I thank you for your constant presence in our lives',
-        'I humbly acknowledge all the gifts you have bestowed upon us',
-        'My soul rejoices in your love and continuous provision',
-        'I deeply appreciate your care and protection'
-      ];
-      
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomReflection = reflectionPhrases[Math.floor(Math.random() * reflectionPhrases.length)];
-      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
-      
-      // Get 6 different subjects for a longer prayer
+      // Get 6 different subjects for substantial content
       const subjects = [];
       while (subjects.length < 6) {
         const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
@@ -1587,24 +1528,113 @@ ${randomTransition}, ${randomClosing1} ${randomClosing2} ${randomClosing3} ${t('
         }
       }
       
-      // Get 4 different closings
+      // Get 3 different closings
       const closings = [];
-      while (closings.length < 4) {
+      while (closings.length < 3) {
         const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
         if (!closings.includes(randomClosing)) {
           closings.push(randomClosing);
         }
       }
       
-      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${randomExpanding} as we bring these needs before you. ${t('comprehensiveMiddle1')}
 
-${subjects[2]}. ${subjects[3]}. ${randomReflection}.
+${subjects[2]}. ${subjects[3]}. We trust in your perfect timing and your boundless mercy. May your will be done in every aspect of our lives, and may we find strength in your promises.
 
-${randomTransition1}, ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')}
+${randomTransition}, ${subjects[4]}. ${subjects[5]}. ${closings[0]} ${closings[1]} ${closings[2]} ${t('finalClosingLong')}`;
+      
+    } else {
+      // Comprehensive: 4-5 paragraphs (Rich & Meaningful) - extensive prayer
+      const transitions = language === 'es' ? 
+        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello', 'Además', 'También', 'Asimismo', 'Del mismo modo', 'En este sentido'] :
+        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence', 'Furthermore', 'Moreover', 'Additionally', 'Likewise', 'In the same manner'];
+      
+      const reflectionPhrases = language === 'es' ? [
+        'Reflexiono sobre tu bondad infinita y tu amor inagotable que trasciende toda comprensión humana',
+        'Medito en tu fidelidad que nunca falla y permanece constante a través de todas las estaciones de la vida',
+        'Contemplo tu gracia que nos sostiene cada día y nos fortalece en los momentos de mayor necesidad',
+        'Pienso en tu misericordia que se renueva cada mañana como el rocío sobre la hierba fresca',
+        'Considero tu sabiduría que guía nuestros pasos por senderos de justicia y verdad',
+        'Reconozco tu poder transformador que obra en nosotros para conformarnos a tu imagen perfecta',
+        'Admiro tu paciencia infinita que nos permite crecer y madurar en tu amor'
+      ] : [
+        'I reflect on your infinite goodness and unfailing love that surpasses all human understanding',
+        'I meditate on your faithfulness that never fails and remains constant through all seasons of life',
+        'I contemplate your grace that sustains us each day and strengthens us in our greatest times of need',
+        'I think about your mercy that is renewed every morning like dew upon fresh grass',
+        'I consider your wisdom that guides our steps along paths of righteousness and truth',
+        'I recognize your transforming power that works within us to conform us to your perfect image',
+        'I marvel at your infinite patience that allows us to grow and mature in your love'
+      ];
 
-${randomGratitude}. ${randomTransition2}, ${closings[0]} ${closings[1]}
+      const gratitudePhrases = language === 'es' ? [
+        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros como lluvia abundante',
+        'Te doy gracias por tu presencia constante en nuestras vidas, siendo nuestro refugio en la tormenta',
+        'Reconozco con humildad todos los dones que nos has otorgado para glorificar tu santo nombre',
+        'Mi alma se regocija en tu amor y provisión continua que excede nuestras expectativas',
+        'Agradezco profundamente por tu cuidado y protección que nos cubren como un manto de paz',
+        'Mi espíritu se eleva en alabanza por tu bondad que perdura para siempre',
+        'Te alabo por tu gran amor que nos ha adoptado como hijos e hijas de tu reino'
+      ] : [
+        'My heart fills with gratitude for all the blessings you pour upon us like abundant rain',
+        'I thank you for your constant presence in our lives, being our refuge in the storm',
+        'I humbly acknowledge all the gifts you have bestowed upon us to glorify your holy name',
+        'My soul rejoices in your love and continuous provision that exceeds our expectations',
+        'I deeply appreciate your care and protection that covers us like a blanket of peace',
+        'My spirit soars in praise for your goodness that endures forever',
+        'I praise you for your great love that has adopted us as sons and daughters of your kingdom'
+      ];
 
-${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
+      const deeperThoughts = language === 'es' ? [
+        'En la quietud de este momento, me maravillo de cómo obras en los detalles más pequeños de nuestras vidas',
+        'Tu amor se manifiesta en formas que apenas comenzamos a comprender, tocando cada aspecto de nuestra existencia',
+        'Veo tu mano guiadora en los momentos de alegría y también en los desafíos que forjan nuestro carácter',
+        'Tu presencia se hace evidente en la belleza de la creación que nos rodea cada día',
+        'Reconozco que tus planes para nosotros son de bien y no de mal, para darnos esperanza y futuro'
+      ] : [
+        'In the stillness of this moment, I marvel at how you work in the smallest details of our lives',
+        'Your love manifests in ways we are only beginning to understand, touching every aspect of our existence',
+        'I see your guiding hand in moments of joy and also in the challenges that forge our character',
+        'Your presence becomes evident in the beauty of creation that surrounds us each day',
+        'I recognize that your plans for us are for good and not for harm, to give us hope and a future'
+      ];
+      
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomTransition3 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomReflection = reflectionPhrases[Math.floor(Math.random() * reflectionPhrases.length)];
+      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
+      const randomDeepThought = deeperThoughts[Math.floor(Math.random() * deeperThoughts.length)];
+      
+      // Get 8 different subjects for a truly comprehensive prayer
+      const subjects = [];
+      while (subjects.length < 8) {
+        const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+        if (!subjects.includes(randomSubject)) {
+          subjects.push(randomSubject);
+        }
+      }
+      
+      // Get 6 different closings for a substantial ending
+      const closings = [];
+      while (closings.length < 6) {
+        const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+        if (!closings.includes(randomClosing)) {
+          closings.push(randomClosing);
+        }
+      }
+      
+      // Create a truly substantial 4-5 paragraph prayer
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')} We come before you with hearts full of expectation, knowing that you hear every word we speak and understand the deepest longings of our souls.
+
+${randomReflection}. ${subjects[2]}. ${subjects[3]}. Your word reminds us that you are working all things together for good for those who love you and are called according to your purpose. We place our trust entirely in your perfect plan, even when we cannot see the full picture of what you are accomplishing in and through us.
+
+${randomTransition1}, we bring before you these specific needs and concerns: ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')} ${randomDeepThought}. We ask for your divine intervention in these areas, knowing that nothing is too difficult for you and that your power is made perfect in our weakness.
+
+${randomGratitude}. ${subjects[6]}. ${subjects[7]}. We celebrate your faithfulness in the past, trust in your provision for today, and have confident hope in your promises for tomorrow. May our lives be a testament to your goodness and may others see your light shining through us in every circumstance.
+
+${randomTransition2}, as we conclude this time of communion with you, ${closings[0]} ${closings[1]} ${closings[2]}. ${randomTransition3}, ${closings[3]} ${closings[4]} ${closings[5]}. ${t('finalClosingLong')} May your peace that surpasses all understanding guard our hearts and minds, and may your love continue to transform us from glory to glory.`;
     }
   };
 
@@ -2000,7 +2030,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
       if (isForSelf) {
         if (language === 'es') {
-          if (length === 'rich') {
+          if (length === 'comprehensive') {
             prayerTemplate = `${randomOpening} vengo ante ti con humildad y un corazón abierto, presentando este pedido: ${filteredRequest}. ${randomMiddle} 
             
             Señor, reconozco que tu sabiduría supera mi entendimiento, y confío en que conoces no solo lo que pido, sino también lo que realmente necesito. Ayúdame a someter mi voluntad a la tuya, sabiendo que tus planes para mí son de bien y no de mal.
@@ -2014,7 +2044,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
           }
         } else {
-          if (length === 'rich') {
+          if (length === 'comprehensive') {
             prayerTemplate = `${randomOpening} I come before you with humility and an open heart, presenting this request: ${filteredRequest}. ${randomMiddle}
             
             Lord, I recognize that your wisdom surpasses my understanding, and I trust that you know not only what I'm asking for, but also what I truly need. Help me to submit my will to yours, knowing that your plans for me are for good and not for harm.
@@ -2034,7 +2064,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
         
         if (language === 'es') {
-          if (length === 'rich') {
+          if (length === 'comprehensive') {
             prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con gran cariño y preocupación, presentando este pedido: ${filteredRequest}. ${randomMiddle}
             
             Padre, tú conoces cada detalle de la vida ${possessive}, cada lucha y cada necesidad. Te pido que obres en ${possessive} situación con tu poder sobrenatural y tu amor infinito. Que ${objectPronoun} pueda sentir tu presencia tangible durante este tiempo.
@@ -2048,7 +2078,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
           }
         } else {
-          if (length === 'rich') {
+          if (length === 'comprehensive') {
             prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with great care and concern, presenting this request: ${filteredRequest}. ${randomMiddle}
             
             Father, you know every detail of ${possessive} life, every struggle and every need. I ask that you work in ${possessive} situation with your supernatural power and infinite love. May ${objectPronoun} feel your tangible presence during this time.
