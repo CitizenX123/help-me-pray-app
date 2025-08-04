@@ -351,9 +351,12 @@ const HelpMePrayApp = ({ user, setUser }) => {
   
   // Set premium status for Google logged-in users
   useEffect(() => {
+    console.log('Setting premium status - user:', user);
     if (user && user.id !== 'guest') {
+      console.log('Google user detected, setting premium to true');
       setIsPremium(true); // Google logged-in users get premium features
     } else {
+      console.log('Guest user or no user, setting premium to false');
       setIsPremium(false);
     }
   }, [user]);
@@ -1000,7 +1003,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Only restrict non-premium users from premium features
   useEffect(() => {
+    console.log('useEffect triggered - isPremium:', isPremium, 'ttsProvider:', ttsProvider);
     if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
+      console.log('Resetting non-premium user from', ttsProvider, 'to browser');
       setTtsProvider('browser');
     }
   }, [isPremium, ttsProvider]);
@@ -3973,7 +3978,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               Free
                             </button>
                             <button
-                              onClick={() => setTtsProvider('google')}
+                              onClick={() => {
+                                console.log('Standard button clicked! Current isPremium:', isPremium, 'Current ttsProvider:', ttsProvider);
+                                setTtsProvider('google');
+                                console.log('Set ttsProvider to google');
+                              }}
                               style={{
                                 flex: 1,
                                 padding: '8px 12px',
