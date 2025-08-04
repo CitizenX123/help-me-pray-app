@@ -8,7 +8,7 @@ let client;
 
 function initializeClient() {
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
-    throw new Error('Google Cloud credentials not configured. Please set GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable.');
+    throw new Error('Google Cloud credentials not configured. Please see GOOGLE_CLOUD_SETUP.md for setup instructions.');
   }
 
   try {
@@ -118,12 +118,31 @@ exports.handler = async (event, context) => {
   } catch (error) {
     console.error('Google Cloud TTS Error:', error);
     
+    let errorMessage = 'Text-to-speech synthesis failed';
+    let details = error.message;
+    
+    // Provide more specific error messages
+    if (error.message.includes('credentials')) {
+      errorMessage = 'Google Cloud credentials issue';
+      details = 'Please check GOOGLE_CLOUD_SETUP.md for configuration instructions';
+    } else if (error.message.includes('billing')) {
+      errorMessage = 'Google Cloud billing not enabled';
+      details = 'Please enable billing on your Google Cloud project';
+    } else if (error.message.includes('API')) {
+      errorMessage = 'Text-to-Speech API not enabled';
+      details = 'Please enable the Cloud Text-to-Speech API in Google Cloud Console';
+    } else if (error.message.includes('permission')) {
+      errorMessage = 'Permission denied';
+      details = 'Service account needs Text-to-Speech User role';
+    }
+    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        error: 'Text-to-speech synthesis failed',
-        details: error.message 
+        error: errorMessage,
+        details: details,
+        setupGuide: 'See GOOGLE_CLOUD_SETUP.md for complete setup instructions'
       })
     };
   }

@@ -2421,9 +2421,95 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   };
 
   const speakWithGoogleCloud = async (text) => {
-    // For now, use enhanced system voices as Google Cloud TTS requires setup
-    console.log('Using enhanced system voice instead of Google Cloud TTS (requires credentials setup)');
-    speakWithEnhancedSystemVoice(text);
+    try {
+      console.log('Attempting Google Cloud TTS...');
+      setIsPlaying(true);
+      setIsPaused(false);
+      
+      const selectedGoogleVoice = googleCloudVoices[googleVoiceType];
+      
+      const requestBody = {
+        text,
+        languageCode: selectedGoogleVoice.languageCode,
+        voiceName: selectedGoogleVoice.voiceName,
+        ssmlGender: selectedGoogleVoice.gender,
+        speakingRate: speechRate
+      };
+
+      console.log('Making Google TTS API request with:', requestBody);
+      console.log('Attempting to reach Netlify function at:', '/.netlify/functions/google-tts');
+      const response = await fetch('/.netlify/functions/google-tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+      console.log('Google TTS API response status:', response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Google TTS API response data:', data);
+        if (data.success) {
+          // Convert base64 audio to blob and play
+          const audioData = atob(data.audioContent);
+          const audioArray = new Uint8Array(audioData.length);
+          for (let i = 0; i < audioData.length; i++) {
+            audioArray[i] = audioData.charCodeAt(i);
+          }
+          
+          const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          
+          const audio = new Audio(audioUrl);
+          setAudioElement(audio);
+          
+          audio.onplay = () => {
+            setIsPlaying(true);
+            setIsPaused(false);
+          };
+          
+          audio.onended = () => {
+            setIsPlaying(false);
+            setIsPaused(false);
+            setAudioElement(null);
+            URL.revokeObjectURL(audioUrl);
+          };
+          
+          audio.onerror = (e) => {
+            console.error('Audio playback error:', e);
+            setIsPlaying(false);
+            setIsPaused(false);
+            setAudioElement(null);
+            URL.revokeObjectURL(audioUrl);
+            // Fallback to enhanced system voice
+            speakWithEnhancedSystemVoice(text);
+          };
+          
+          await audio.play();
+          console.log('Google TTS audio playback started successfully');
+        } else {
+          console.error('Google TTS API returned success=false:', data);
+          throw new Error(data.error || 'Google TTS API returned unsuccessful response');
+        }
+      } else {
+        console.error('Google TTS API request failed with status:', response.status);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error response:', errorData);
+        throw new Error(errorData.error || `Google Cloud TTS API request failed with status ${response.status}`);
+      }
+      
+    } catch (error) {
+      console.error('Google Cloud TTS error:', error);
+      setIsPlaying(false);
+      setIsPaused(false);
+      
+      // Show error to user with setup instructions
+      alert(`Google Cloud TTS needs to be configured. Error: ${error.message}\n\nUsing enhanced system voice as fallback.`);
+      
+      // Fallback to enhanced system voice
+      speakWithEnhancedSystemVoice(text);
+    }
   };
 
   // Enhanced system voice with better settings to simulate premium quality
@@ -3986,7 +4072,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                 transition: 'all 0.2s'
                               }}
                             >
-                              Standard
+                              Standard $4.99
                             </button>
                             <button
                               onClick={() => setTtsProvider('elevenlabs')}
@@ -4053,21 +4139,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               </div>
                             )}
 
-                            {/* STANDARD TIER: Enhanced System Voices */}
+                            {/* STANDARD TIER: Google Cloud TTS Voices */}
                             {ttsProvider === 'google' && (
                               <div>
-                                <div style={{ 
-                                  textAlign: 'center', 
-                                  fontSize: '12px', 
-                                  color: '#6366f1', 
-                                  marginBottom: '12px',
-                                  padding: '8px',
-                                  backgroundColor: '#f0f9ff',
-                                  borderRadius: '4px',
-                                  border: '1px solid #bfdbfe'
-                                }}>
-                                  ✨ Enhanced system voices with premium settings
-                                </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                   {Object.entries(googleCloudVoices).map(([key, voice]) => (
                                   <button
