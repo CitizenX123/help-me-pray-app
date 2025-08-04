@@ -472,49 +472,49 @@ const HelpMePrayApp = ({ user, setUser }) => {
           });
         };
 
-        // Curated photo collections for each category - real photographic images
+        // Curated photo collections for each category - specific photorealistic images
         const photoCollections = {
           morning: [
-            // Beautiful sunrise/golden hour photos
+            // SUNRISE scenes only - mountain, beach, field sunrises
             'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Mountain sunrise
-            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&h=1000&fit=crop&crop=center', // Lake sunrise
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Ocean sunrise
-            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center'  // Field sunrise
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Beach sunrise over ocean
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center', // Field sunrise
+            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&h=1000&fit=crop&crop=center'  // Lake sunrise reflection
           ],
           bedtime: [
-            // Night sky and starry photos
-            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=1000&fit=crop&crop=center', // Milky Way
-            'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=800&h=1000&fit=crop&crop=center', // Starry night
-            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center', // Night landscape
-            'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=800&h=1000&fit=crop&crop=center'  // Moon and stars
+            // STARRY NIGHT, MOON scenes - peaceful nighttime only
+            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=1000&fit=crop&crop=center', // Milky Way starry sky
+            'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=800&h=1000&fit=crop&crop=center', // Starry night sky
+            'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=800&h=1000&fit=crop&crop=center', // Moon and stars
+            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center'  // Night landscape with stars
           ],
           family: [
-            // Lake, river, and peaceful water scenes
-            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=1000&fit=crop&crop=center', // Peaceful lake
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Mountain lake
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // River scene
-            'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=800&h=1000&fit=crop&crop=center'  // Calm waters
+            // FAMILY gathering spaces - parks, gardens, peaceful outdoor areas
+            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=1000&fit=crop&crop=center', // Peaceful garden path
+            'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=800&h=1000&fit=crop&crop=center', // Family picnic area
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Peaceful meadow
+            'https://images.unsplash.com/photo-1515263487990-61b07816b132?w=800&h=1000&fit=crop&crop=center'  // Cozy outdoor family space
           ],
           healing: [
-            // Forest and nature healing scenes
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Forest path
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Deep forest
-            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Sunlight through trees
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center'  // Peaceful nature
+            // PEACEFUL FOREST paths, gentle nature healing scenes
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Forest healing path
+            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Sunlight through healing trees
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Peaceful healing forest
+            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center'  // Serene nature healing
           ],
           gratitude: [
-            // Wheat fields and golden harvest scenes
-            'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=1000&fit=crop&crop=center', // Golden wheat field
-            'https://images.unsplash.com/photo-1574919995582-ca2b037ed3cc?w=800&h=1000&fit=crop&crop=center', // Harvest field
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Golden hour field
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Prairie landscape
+            // GOLDEN WHEAT fields, harvest abundance, golden hour scenes
+            'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=1000&fit=crop&crop=center', // Golden wheat field abundance
+            'https://images.unsplash.com/photo-1574919995582-ca2b037ed3cc?w=800&h=1000&fit=crop&crop=center', // Harvest gratitude field
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center', // Golden hour gratitude field
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Abundant nature landscape
           ],
           bibleVerses: [
-            // Ancient landscapes and desert scenes
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Desert landscape
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Ancient terrain
-            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Holy land style
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Middle eastern landscape
+            // ANCIENT biblical landscapes, desert, Middle Eastern terrain, holy land
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Desert biblical mountain
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Ancient biblical path
+            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Holy land style terrain
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Middle Eastern biblical landscape
           ]
         };
 
@@ -663,9 +663,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
         }
       }
       
-      // Category-specific title styling
+      // Category-specific title styling - ENHANCED for better visibility
       ctx.textAlign = 'center';
-      ctx.font = 'normal 48px Georgia, serif';
+      ctx.font = 'bold 64px Georgia, serif';  // Increased from 48px to 64px and made bold
       
       // Add elegant styling based on category
       switch(selectedCategory) {
@@ -675,10 +675,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           morningTitleGradient.addColorStop(0, '#FFD700');
           morningTitleGradient.addColorStop(1, '#FFA500');
           ctx.fillStyle = morningTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
+          ctx.shadowBlur = 8;                      // Increased blur
+          ctx.shadowOffsetX = 4;                   // Increased offset
+          ctx.shadowOffsetY = 4;
           break;
           
         case 'bedtime':
@@ -711,10 +711,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           gratitudeTitleGradient.addColorStop(0, '#F0E68C');
           gratitudeTitleGradient.addColorStop(1, '#DAA520');
           ctx.fillStyle = gratitudeTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
+          ctx.shadowBlur = 8;                      // Increased blur
+          ctx.shadowOffsetX = 4;                   // Increased offset
+          ctx.shadowOffsetY = 4;
           break;
           
         case 'family':
@@ -735,10 +735,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           bibleTitleGradient.addColorStop(0, '#F5DEB3');
           bibleTitleGradient.addColorStop(1, '#D2691E');
           ctx.fillStyle = bibleTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
+          ctx.shadowBlur = 8;                      // Increased blur
+          ctx.shadowOffsetX = 4;                   // Increased offset
+          ctx.shadowOffsetY = 4;
           break;
           
         default:
@@ -1971,8 +1971,46 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       ];
 
       const randomOpening = customOpenings[Math.floor(Math.random() * customOpenings.length)];
-      const randomMiddle = customMiddles[Math.floor(Math.random() * customMiddles.length)];
-      const randomClosing = customClosings[Math.floor(Math.random() * customClosings.length)];
+      
+      // Use different templates based on who the prayer is for
+      let randomMiddle, randomClosing;
+      
+      if (isForSelf) {
+        randomMiddle = customMiddles[Math.floor(Math.random() * customMiddles.length)];
+        randomClosing = customClosings[Math.floor(Math.random() * customClosings.length)];
+      } else {
+        // Create third-person versions for prayers for others
+        const othersMiddles = language === 'es' ? [
+          'Te pido que escuches esta oración y respondas según tu perfecta voluntad y tiempo.',
+          'Confiamos en tu sabiduría y buscamos tu guía en esta situación.',
+          'Ponemos esta petición en tus manos, sabiendo que tu amor nunca falla.',
+          'Buscamos tu dirección y confiamos en tu plan perfecto.',
+          'Te presentamos esta necesidad, creyendo en tu poder y bondad.'
+        ] : [
+          'I ask that you hear this prayer and respond according to your perfect will and timing.',
+          'We trust in your wisdom and seek your guidance in this situation.',
+          'We place this request in your hands, knowing that your love never fails.',
+          'We seek your direction and trust in your perfect plan.',
+          'We bring this need to you, believing in your power and goodness.'
+        ];
+        
+        const othersClosings = language === 'es' ? [
+          'Concédeles fe para confiar en tu bondad, incluso cuando no puedan ver el camino adelante.',
+          'Dales paciencia mientras esperan tu respuesta y sabiduría para reconocerla.',
+          'Fortalece su fe y ayúdales a descansar en tu amor perfecto.',
+          'Guía sus pasos y llena sus corazones con tu paz.',
+          'Que tu voluntad se haga en sus vidas, y que puedan glorificarte en todo.'
+        ] : [
+          'Grant them faith to trust in your goodness, even when they cannot see the way forward.',
+          'Give them patience as they await your answer and wisdom to recognize it.',
+          'Strengthen their faith and help them rest in your perfect love.',
+          'Guide their steps and fill their hearts with your peace.',
+          'May your will be done in their lives, and may they glorify you in all things.'
+        ];
+        
+        randomMiddle = othersMiddles[Math.floor(Math.random() * othersMiddles.length)];
+        randomClosing = othersClosings[Math.floor(Math.random() * othersClosings.length)];
+      }
 
       if (isForSelf) {
         if (language === 'es') {
