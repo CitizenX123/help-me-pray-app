@@ -4197,7 +4197,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               transition: 'background-color 0.2s'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f9fafb';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
                               e.target.style.backgroundColor = '#dc2626';
