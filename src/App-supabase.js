@@ -558,8 +558,80 @@ const HelpMePrayApp = ({ user, setUser }) => {
       // Add elegant category title at the top
       let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
       
+      // Create personalized titles for custom prayers
+      if (selectedCategory === 'custom') {
+        if (prayerFor === 'myself') {
+          if (selectedOccasion && selectedOccasion !== 'none') {
+            // Map occasion values to readable titles
+            const occasionTitles = {
+              'birthday': 'Birthday',
+              'anniversary': 'Anniversary', 
+              'graduation': 'Graduation',
+              'wedding': 'Wedding',
+              'newJob': 'New Job',
+              'illness': 'Healing',
+              'loss': 'Comfort',
+              'travel': 'Safe Travel',
+              'exams': 'Exams',
+              'pregnancy': 'Pregnancy',
+              'retirement': 'Retirement',
+              'moving': 'New Home',
+              'addiction': 'Recovery'
+            };
+            categoryTitle = `A Prayer For ${occasionTitles[selectedOccasion] || selectedOccasion}`;
+          } else {
+            categoryTitle = 'A Personal Prayer';
+          }
+        } else if (prayerFor === 'someone' && personName.trim()) {
+          // Extract first name only for the title
+          const firstName = personName.trim().split(' ')[0];
+          if (selectedOccasion && selectedOccasion !== 'none') {
+            const occasionTitles = {
+              'birthday': 'Birthday',
+              'anniversary': 'Anniversary',
+              'graduation': 'Graduation', 
+              'wedding': 'Wedding',
+              'newJob': 'New Job',
+              'illness': 'Healing',
+              'loss': 'Comfort',
+              'travel': 'Safe Travel',
+              'exams': 'Exams',
+              'pregnancy': 'Pregnancy',
+              'retirement': 'Retirement',
+              'moving': 'New Home',
+              'addiction': 'Recovery'
+            };
+            categoryTitle = `A Prayer For ${firstName}'s ${occasionTitles[selectedOccasion] || selectedOccasion}`;
+          } else {
+            categoryTitle = `A Prayer For ${firstName}`;
+          }
+        } else {
+          // Fallback for someone else without a name
+          if (selectedOccasion && selectedOccasion !== 'none') {
+            const occasionTitles = {
+              'birthday': 'Birthday',
+              'anniversary': 'Anniversary',
+              'graduation': 'Graduation',
+              'wedding': 'Wedding', 
+              'newJob': 'New Job',
+              'illness': 'Healing',
+              'loss': 'Comfort',
+              'travel': 'Safe Travel',
+              'exams': 'Exams',
+              'pregnancy': 'Pregnancy',
+              'retirement': 'Retirement',
+              'moving': 'New Home',
+              'addiction': 'Recovery'
+            };
+            categoryTitle = `A Prayer For ${occasionTitles[selectedOccasion] || selectedOccasion}`;
+          } else {
+            categoryTitle = 'A Prayer For Someone Special';
+          }
+        }
+      }
+      
       // Extract creative titles for Bible verses
-      if (selectedCategory === 'bibleVerses') {
+      else if (selectedCategory === 'bibleVerses') {
         const versePatterns = [
           {match: /plans to prosper you/i, title: "Plans to Prosper You"},
           {match: /plans.*hope.*future/i, title: "Hope and a Future"},
