@@ -417,12 +417,18 @@ const HelpMePrayApp = ({ user, setUser }) => {
         const randomSeed = Math.random();
         const timeStamp = Date.now();
 
-        // Function to load and draw image on canvas
+        // Function to load and draw image on canvas - Safari compatible
         const loadAndDrawImage = (imageUrl) => {
           return new Promise((resolve, reject) => {
             const img = new Image();
-            img.crossOrigin = 'anonymous';
+            
+            // Safari-specific: Add timeout and better error handling
+            const timeoutId = setTimeout(() => {
+              reject(new Error('Image load timeout'));
+            }, 15000);
+            
             img.onload = () => {
+              clearTimeout(timeoutId);
               // Draw image to fill canvas while maintaining aspect ratio
               const canvasRatio = canvas.width / canvas.height;
               const imageRatio = img.width / img.height;
@@ -450,6 +456,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
               resolve();
             };
             img.onerror = () => {
+              clearTimeout(timeoutId);
               // Fallback to gradient if image fails to load
               const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
               gradient.addColorStop(0, '#87CEEB');
@@ -458,6 +465,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
               ctx.fillRect(0, 0, canvas.width, canvas.height);
               resolve();
             };
+            
+            // Safari-specific: Set crossOrigin after setting up handlers
+            img.crossOrigin = 'anonymous';
             img.src = imageUrl;
           });
         };
@@ -527,8 +537,23 @@ const HelpMePrayApp = ({ user, setUser }) => {
         // Photo background is already loaded above
       };
 
-      // Create the background (wait for photo to load)
-      await createPhotoRealisticBackground();
+      // Create the background (wait for photo to load) - Safari compatible with timeout
+      try {
+        await Promise.race([
+          createPhotoRealisticBackground(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Background generation timeout')), 20000)
+          )
+        ]);
+      } catch (error) {
+        console.warn('Background generation failed, using simple gradient:', error);
+        // Simple fallback gradient for Safari compatibility
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
       
       // Add elegant category title at the top
       let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
