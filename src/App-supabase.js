@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book } from 'lucide-react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book } from 'lucide-react';
 import { supabase } from './supabaseClient';
 // Force cache bust v2.3
 // import { SubscriptionProvider } from './SubscriptionContext';
@@ -1514,7 +1514,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
   const prayerCategories = {
     gratitude: {
-      icon: Heart,
+      icon: () => (
+        <img 
+          src="/logo192.png" 
+          alt="Praying Hands" 
+          style={{ width: '20px', height: '20px' }} 
+        />
+      ),
       name: t('gratitude'),
       description: t('gratitudeDesc'),
       color: '#6366f1',
@@ -4148,9 +4154,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
                               padding: '8px 12px',
                               borderRadius: '6px',
                               fontSize: '14px',
@@ -4162,12 +4168,10 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               transition: 'all 0.2s ease'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f9fafb';
-                              e.target.style.borderColor = '#9ca3af';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
-                              e.target.style.borderColor = '#d1d5db';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
@@ -4178,9 +4182,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
                               padding: '12px 20px',
                               borderRadius: '6px',
                               fontSize: '14px',
@@ -4196,7 +4200,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               e.target.style.backgroundColor = '#f9fafb';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
@@ -4227,7 +4231,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}>
-                        {(selectedCategory === 'gratitude' || !selectedCategory) && <Heart size={36} color="white" />}
+                        {(selectedCategory === 'gratitude' || !selectedCategory) && (
+                          <img 
+                            src="/logo192.png" 
+                            alt="Praying Hands" 
+                            style={{ width: '36px', height: '36px', filter: 'brightness(0) invert(1)' }} 
+                          />
+                        )}
                         {selectedCategory === 'morning' && <Sun size={36} color="white" />}
                         {selectedCategory === 'bedtime' && <Moon size={36} color="white" />}
                         {selectedCategory === 'healing' && <Sparkles size={36} color="white" />}
@@ -4349,9 +4359,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
                               padding: '8px 12px',
                               borderRadius: '6px',
                               fontSize: '14px',
@@ -4363,12 +4373,10 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               transition: 'all 0.2s ease'
                             }}
                             onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#f9fafb';
-                              e.target.style.borderColor = '#9ca3af';
+                              e.target.style.backgroundColor = '#b91c1c';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
-                              e.target.style.borderColor = '#d1d5db';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
@@ -4379,9 +4387,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           <button
                             onClick={handleSignOut}
                             style={{
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              color: '#6b7280',
+                              background: '#dc2626',
+                              border: 'none',
+                              color: 'white',
                               padding: '12px 20px',
                               borderRadius: '6px',
                               fontSize: '14px',
@@ -4395,7 +4403,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               e.target.style.backgroundColor = '#f3f4f6';
                             }}
                             onMouseOut={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.backgroundColor = '#dc2626';
                             }}
                           >
                             Sign Out
