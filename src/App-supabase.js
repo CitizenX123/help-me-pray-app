@@ -1367,7 +1367,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   };
 
   // Function to ensure prayer uniqueness
-  const generateUniquePrayer = (generatorFunction, maxAttempts = 100) => {
+  const generateUniquePrayer = (generatorFunction, maxAttempts = 10) => {
     let attempts = 0;
     let prayer = '';
     
@@ -1375,60 +1375,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
       prayer = generatorFunction();
       attempts++;
       
-      // If we've tried many times and still getting duplicates, 
-      // add timestamp-based uniqueness and try again
-      if (attempts > 30 && usedPrayers.has(prayer)) {
-        // Add subtle timestamp-based variation to ensure uniqueness
-        const timeVariations = language === 'es' ? [
-          ' En este momento especial',
-          ' En esta hora sagrada',
-          ' En este tiempo de gracia',
-          ' En esta ocasión bendita',
-          ' En este instante de oración'
-        ] : [
-          ' In this special moment',
-          ' In this sacred hour', 
-          ' In this time of grace',
-          ' In this blessed occasion',
-          ' In this moment of prayer'
-        ];
-        
-        const timeVariation = timeVariations[Math.floor(Math.random() * timeVariations.length)];
-        const prayerParts = prayer.split('.');
-        if (prayerParts.length > 1) {
-          prayerParts[0] = prayerParts[0] + timeVariation;
-          prayer = prayerParts.join('.');
-        }
-      }
-      
-      // If we've tried many times and still getting duplicates, 
-      // clear some old prayers and continue
-      if (attempts > maxAttempts) {
-        const usedArray = Array.from(usedPrayers);
-        // Keep only the most recent 50 prayers to allow some recycling
-        if (usedArray.length > 150) {
-          const recentPrayers = new Set(usedArray.slice(-75));
-          setUsedPrayers(recentPrayers);
-        }
-        // Force uniqueness by adding a subtle variation
-        if (usedPrayers.has(prayer)) {
-          const uniqueEndings = language === 'es' ? [
-            ' Que así sea según tu voluntad perfecta.',
-            ' Todo esto te lo pedimos con fe.',
-            ' Confiamos en tu amor infinito.',
-            ' En tu santo nombre oramos.',
-            ' Bendice esta oración, Señor.'
-          ] : [
-            ' May this be according to your perfect will.',
-            ' We ask all this in faith.',
-            ' We trust in your infinite love.',
-            ' In your holy name we pray.',
-            ' Bless this prayer, Lord.'
-          ];
-          
-          const uniqueEnding = uniqueEndings[Math.floor(Math.random() * uniqueEndings.length)];
-          prayer = prayer.replace(/\s*Am[eé]n\.?\s*$/i, '') + uniqueEnding + ' Amen.';
-        }
+      // Simple uniqueness - if we hit max attempts, just use current prayer
+      if (attempts >= maxAttempts) {
         break;
       }
     } while (usedPrayers.has(prayer) && attempts < maxAttempts);
@@ -1523,58 +1471,11 @@ May this verse continue to speak to your heart throughout the day, bringing you 
     if (!templates) return null;
     
     if (length === 'brief') {
-      // Brief: 100+ words (Brief & Beautiful)
-      const expandedOpenings = language === 'es' ? [
-        'Dios todopoderoso, creador del cielo y la tierra, vengo ante tu trono de gracia en este momento sagrado',
-        'Padre celestial, fuente de toda bendición y misericordia, me acerco a ti con un corazón humilde y agradecido',
-        'Señor Jesús, mi salvador y redentor amado, te busco en este tiempo de oración y reflexión profunda',
-        'Espíritu Santo, consolador y guía perfecto, te invito a llenar mi corazón con tu presencia divina y transformadora',
-        'Dios de amor infinito, refugio seguro en la tormenta, levanto mi voz hacia ti en adoración y súplica',
-        'Padre eterno, roca firme de salvación, me postro ante ti reconociendo tu soberanía absoluta sobre todas las cosas'
-      ] : [
-        'Almighty God, creator of heaven and earth, I come before your throne of grace in this sacred moment',
-        'Heavenly Father, source of all blessing and mercy, I approach you with a humble and grateful heart',
-        'Lord Jesus, my beloved savior and redeemer, I seek you in this time of prayer and deep reflection',
-        'Holy Spirit, perfect comforter and guide, I invite you to fill my heart with your divine and transforming presence',
-        'God of infinite love, safe refuge in the storm, I lift my voice to you in worship and supplication',
-        'Eternal Father, firm rock of salvation, I bow before you acknowledging your absolute sovereignty over all things'
-      ];
-      
-      const expandedMiddle = language === 'es' ? [
-        'Te pido con fe inquebrantable que obres poderosamente en cada área de mi vida, transformando mi corazón según tu perfecta voluntad y renovando mi mente con tu sabiduría eterna',
-        'Derramo mi alma ante ti en completa confianza, sabiendo que tu amor inquebrantable perdura para siempre y tu fidelidad se extiende de generación en generación',
-        'Reconozco tu grandeza infinita y tu poder sobrenatural, confiando plenamente en que contigo todas las cosas son posibles y nada es demasiado difícil para tus manos',
-        'Te alabo por tu bondad constante y por las innumerables bendiciones que derramas sobre mi vida cada día, manifestando tu gracia y misericordia de maneras incontables',
-        'Busco tu rostro santo y tu dirección divina, anhelando profundamente caminar en tus sendas de justicia y verdad por el resto de mis días'
-      ] : [
-        'I ask with unwavering faith that you work powerfully in every area of my life, transforming my heart according to your perfect will and renewing my mind with your eternal wisdom',
-        'I pour out my soul before you in complete trust, knowing that your unfailing love endures forever and your faithfulness extends from generation to generation',
-        'I acknowledge your infinite greatness and your supernatural power, trusting fully that with you all things are possible and nothing is too difficult for your hands',
-        'I praise you for your constant goodness and for the countless blessings you pour into my life each day, manifesting your grace and mercy in innumerable ways',
-        'I seek your holy face and your divine direction, deeply longing to walk in your paths of righteousness and truth for the rest of my days'
-      ];
-      
-      const expandedClosings = language === 'es' ? [
-        'Te doy gracias de todo corazón por escuchar mi oración y por tu promesa inquebrantable de que nunca me abandonarás ni me desampararás en ninguna circunstancia',
-        'Confío completamente en tu tiempo perfecto y en tu sabiduría infinita para todas las situaciones y decisiones importantes en mi vida',
-        'Que tu paz sobrenatural que sobrepasa todo entendimiento humano guarde mi corazón y mi mente en Cristo Jesús por siempre',
-        'Permite que tu luz gloriosa brille poderosamente a través de mí para que otros puedan ver claramente tu amor redentor y tu gracia transformadora',
-        'Fortaléceme con tu poder divino para vivir cada día en obediencia perfecta a tu palabra santa y para la gloria eterna de tu nombre'
-      ] : [
-        'I thank you wholeheartedly for hearing my prayer and for your unwavering promise that you will never leave me nor forsake me in any circumstance',
-        'I trust completely in your perfect timing and your infinite wisdom for all situations and important decisions in my life',
-        'May your supernatural peace that surpasses all human understanding guard my heart and mind in Christ Jesus forever',
-        'Let your glorious light shine powerfully through me so that others may clearly see your redeeming love and your transforming grace',
-        'Strengthen me with your divine power to live each day in perfect obedience to your holy word and for the eternal glory of your name'
-      ];
-      
-      const randomOpening = expandedOpenings[Math.floor(Math.random() * expandedOpenings.length)];
+      // Brief: ~100 words (Brief & Beautiful)
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
       const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject4 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      const randomMiddle = expandedMiddle[Math.floor(Math.random() * expandedMiddle.length)];
-      const randomClosing = expandedClosings[Math.floor(Math.random() * expandedClosings.length)];
       
       // Ensure different subjects
       while (randomSubject2 === randomSubject1) {
@@ -1583,171 +1484,103 @@ May this verse continue to speak to your heart throughout the day, bringing you 
       while (randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) {
         randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       }
-      while (randomSubject4 === randomSubject1 || randomSubject4 === randomSubject2 || randomSubject4 === randomSubject3) {
-        randomSubject4 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
       
-      return `${randomOpening}. ${randomSubject1}. ${randomSubject2}. ${randomSubject3}. ${randomSubject4}. ${randomMiddle}. ${randomClosing}. ${t('finalClosingShort')}`;
+      const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+      
+      const middlePhrases = language === 'es' ? [
+        'Te pido con fe que obres en mi vida y me guíes por tus sendas',
+        'Derramo mi corazón ante ti, confiando en tu amor y misericordia',
+        'Reconozco tu bondad y te alabo por todas tus bendiciones',
+        'Busco tu rostro y tu sabiduría para enfrentar cada día'
+      ] : [
+        'I ask with faith that you work in my life and guide me in your ways',
+        'I pour out my heart to you, trusting in your love and mercy',
+        'I acknowledge your goodness and praise you for all your blessings',
+        'I seek your face and your wisdom to face each day'
+      ];
+      
+      const randomMiddle = middlePhrases[Math.floor(Math.random() * middlePhrases.length)];
+      
+      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${randomMiddle}. ${randomSubject3}. ${randomClosing} ${t('finalClosingShort')}`;
       
     } else if (length === 'medium') {
-      // Medium: 200+ words (Perfectly Timed)
-      const expandedOpenings = language === 'es' ? [
-        'Dios todopoderoso y eterno, creador de todas las cosas visibles e invisibles, vengo ante tu presencia sagrada en este momento de oración sincera',
-        'Padre celestial, fuente inagotable de amor y misericordia divina, me acerco a tu trono de gracia con un corazón lleno de reverencia y expectativa',
-        'Señor Jesús, mi salvador y redentor amado, te busco en este tiempo de comunión íntima, anhelando profundamente sentir tu presencia transformadora',
-        'Espíritu Santo, consolador divino y guía perfecto, te invito a llenar cada rincón de mi ser con tu poder sanctificador y tu sabiduría eterna'
-      ] : [
-        'Almighty and eternal God, creator of all things visible and invisible, I come before your sacred presence in this moment of sincere prayer',
-        'Heavenly Father, inexhaustible source of love and divine mercy, I approach your throne of grace with a heart full of reverence and expectation',
-        'Lord Jesus, my beloved savior and redeemer, I seek you in this time of intimate communion, deeply longing to feel your transforming presence',
-        'Holy Spirit, divine comforter and perfect guide, I invite you to fill every corner of my being with your sanctifying power and eternal wisdom'
-      ];
+      // Medium: ~200 words (Perfectly Timed)
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomTransition = language === 'es' ? 
+        ['Por tanto', 'También', 'Además'][Math.floor(Math.random() * 3)] :
+        ['Therefore', 'Also', 'Furthermore'][Math.floor(Math.random() * 3)];
       
-      const expandedMiddleSections = language === 'es' ? [
-        'Te presento estas peticiones con fe inquebrantable, sabiendo que tu amor por nosotros es más profundo que los océanos y más alto que los cielos. Reconozco que tu sabiduría infinita ve lo que nosotros no podemos ver, y tu poder sobrenatural puede obrar milagros que superan nuestra comprensión humana.',
-        'En tu presencia encuentro paz que sobrepasa todo entendimiento, y en tu palabra hallo esperanza que renueva mi alma. Te pido que obres poderosamente en cada situación que coloco ante ti, transformando corazones y cambiando circunstancias según tu perfecta voluntad.',
-        'Derramo mi corazón ante ti como agua, confiando completamente en tu fidelidad que permanece para siempre. Tu amor inquebrantable es mi refugio en la tormenta, y tu gracia abundante es suficiente para todas mis necesidades y las de aquellos por quienes intercedo.'
-      ] : [
-        'I present these petitions with unwavering faith, knowing that your love for us is deeper than the oceans and higher than the heavens. I recognize that your infinite wisdom sees what we cannot see, and your supernatural power can work miracles that surpass our human understanding.',
-        'In your presence I find peace that surpasses all understanding, and in your word I find hope that renews my soul. I ask that you work powerfully in every situation I place before you, transforming hearts and changing circumstances according to your perfect will.',
-        'I pour out my heart before you like water, trusting completely in your faithfulness that endures forever. Your unfailing love is my refuge in the storm, and your abundant grace is sufficient for all my needs and those of the ones I intercede for.'
-      ];
-      
-      const expandedClosingSections = language === 'es' ? [
-        'Te alabo por tu bondad constante y por las innumerables bendiciones que derramas sobre nuestras vidas cada día. Que tu nombre sea glorificado en todo lo que hagamos, y que nuestras vidas sean un testimonio viviente de tu amor redentor.',
-        'Fortalécenos con tu poder divino para enfrentar cada desafío con valentía, y concédenos sabiduría celestial para tomar decisiones que honren tu santo nombre. Que tu luz brille a través de nosotros para que otros puedan conocer tu salvación.',
-        'Confío en tu tiempo perfecto y en tus propósitos eternos, sabiendo que trabajas todas las cosas para el bien de aquellos que te aman. Permite que tu paz reine en nuestros corazones y que tu gozo sea nuestra fortaleza en cada circunstancia.'
-      ] : [
-        'I praise you for your constant goodness and for the countless blessings you pour into our lives each day. May your name be glorified in everything we do, and may our lives be a living testimony of your redeeming love.',
-        'Strengthen us with your divine power to face every challenge with courage, and grant us heavenly wisdom to make decisions that honor your holy name. May your light shine through us so that others may come to know your salvation.',
-        'I trust in your perfect timing and your eternal purposes, knowing that you work all things together for the good of those who love you. Let your peace reign in our hearts and let your joy be our strength in every circumstance.'
-      ];
-      
-      const transitions = language === 'es' ? 
-        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello', 'Además', 'También'] :
-        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence', 'Furthermore', 'Moreover'];
-      
-      const randomOpening = expandedOpenings[Math.floor(Math.random() * expandedOpenings.length)];
-      const randomMiddle1 = expandedMiddleSections[Math.floor(Math.random() * expandedMiddleSections.length)];
-      let randomMiddle2 = expandedMiddleSections[Math.floor(Math.random() * expandedMiddleSections.length)];
-      while (randomMiddle2 === randomMiddle1) {
-        randomMiddle2 = expandedMiddleSections[Math.floor(Math.random() * expandedMiddleSections.length)];
-      }
-      const randomClosing = expandedClosingSections[Math.floor(Math.random() * expandedClosingSections.length)];
-      const randomTransition = transitions[Math.floor(Math.random() * transitions.length)];
-      
-      // Get 8 different subjects for comprehensive coverage
+      // Get 4 different subjects
       const subjects = [];
-      while (subjects.length < 8) {
+      while (subjects.length < 4) {
         const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
         if (!subjects.includes(randomSubject)) {
           subjects.push(randomSubject);
         }
       }
       
-      // Get 4 different closings
+      // Get 2 different closings
       const closings = [];
-      while (closings.length < 4) {
+      while (closings.length < 2) {
         const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
         if (!closings.includes(randomClosing)) {
           closings.push(randomClosing);
         }
       }
       
-      return `${randomOpening}. ${subjects[0]}. ${subjects[1]}. ${subjects[2]}. ${randomMiddle1} ${t('comprehensiveMiddle1')}
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
 
-${subjects[3]}. ${subjects[4]}. ${subjects[5]}. ${randomMiddle2} We place our complete trust in your divine plan, knowing that your thoughts toward us are thoughts of peace and not of evil, to give us a future and a hope. May your will be accomplished in every aspect of our lives as we surrender ourselves completely to your loving care.
+${randomTransition}, ${subjects[2]}. ${subjects[3]}. We trust in your perfect timing and boundless mercy. May your will be done in every aspect of our lives.
 
-${randomTransition}, ${subjects[6]}. ${subjects[7]}. ${randomClosing} ${closings[0]} ${closings[1]} ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
+${closings[0]} ${closings[1]} ${t('finalClosingLong')}`;
       
     } else {
-      // Comprehensive: 300+ words (Rich & Meaningful) - extensive prayer
-      const expandedOpenings = language === 'es' ? [
-        'Dios todopoderoso, creador de los cielos y la tierra, rey de reyes y señor de señores, vengo ante tu presencia majestuosa en este momento sagrado de oración y adoración',
-        'Padre celestial, fuente eterna de todo amor, sabiduría y poder, me acerco a tu trono de gracia infinita con un corazón lleno de reverencia, gratitud y expectativa divina',
-        'Señor Jesús, mi salvador y redentor amado, príncipe de paz y luz del mundo, te busco en este tiempo de comunión profunda e íntima, anhelando sentir tu presencia transformadora',
-        'Espíritu Santo, consolador divino, guía perfecto y fuego purificador, te invito a llenar cada rincón de mi ser con tu poder sanctificador, tu sabiduría eterna y tu amor incondicional'
-      ] : [
-        'Almighty God, creator of heaven and earth, king of kings and lord of lords, I come before your majestic presence in this sacred moment of prayer and worship',
-        'Heavenly Father, eternal source of all love, wisdom and power, I approach your throne of infinite grace with a heart full of reverence, gratitude and divine expectation',
-        'Lord Jesus, my beloved savior and redeemer, prince of peace and light of the world, I seek you in this time of deep and intimate communion, longing to feel your transforming presence',
-        'Holy Spirit, divine comforter, perfect guide and purifying fire, I invite you to fill every corner of my being with your sanctifying power, your eternal wisdom and your unconditional love'
-      ];
-      
-      const expandedReflectionSections = language === 'es' ? [
-        'Reflexiono profundamente sobre tu bondad infinita y tu amor inagotable que trasciende toda comprensión humana, recordando cómo has obrado milagrosamente en mi vida y en las vidas de aquellos que amo. Tu fidelidad nunca falla y permanece constante a través de todas las estaciones de la vida, siendo nuestro ancla segura en medio de las tormentas.',
-        'Medito en tu gracia extraordinaria que nos sostiene cada día y nos fortalece en los momentos de mayor necesidad y adversidad. Tu misericordia se renueva cada mañana como el rocío fresco sobre la hierba, ofreciéndonos nuevas oportunidades para crecer en santidad y caminar más cerca de ti.',
-        'Contemplo tu sabiduría infinita que guía nuestros pasos por senderos de justicia y verdad, iluminando nuestro camino incluso en los momentos más oscuros. Reconozco tu poder transformador que obra constantemente en nosotros para conformarnos a tu imagen perfecta y gloriosa.'
-      ] : [
-        'I reflect deeply on your infinite goodness and unfailing love that surpasses all human understanding, remembering how you have worked miraculously in my life and in the lives of those I love. Your faithfulness never fails and remains constant through all seasons of life, being our secure anchor in the midst of storms.',
-        'I meditate on your extraordinary grace that sustains us each day and strengthens us in our greatest times of need and adversity. Your mercy is renewed every morning like fresh dew upon the grass, offering us new opportunities to grow in holiness and walk closer to you.',
-        'I contemplate your infinite wisdom that guides our steps along paths of righteousness and truth, illuminating our way even in the darkest moments. I recognize your transforming power that works constantly within us to conform us to your perfect and glorious image.'
-      ];
-      
-      const expandedPetitionSections = language === 'es' ? [
-        'Te presento estas peticiones específicas con fe inquebrantable y confianza absoluta, sabiendo que tu amor por nosotros es más profundo que los océanos más vastos y más alto que las montañas más elevadas. Tu sabiduría infinita ve lo que nosotros no podemos ver, y tu poder sobrenatural puede obrar milagros que superan completamente nuestra comprensión humana limitada.',
-        'En tu presencia sagrada encuentro paz que sobrepasa todo entendimiento terrenal, y en tu palabra santa hallo esperanza que renueva mi alma cansada. Te pido fervientemente que obres poderosamente en cada situación que coloco ante ti, transformando corazones endurecidos y cambiando circunstancias imposibles según tu perfecta voluntad soberana.',
-        'Derramo mi corazón completamente ante ti como agua derramada, confiando enteramente en tu fidelidad que permanece para siempre y jamás. Tu amor inquebrantable es mi refugio seguro en la tormenta más feroz, y tu gracia abundante es más que suficiente para todas mis necesidades y las de aquellos por quienes intercedo constantemente.'
-      ] : [
-        'I present these specific petitions with unwavering faith and absolute confidence, knowing that your love for us is deeper than the vastest oceans and higher than the tallest mountains. Your infinite wisdom sees what we cannot see, and your supernatural power can work miracles that completely surpass our limited human understanding.',
-        'In your sacred presence I find peace that surpasses all earthly understanding, and in your holy word I find hope that renews my weary soul. I fervently ask that you work powerfully in every situation I place before you, transforming hardened hearts and changing impossible circumstances according to your perfect sovereign will.',
-        'I pour out my heart completely before you like spilled water, trusting entirely in your faithfulness that remains forever and always. Your unfailing love is my secure refuge in the fiercest storm, and your abundant grace is more than sufficient for all my needs and those of the ones I constantly intercede for.'
-      ];
-      
-      const expandedGratitudeSections = language === 'es' ? [
-        'Mi corazón rebosa de gratitud profunda por todas las bendiciones incontables que derramas sobre nuestras vidas cada día como lluvia abundante sobre tierra seca. Te alabo por tu bondad constante que nunca se agota, por tu provisión fiel que nunca falla, y por tu protección divina que nos cubre como un manto de paz celestial.',
-        'Te doy gracias de todo corazón por tu presencia constante en nuestras vidas, siendo nuestro refugio inquebrantable en la tormenta y nuestro gozo en tiempos de celebración. Reconozco con profunda humildad todos los dones preciosos que nos has otorgado generosamente para glorificar tu santo nombre y servir a tu reino eterno.',
-        'Mi alma se regocija intensamente en tu amor incondicional y tu provisión continua que excede abundantemente nuestras expectativas más altas. Mi espíritu se eleva en alabanza sincera por tu bondad que perdura para siempre y por tu gran amor que nos ha adoptado como hijos e hijas queridos de tu reino celestial.'
-      ] : [
-        'My heart overflows with deep gratitude for all the countless blessings you pour into our lives each day like abundant rain upon dry ground. I praise you for your constant goodness that never runs out, for your faithful provision that never fails, and for your divine protection that covers us like a blanket of heavenly peace.',
-        'I thank you wholeheartedly for your constant presence in our lives, being our unshakeable refuge in the storm and our joy in times of celebration. I humbly acknowledge with deep humility all the precious gifts you have generously bestowed upon us to glorify your holy name and serve your eternal kingdom.',
-        'My soul rejoices intensely in your unconditional love and your continuous provision that abundantly exceeds our highest expectations. My spirit soars in sincere praise for your goodness that endures forever and for your great love that has adopted us as beloved sons and daughters of your heavenly kingdom.'
-      ];
-      
+      // Comprehensive: ~300 words (Rich & Meaningful)
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
       const transitions = language === 'es' ? 
-        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello', 'Además', 'También', 'Asimismo', 'Del mismo modo', 'En este sentido', 'Por consiguiente', 'De igual manera'] :
-        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence', 'Furthermore', 'Moreover', 'Additionally', 'Likewise', 'In the same manner', 'As a result', 'Similarly'];
-      
-      const randomOpening = expandedOpenings[Math.floor(Math.random() * expandedOpenings.length)];
-      const randomReflection = expandedReflectionSections[Math.floor(Math.random() * expandedReflectionSections.length)];
-      const randomPetition1 = expandedPetitionSections[Math.floor(Math.random() * expandedPetitionSections.length)];
-      let randomPetition2 = expandedPetitionSections[Math.floor(Math.random() * expandedPetitionSections.length)];
-      while (randomPetition2 === randomPetition1) {
-        randomPetition2 = expandedPetitionSections[Math.floor(Math.random() * expandedPetitionSections.length)];
-      }
-      const randomGratitude = expandedGratitudeSections[Math.floor(Math.random() * expandedGratitudeSections.length)];
+        ['Por tanto', 'También', 'Además', 'Asimismo'] :
+        ['Therefore', 'Also', 'Furthermore', 'Moreover'];
       const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
       const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomTransition3 = transitions[Math.floor(Math.random() * transitions.length)];
       
-      // Get 10 different subjects for truly comprehensive coverage
+      // Get 6 different subjects
       const subjects = [];
-      while (subjects.length < 10) {
+      while (subjects.length < 6) {
         const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
         if (!subjects.includes(randomSubject)) {
           subjects.push(randomSubject);
         }
       }
       
-      // Get 8 different closings for substantial conclusion
+      // Get 3 different closings
       const closings = [];
-      while (closings.length < 8) {
+      while (closings.length < 3) {
         const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
         if (!closings.includes(randomClosing)) {
           closings.push(randomClosing);
         }
       }
       
-      // Create a truly substantial 300+ word prayer with 5 full paragraphs
-      return `${randomOpening}. ${subjects[0]}. ${subjects[1]}. ${subjects[2]}. ${t('comprehensiveMiddle1')} We come before you with hearts overflowing with expectation and faith, knowing that you hear every word we speak and understand the deepest longings and desires of our souls.
+      const gratitudePhrases = language === 'es' ? [
+        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros',
+        'Te alabo por tu bondad constante y tu amor que nunca falla',
+        'Reconozco con humildad todos los dones que nos has otorgado'
+      ] : [
+        'My heart fills with gratitude for all the blessings you pour upon us',
+        'I praise you for your constant goodness and your love that never fails',
+        'I humbly acknowledge all the gifts you have bestowed upon us'
+      ];
+      
+      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
+      
+      // Create a substantial 4-paragraph prayer
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')} We come before you with hearts full of expectation, knowing that you hear every word we speak and understand the deepest longings of our souls.
 
-${randomReflection} ${subjects[3]}. ${subjects[4]}. Your word reminds us that you are working all things together for good for those who love you and are called according to your purpose. We place our complete and unwavering trust in your perfect plan, even when we cannot see the full picture of what you are accomplishing in and through us.
+${subjects[2]}. ${subjects[3]}. Your word reminds us that you are working all things together for good for those who love you. We place our trust in your perfect plan, even when we cannot see the full picture of what you are accomplishing in our lives.
 
-${randomTransition1}, ${randomPetition1} ${subjects[5]}. ${subjects[6]}. ${t('comprehensiveMiddle2')} We ask for your divine intervention in these areas, knowing that nothing is too difficult for you and that your power is made perfect in our weakness and human frailty.
+${randomTransition1}, we bring before you these concerns: ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')} We ask for your divine intervention, knowing that nothing is too difficult for you and that your power is made perfect in our weakness.
 
-${randomPetition2} ${subjects[7]}. ${subjects[8]}. We celebrate your faithfulness in the past, trust completely in your provision for today, and have confident hope in your promises for tomorrow. May our lives be a living testament to your goodness and may others see your light shining brightly through us in every circumstance.
-
-${randomTransition2}, ${randomGratitude} ${subjects[9]}. ${randomTransition3}, as we conclude this sacred time of communion with you, ${closings[0]} ${closings[1]} ${closings[2]} ${closings[3]}. ${closings[4]} ${closings[5]} ${closings[6]} ${closings[7]}. ${t('finalClosingLong')} May your supernatural peace that surpasses all understanding guard our hearts and minds continually, and may your transforming love continue to change us from glory to glory throughout all eternity.`;
+${randomGratitude}. We celebrate your faithfulness in the past, trust in your provision for today, and have hope in your promises for tomorrow. ${randomTransition2}, ${closings[0]} ${closings[1]} ${closings[2]} ${t('finalClosingLong')}`;
     }
   };
 

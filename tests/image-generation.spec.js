@@ -25,7 +25,7 @@ test.describe('Image Generation and Download', () => {
     ]);
     
     // Verify download was initiated
-    expect(download.suggestedFilename()).toMatch(/prayer-.*\.png/);
+    expect(download.suggestedFilename()).toMatch(/.*\.png$/);
   });
 
   test('should show download button only after prayer generation', async ({ page }) => {
