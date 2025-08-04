@@ -2436,6 +2436,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       };
 
       console.log('Making Google TTS API request with:', requestBody);
+      console.log('Attempting to reach Netlify function at:', '/.netlify/functions/google-tts');
       const response = await fetch('/.netlify/functions/google-tts', {
         method: 'POST',
         headers: {
@@ -2447,6 +2448,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Google TTS API response data:', data);
         if (data.success) {
           // Convert base64 audio to blob and play
           const audioData = atob(data.audioContent);
@@ -2484,15 +2486,26 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           };
           
           await audio.play();
+          console.log('Google TTS audio playback started successfully');
+        } else {
+          console.error('Google TTS API returned success=false:', data);
+          throw new Error(data.error || 'Google TTS API returned unsuccessful response');
         }
       } else {
-        throw new Error('Google Cloud TTS API request failed');
+        console.error('Google TTS API request failed with status:', response.status);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error response:', errorData);
+        throw new Error(errorData.error || `Google Cloud TTS API request failed with status ${response.status}`);
       }
       
     } catch (error) {
       console.error('Google Cloud TTS error:', error);
       setIsPlaying(false);
       setIsPaused(false);
+      
+      // Show error to user
+      alert(`Google voices are temporarily unavailable: ${error.message}. Using system voice as fallback.`);
+      
       // Fallback to system voice
       speakWithSystemVoice(text);
     }
