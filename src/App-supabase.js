@@ -2420,95 +2420,72 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   };
 
   const speakWithGoogleCloud = async (text) => {
-    try {
-      console.log('Attempting Google Cloud TTS...');
+    // For now, use enhanced system voices as Google Cloud TTS requires setup
+    console.log('Using enhanced system voice instead of Google Cloud TTS (requires credentials setup)');
+    speakWithEnhancedSystemVoice(text);
+  };
+
+  // Enhanced system voice with better settings to simulate premium quality
+  const speakWithEnhancedSystemVoice = (text) => {
+    if (!availableVoices.length) return;
+    
+    setIsPlaying(true);
+    setIsPaused(false);
+    
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Find best quality English voice based on Google voice type selection
+    let preferredVoice;
+    const googleVoiceConfig = googleCloudVoices[googleVoiceType];
+    
+    // Map Google voice types to system voice preferences
+    const voiceMapping = {
+      warm: (voices) => voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female')),
+      confident: (voices) => voices.find(v => v.name.includes('Alex') || v.name.includes('Daniel') || v.name.includes('Google US English Male')) || voices.find(v => v.name.includes('Male')),
+      gentle: (voices) => voices.find(v => v.name.includes('Victoria') || v.name.includes('Zira') || v.name.includes('Google UK English Female')) || voices.find(v => v.name.includes('Female')),
+      steady: (voices) => voices.find(v => v.name.includes('David') || v.name.includes('Mark') || v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Male')),
+      peaceful: (voices) => voices.find(v => v.name.includes('Fiona') || v.name.includes('Moira') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female')),
+      wise: (voices) => voices.find(v => v.name.includes('Oliver') || v.name.includes('Thomas') || v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Male')),
+      hopeful: (voices) => voices.find(v => v.name.includes('Allison') || v.name.includes('Susan') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female')),
+      understanding: (voices) => voices.find(v => v.name.includes('Veena') || v.name.includes('Tessa') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female'))
+    };
+    
+    const englishVoices = availableVoices.filter(voice => voice.lang.startsWith('en'));
+    preferredVoice = voiceMapping[googleVoiceType]?.(englishVoices) || englishVoices[0] || availableVoices[0];
+    
+    utterance.voice = preferredVoice;
+    
+    // Enhanced voice settings for better quality
+    utterance.rate = speechRate * 0.9; // Slightly slower for prayer reading
+    utterance.pitch = googleVoiceConfig.name.includes('Male') ? 0.8 : 1.1; // Adjust pitch based on voice type
+    utterance.volume = 0.9;
+    
+    // Event handlers
+    utterance.onstart = () => {
+      console.log('Enhanced system voice started:', preferredVoice?.name);
       setIsPlaying(true);
       setIsPaused(false);
-      
-      const selectedGoogleVoice = googleCloudVoices[googleVoiceType];
-      
-      const requestBody = {
-        text,
-        languageCode: selectedGoogleVoice.languageCode,
-        voiceName: selectedGoogleVoice.voiceName,
-        ssmlGender: selectedGoogleVoice.gender,
-        speakingRate: speechRate
-      };
-
-      console.log('Making Google TTS API request with:', requestBody);
-      console.log('Attempting to reach Netlify function at:', '/.netlify/functions/google-tts');
-      const response = await fetch('/.netlify/functions/google-tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-      console.log('Google TTS API response status:', response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Google TTS API response data:', data);
-        if (data.success) {
-          // Convert base64 audio to blob and play
-          const audioData = atob(data.audioContent);
-          const audioArray = new Uint8Array(audioData.length);
-          for (let i = 0; i < audioData.length; i++) {
-            audioArray[i] = audioData.charCodeAt(i);
-          }
-          
-          const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          
-          const audio = new Audio(audioUrl);
-          setAudioElement(audio);
-          
-          audio.onplay = () => {
-            setIsPlaying(true);
-            setIsPaused(false);
-          };
-          
-          audio.onended = () => {
-            setIsPlaying(false);
-            setIsPaused(false);
-            setAudioElement(null);
-            URL.revokeObjectURL(audioUrl);
-          };
-          
-          audio.onerror = (e) => {
-            console.error('Audio playback error:', e);
-            setIsPlaying(false);
-            setIsPaused(false);
-            setAudioElement(null);
-            URL.revokeObjectURL(audioUrl);
-            // Fallback to system voice
-            speakWithSystemVoice(text);
-          };
-          
-          await audio.play();
-          console.log('Google TTS audio playback started successfully');
-        } else {
-          console.error('Google TTS API returned success=false:', data);
-          throw new Error(data.error || 'Google TTS API returned unsuccessful response');
-        }
-      } else {
-        console.error('Google TTS API request failed with status:', response.status);
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Error response:', errorData);
-        throw new Error(errorData.error || `Google Cloud TTS API request failed with status ${response.status}`);
-      }
-      
-    } catch (error) {
-      console.error('Google Cloud TTS error:', error);
+    };
+    
+    utterance.onend = () => {
+      console.log('Enhanced system voice finished');
       setIsPlaying(false);
       setIsPaused(false);
-      
-      // Show error to user
-      alert(`Google voices are temporarily unavailable: ${error.message}. Using system voice as fallback.`);
-      
-      // Fallback to system voice
-      speakWithSystemVoice(text);
-    }
+      setCurrentUtterance(null);
+    };
+    
+    utterance.onerror = (event) => {
+      console.error('Enhanced system voice error:', event.error);
+      setIsPlaying(false);
+      setIsPaused(false);
+      setCurrentUtterance(null);
+    };
+    
+    setCurrentUtterance(utterance);
+    window.speechSynthesis.speak(utterance);
   };
   
   const socialSharing = {
@@ -4008,7 +3985,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                 transition: 'all 0.2s'
                               }}
                             >
-                              Standard $4.99
+                              Standard (Enhanced)
                             </button>
                             <button
                               onClick={() => setTtsProvider('elevenlabs')}
@@ -4075,10 +4052,23 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               </div>
                             )}
 
-                            {/* STANDARD TIER: Google Cloud TTS Voices */}
+                            {/* STANDARD TIER: Enhanced System Voices */}
                             {ttsProvider === 'google' && (
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                {Object.entries(googleCloudVoices).map(([key, voice]) => (
+                              <div>
+                                <div style={{ 
+                                  textAlign: 'center', 
+                                  fontSize: '12px', 
+                                  color: '#6366f1', 
+                                  marginBottom: '12px',
+                                  padding: '8px',
+                                  backgroundColor: '#f0f9ff',
+                                  borderRadius: '4px',
+                                  border: '1px solid #bfdbfe'
+                                }}>
+                                  ✨ Enhanced system voices with premium settings
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                  {Object.entries(googleCloudVoices).map(([key, voice]) => (
                                   <button
                                     key={key}
                                     onClick={() => setGoogleVoiceType(key)}
@@ -4100,6 +4090,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                     </div>
                                   </button>
                                 ))}
+                                </div>
                               </div>
                             )}
 
