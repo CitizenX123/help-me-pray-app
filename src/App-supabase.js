@@ -4176,12 +4176,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
@@ -4194,23 +4190,14 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               background: '#dc2626',
                               border: 'none',
                               color: 'white',
-                              padding: '12px 20px',
+                              padding: '8px 16px',
                               borderRadius: '6px',
                               fontSize: '14px',
                               cursor: 'pointer',
-                              minHeight: '44px',
-                              minWidth: '100px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
@@ -4377,12 +4364,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
