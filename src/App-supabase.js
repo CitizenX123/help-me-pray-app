@@ -1001,13 +1001,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   }, [user]);
 
-  // Only restrict non-premium users from premium features
+  // Only restrict elevenlabs (premium) voices for non-premium users, allow google (enhanced system voices)
   useEffect(() => {
     console.log('useEffect triggered - isPremium:', isPremium, 'ttsProvider:', ttsProvider);
-    if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
-      console.log('Resetting non-premium user from', ttsProvider, 'to browser');
+    if (!isPremium && ttsProvider === 'elevenlabs') {
+      console.log('Resetting non-premium user from elevenlabs to browser');
       setTtsProvider('browser');
     }
+    // Note: Google voices now use enhanced system voices, so they're available to all users
   }, [isPremium, ttsProvider]);
 
   // Initialize text-to-speech voices
@@ -2209,9 +2210,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   const speakPrayer = async (text) => {
     console.log('speakPrayer called with provider:', ttsProvider, 'isPremium:', isPremium);
     
-    // Restrict premium voices to premium users only
-    if ((ttsProvider === 'google' || ttsProvider === 'elevenlabs') && !isPremium) {
-      console.log('Non-premium user trying premium voice, falling back to system');
+    // Only restrict ElevenLabs voices to premium users (Google voices use enhanced system voices)
+    if (ttsProvider === 'elevenlabs' && !isPremium) {
+      console.log('Non-premium user trying ElevenLabs voice, falling back to system');
       speakWithSystemVoice(text);
       return;
     }
@@ -3985,7 +3986,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                 transition: 'all 0.2s'
                               }}
                             >
-                              Standard (Enhanced)
+                              Standard
                             </button>
                             <button
                               onClick={() => setTtsProvider('elevenlabs')}
