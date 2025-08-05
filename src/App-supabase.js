@@ -279,8 +279,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [speechRate, setSpeechRate] = useState(1);
   const [showVoiceSettings, setShowVoiceSettings] = useState(true);
   const [currentUtterance, setCurrentUtterance] = useState(null);
-  const [useHumanVoice, setUseHumanVoice] = useState(true);
-  const [humanVoiceType, setHumanVoiceType] = useState('nurturing');
+  // ElevenLabs voice variables removed due to cost
   const [googleVoiceType, setGoogleVoiceType] = useState('warm');
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
   // Google Cloud TTS voices to match ElevenLabs selection
@@ -1001,14 +1000,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   }, [user]);
 
-  // Only restrict elevenlabs (premium) voices for non-premium users, allow google (enhanced system voices)
+  // No premium voice restrictions needed - ElevenLabs removed for cost reasons
+  // Google and browser voices available to all users
   useEffect(() => {
     console.log('useEffect triggered - isPremium:', isPremium, 'ttsProvider:', ttsProvider);
-    if (!isPremium && ttsProvider === 'elevenlabs') {
-      console.log('Resetting non-premium user from elevenlabs to browser');
-      setTtsProvider('browser');
-    }
-    // Note: Google voices now use enhanced system voices, so they're available to all users
+    // All voice options now available to everyone (ElevenLabs removed due to cost)
   }, [isPremium, ttsProvider]);
 
   // Initialize text-to-speech voices
@@ -2130,8 +2126,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return `${prayer}${includeAttribution ? attribution : ""}${appBranding}`;
   };
   
-  // Human-like voice configurations
-  const humanVoices = {
+  // ElevenLabs configurations removed due to cost - keeping for reference
+  const removedHumanVoices = {
     nurturing: {
       name: 'Maria - Nurturing',
       description: 'Soft, caring Latina voice with bilingual warmth',
@@ -2210,131 +2206,22 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   const speakPrayer = async (text) => {
     console.log('speakPrayer called with provider:', ttsProvider, 'isPremium:', isPremium);
     
-    // Only restrict ElevenLabs voices to premium users (Google voices use enhanced system voices)
-    if (ttsProvider === 'elevenlabs' && !isPremium) {
-      console.log('Non-premium user trying ElevenLabs voice, falling back to system');
-      speakWithSystemVoice(text);
-      return;
-    }
-    
+    // ElevenLabs removed due to cost - using Google and enhanced browser voices
     switch (ttsProvider) {
       case 'google':
         await speakWithGoogleCloud(text);
         break;
-      case 'elevenlabs':
-        if (useHumanVoice) {
-          await speakWithHumanVoice(text);
-        } else {
-          speakWithSystemVoice(text);
-        }
+      case 'azure':
+        await speakWithAzureTTS(text);
         break;
       case 'browser':
       default:
-        speakWithSystemVoice(text);
+        speakWithEnhancedSystemVoice(text);
         break;
     }
   };
 
-  const speakWithHumanVoice = async (text) => {
-    try {
-      console.log('Attempting human voice with:', humanVoiceType);
-      console.log('API Key available:', !!process.env.REACT_APP_ELEVENLABS_API_KEY);
-      
-      // Check if API key is configured
-      console.log('ElevenLabs API Key:', process.env.REACT_APP_ELEVENLABS_API_KEY ? 'Present' : 'Missing');
-      if (!process.env.REACT_APP_ELEVENLABS_API_KEY || process.env.REACT_APP_ELEVENLABS_API_KEY === 'your_elevenlabs_key_here') {
-        throw new Error('Premium voices are temporarily unavailable. Please contact support to enable this feature.');
-      }
-      
-      setIsPlaying(true);
-      setIsPaused(false);
-
-      console.log('humanVoiceType:', humanVoiceType);
-      console.log('Available humanVoices keys:', Object.keys(humanVoices));
-      const voiceConfig = humanVoices[humanVoiceType];
-      console.log('voiceConfig:', voiceConfig);
-      if (!voiceConfig) {
-        throw new Error(`Voice configuration not found for: ${humanVoiceType}`);
-      }
-      console.log('Using voice config:', voiceConfig.name);
-      
-      // Truncate text for demo if too long (ElevenLabs has character limits)
-      const truncatedText = text.length > 2500 ? text.substring(0, 2500) + '...' : text;
-      
-      console.log('Making ElevenLabs API request to voice:', voiceConfig.voiceId);
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceConfig.voiceId, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': process.env.REACT_APP_ELEVENLABS_API_KEY
-        },
-        body: JSON.stringify({
-          text: truncatedText,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: voiceConfig.stability,
-            similarity_boost: voiceConfig.similarity_boost,
-            style: voiceConfig.style,
-            use_speaker_boost: voiceConfig.use_speaker_boost
-          }
-        })
-      });
-
-      console.log('ElevenLabs response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('ElevenLabs API error:', response.status, errorText);
-        throw new Error(`API Error: ${response.status} - ${errorText}`);
-      }
-
-      const audioBlob = await response.blob();
-      console.log('Audio blob size:', audioBlob.size);
-      
-      // Save the audio blob and URL for sharing
-      setCurrentAudioBlob(audioBlob);
-      
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      const audio = new Audio(audioUrl);
-      setAudioElement(audio);
-      
-      audio.onended = () => {
-        setIsPlaying(false);
-        setIsPaused(false);
-        setAudioElement(null);
-        URL.revokeObjectURL(audioUrl);
-      };
-      
-      audio.onerror = (e) => {
-        console.error('Audio playback error:', e);
-        setIsPlaying(false);
-        setIsPaused(false);
-        setAudioElement(null);
-        URL.revokeObjectURL(audioUrl);
-        // Fallback to system voice
-        alert('Human voice failed, using system voice as fallback');
-        speakWithSystemVoice(text);
-      };
-      
-      console.log('Starting audio playback...');
-      await audio.play();
-      console.log('Human voice playback started successfully!');
-      
-    } catch (error) {
-      console.error('Human voice failed, falling back to system voice:', error);
-      if (error.message.includes('temporarily unavailable')) {
-        alert(`${error.message} Using system voice instead.`);
-      } else {
-        alert(`Premium voice error: ${error.message}. Using system voice as fallback.`);
-      }
-      setIsPlaying(false);
-      setIsPaused(false);
-      // Fallback to system voice
-      speakWithSystemVoice(text);
-    }
-  };
+  // ElevenLabs function removed due to high cost
 
   const speakWithSystemVoice = (text) => {
     if (!selectedVoice) return;
@@ -2573,6 +2460,28 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     
     setCurrentUtterance(utterance);
     window.speechSynthesis.speak(utterance);
+  };
+
+  // Azure Cognitive Services Text-to-Speech (cost-effective alternative)
+  const speakWithAzureTTS = async (text) => {
+    try {
+      console.log('Attempting Azure TTS...');
+      setIsPlaying(true);
+      setIsPaused(false);
+      
+      // Azure TTS would require a Netlify function similar to Google TTS
+      // For now, fall back to enhanced system voice until Azure function is implemented
+      console.log('Azure TTS not yet implemented, using enhanced system voice');
+      speakWithEnhancedSystemVoice(text);
+      
+    } catch (error) {
+      console.error('Azure TTS error:', error);
+      setIsPlaying(false);
+      setIsPaused(false);
+      
+      // Fallback to enhanced system voice
+      speakWithEnhancedSystemVoice(text);
+    }
   };
   
   const socialSharing = {
@@ -4075,12 +3984,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               Standard $4.99
                             </button>
                             <button
-                              onClick={() => setTtsProvider('elevenlabs')}
+                              onClick={() => setTtsProvider('azure')}
                               style={{
                                 flex: 1,
                                 padding: '8px 12px',
-                                backgroundColor: ttsProvider === 'elevenlabs' ? '#6366f1' : '#f3f4f6',
-                                color: ttsProvider === 'elevenlabs' ? 'white' : '#6b7280',
+                                backgroundColor: ttsProvider === 'azure' ? '#6366f1' : '#f3f4f6',
+                                color: ttsProvider === 'azure' ? 'white' : '#6b7280',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '4px',
                                 fontSize: '12px',
@@ -4088,7 +3997,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                 transition: 'all 0.2s'
                               }}
                             >
-                              Premium $7.99
+                              Premium (Azure)
                             </button>
                           </div>
                         </div>
@@ -4111,31 +4020,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           </div>
                         )}
 
-                        {/* PREMIUM TIER: ElevenLabs Voices */}
-                        {ttsProvider === 'elevenlabs' && (
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                {Object.entries(humanVoices).map(([key, voice]) => (
-                                  <button
-                                    key={key}
-                                    onClick={() => setHumanVoiceType(key)}
-                                    style={{
-                                      padding: '12px',
-                                      backgroundColor: humanVoiceType === key ? '#eef2ff' : '#ffffff',
-                                      border: humanVoiceType === key ? '2px solid #6366f1' : '1px solid #e5e7eb',
-                                      borderRadius: '6px',
-                                      textAlign: 'left',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s'
-                                    }}
-                                  >
-                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
-                                      {voice.name}
-                                    </div>
-                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                      {voice.description}
-                                    </div>
-                                  </button>
-                                ))}
+                        {/* PREMIUM TIER: Azure Cognitive Services Voices */}
+                        {ttsProvider === 'azure' && (
+                              <div style={{ 
+                                textAlign: 'center', 
+                                fontSize: '14px', 
+                                color: '#6366f1', 
+                                padding: '30px 20px',
+                                backgroundColor: '#f0f9ff',
+                                borderRadius: '12px',
+                                border: '1px solid #bfdbfe'
+                              }}>
+                                <div style={{ fontSize: '20px', marginBottom: '8px' }}>🚀</div>
+                                <div style={{ fontWeight: '600', marginBottom: '8px' }}>
+                                  Azure Neural Voices Coming Soon!
+                                </div>
+                                <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.4' }}>
+                                  High-quality neural voices at 75% less cost than ElevenLabs<br/>
+                                  Same pricing as Google with 500K free characters/month
+                                </div>
                               </div>
                             )}
 
