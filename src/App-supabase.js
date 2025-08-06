@@ -2466,14 +2466,93 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   // Azure Cognitive Services Text-to-Speech (cost-effective alternative)
   const speakWithAzureTTS = async (text) => {
     try {
-      console.log('Attempting Azure TTS...');
+      console.log('Using Azure Neural TTS with voice:', selectedVoice || 'en-US-AvaMultilingualNeural');
+      
+      // Stop any currently playing audio
+      if (currentAudioBlob) {
+        try {
+          window.speechSynthesis.cancel();
+          if (window.currentAudio) {
+            window.currentAudio.pause();
+            window.currentAudio.currentTime = 0;
+          }
+        } catch (e) {
+          console.log('No current audio to stop');
+        }
+      }
+
       setIsPlaying(true);
       setIsPaused(false);
       
-      // Azure TTS would require a Netlify function similar to Google TTS
-      // For now, fall back to enhanced system voice until Azure function is implemented
-      console.log('Azure TTS not yet implemented, using enhanced system voice');
-      speakWithEnhancedSystemVoice(text);
+      // Call Azure TTS API
+      const response = await fetch('/api/azure-tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: text,
+          voiceName: selectedVoice || 'en-US-AvaMultilingualNeural',
+          speakingRate: 0.9,
+          pitch: 0,
+          languageCode: 'en-US'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Azure TTS request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('Azure TTS successful, playing audio...');
+        
+        // Convert base64 audio to playable format
+        const audioBlob = new Blob([
+          Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
+        ], { type: 'audio/mpeg' });
+        
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        // Store reference for cleanup
+        window.currentAudio = audio;
+        
+        audio.onloadeddata = () => {
+          console.log('Azure audio loaded successfully');
+        };
+        
+        audio.onplay = () => {
+          setIsPlaying(true);
+          setIsPaused(false);
+        };
+        
+        audio.onended = () => {
+          console.log('Azure audio playback ended');
+          setIsPlaying(false);
+          setIsPaused(false);
+          URL.revokeObjectURL(audioUrl);
+          window.currentAudio = null;
+        };
+        
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          setIsPlaying(false);
+          setIsPaused(false);
+          URL.revokeObjectURL(audioUrl);
+          window.currentAudio = null;
+          
+          // Fallback to enhanced system voice
+          console.log('Falling back to system voice due to audio error');
+          speakWithEnhancedSystemVoice(text);
+        };
+        
+        await audio.play();
+        
+      } else {
+        throw new Error(data.details || 'Azure TTS failed');
+      }
       
     } catch (error) {
       console.error('Azure TTS error:', error);
@@ -2481,6 +2560,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       setIsPaused(false);
       
       // Fallback to enhanced system voice
+      console.log('Falling back to enhanced system voice due to Azure error');
       speakWithEnhancedSystemVoice(text);
     }
   };
@@ -4023,22 +4103,61 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                         {/* PREMIUM TIER: Azure Cognitive Services Voices */}
                         {ttsProvider === 'azure' && (
-                              <div style={{ 
-                                textAlign: 'center', 
-                                fontSize: '14px', 
-                                color: '#6366f1', 
-                                padding: '30px 20px',
-                                backgroundColor: '#f0f9ff',
-                                borderRadius: '12px',
-                                border: '1px solid #bfdbfe'
-                              }}>
-                                <div style={{ fontSize: '20px', marginBottom: '8px' }}>🚀</div>
-                                <div style={{ fontWeight: '600', marginBottom: '8px' }}>
-                                  Azure Neural Voices Coming Soon!
+                              <div>
+                                <div style={{ 
+                                  textAlign: 'center', 
+                                  fontSize: '14px', 
+                                  color: '#6366f1', 
+                                  padding: '12px 20px',
+                                  backgroundColor: '#f0f9ff',
+                                  borderRadius: '8px',
+                                  border: '1px solid #bfdbfe',
+                                  marginBottom: '16px'
+                                }}>
+                                  <div style={{ fontSize: '16px', marginBottom: '4px' }}>🎭</div>
+                                  <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                    Azure Premium Neural Voices
+                                  </div>
+                                  <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.3' }}>
+                                    High-quality neural voices with emotional range
+                                  </div>
                                 </div>
-                                <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.4' }}>
-                                  High-quality neural voices at 75% less cost than ElevenLabs<br/>
-                                  Same pricing as Google with 500K free characters/month
+                                
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+                                  <select 
+                                    value={selectedVoice || 'en-US-AvaMultilingualNeural'}
+                                    onChange={(e) => setSelectedVoice(e.target.value)}
+                                    style={{
+                                      gridColumn: '1 / -1',
+                                      padding: '8px 12px',
+                                      border: '1px solid #d1d5db',
+                                      borderRadius: '6px',
+                                      fontSize: '14px',
+                                      backgroundColor: 'white'
+                                    }}
+                                  >
+                                    <optgroup label="Premium Female Voices">
+                                      <option value="en-US-AvaMultilingualNeural">Ava - Warm & Expressive</option>
+                                      <option value="en-US-EmmaMultilingualNeural">Emma - Gentle & Soothing</option>
+                                      <option value="en-US-AriaNeural">Aria - Natural & Dynamic</option>
+                                      <option value="en-US-JennyNeural">Jenny - Friendly & Clear</option>
+                                    </optgroup>
+                                    <optgroup label="Premium Male Voices">
+                                      <option value="en-US-AndrewMultilingualNeural">Andrew - Professional & Clear</option>
+                                      <option value="en-US-BrianMultilingualNeural">Brian - Engaging & Confident</option>
+                                      <option value="en-US-DavisNeural">Davis - Professional & Polished</option>
+                                      <option value="en-US-GuyNeural">Guy - Calm & Measured</option>
+                                    </optgroup>
+                                    <optgroup label="International">
+                                      <option value="en-GB-SoniaNeural">Sonia - British Accent</option>
+                                      <option value="en-GB-RyanNeural">Ryan - British Accent</option>
+                                      <option value="en-AU-NatashaNeural">Natasha - Australian Accent</option>
+                                    </optgroup>
+                                  </select>
+                                </div>
+                                
+                                <div style={{ textAlign: 'center', fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>
+                                  💡 Premium neural voices provide natural speech with emotional expression
                                 </div>
                               </div>
                             )}
