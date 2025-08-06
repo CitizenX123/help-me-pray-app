@@ -1,9 +1,0 @@
-{
-  "name": "netlify-functions",
-  "version": "1.0.0",
-  "description": "Netlify Functions for Help Me Pray app",
-  "dependencies": {
-    "@google-cloud/text-to-speech": "^5.4.0",
-    "microsoft-cognitiveservices-speech-sdk": "^1.40.0"
-  }
-}
