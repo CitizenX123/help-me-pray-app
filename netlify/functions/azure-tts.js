@@ -2,30 +2,49 @@
 // This handles server-side authentication for Azure Speech Services
 
 const sdk = require('microsoft-cognitiveservices-speech-sdk');
-const { Readable } = require('stream');
 
-module.exports = async (req, res) => {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+exports.handler = async (event, context) => {
+  // Handle CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+      body: ''
+    };
   }
 
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'Method not allowed' })
+    };
   }
 
   try {
     // Check for required environment variables
     if (!process.env.AZURE_SPEECH_KEY || !process.env.AZURE_SPEECH_REGION) {
-      throw new Error('Azure Speech credentials not configured');
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          error: 'Azure Speech credentials not configured',
+          details: 'AZURE_SPEECH_KEY and AZURE_SPEECH_REGION environment variables are required'
+        })
+      };
     }
 
+    const body = JSON.parse(event.body || '{}');
     const { 
       text, 
       languageCode = 'en-US', 
@@ -33,11 +52,17 @@ module.exports = async (req, res) => {
       speakingRate = 1.0,
       pitch = 0,
       outputFormat = 'Audio24Khz48KBitRateMonoMp3'
-    } = req.body;
+    } = body;
 
     if (!text) {
-      res.status(400).json({ error: 'Text is required' });
-      return;
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Text is required' })
+      };
     }
 
     // Create speech config
@@ -88,21 +113,35 @@ module.exports = async (req, res) => {
     const audioBuffer = Buffer.from(synthesisResult.audioData);
     const audioBase64 = audioBuffer.toString('base64');
 
-    res.status(200).json({
-      success: true,
-      audioContent: audioBase64,
-      contentType: 'audio/mpeg',
-      provider: 'azure',
-      voiceName: voiceName,
-      language: languageCode
-    });
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        success: true,
+        audioContent: audioBase64,
+        contentType: 'audio/mpeg',
+        provider: 'azure',
+        voiceName: voiceName,
+        language: languageCode
+      })
+    };
 
   } catch (error) {
     console.error('Azure TTS Error:', error);
-    res.status(500).json({ 
-      error: 'Text-to-speech synthesis failed',
-      details: error.message,
-      provider: 'azure'
-    });
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        error: 'Text-to-speech synthesis failed',
+        details: error.message,
+        provider: 'azure'
+      })
+    };
   }
 };
