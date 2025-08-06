@@ -2484,8 +2484,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       setIsPlaying(true);
       setIsPaused(false);
       
-      // Call Azure TTS API
-      const response = await fetch('/api/azure-tts', {
+      // Call Azure TTS API (using simple REST implementation)
+      const response = await fetch('/api/azure-tts-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
