@@ -279,69 +279,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [speechRate, setSpeechRate] = useState(1);
   const [showVoiceSettings, setShowVoiceSettings] = useState(true);
   const [currentUtterance, setCurrentUtterance] = useState(null);
-  // ElevenLabs voice variables removed due to cost
-  const [googleVoiceType, setGoogleVoiceType] = useState('warm');
+  // Simplified voice system - removed Google and ElevenLabs due to cost
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
-  const [useHumanVoice, setUseHumanVoice] = useState(false);
-  // Google Cloud TTS voices to match ElevenLabs selection
-  const googleCloudVoices = {
-    warm: {
-      name: 'Grace - Warm',
-      description: 'Gentle, soothing American voice',
-      voiceName: 'en-US-Neural2-F',
-      languageCode: 'en-US',
-      gender: 'FEMALE'
-    },
-    confident: {
-      name: 'David - Confident', 
-      description: 'Strong, reassuring male voice',
-      voiceName: 'en-US-Neural2-D',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    },
-    gentle: {
-      name: 'Emma - Gentle',
-      description: 'Soft, caring female voice',
-      voiceName: 'en-US-Neural2-H',
-      languageCode: 'en-US', 
-      gender: 'FEMALE'
-    },
-    steady: {
-      name: 'Michael - Steady',
-      description: 'Calm, dependable voice',
-      voiceName: 'en-US-Neural2-I',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    },
-    serena: {
-      name: 'Serena - Peaceful',
-      description: 'Tranquil, meditative voice',
-      voiceName: 'en-US-Neural2-G',
-      languageCode: 'en-US',
-      gender: 'FEMALE'
-    },
-    brian: {
-      name: 'Brian - Thoughtful',
-      description: 'Reflective, wise voice',
-      voiceName: 'en-US-Neural2-J',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    },
-    aria: {
-      name: 'Aria - Uplifting',
-      description: 'Inspiring, hopeful voice',
-      voiceName: 'en-US-Neural2-C',
-      languageCode: 'en-US',
-      gender: 'FEMALE'
-    },
-    compassionate: {
-      name: 'Samuel - Compassionate',
-      description: 'Understanding, empathetic voice',
-      voiceName: 'en-US-Neural2-A',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    }
-  };
   const [currentAudioBlob, setCurrentAudioBlob] = useState(null);
   const [audioElement, setAudioElement] = useState(null);
 
@@ -2207,11 +2146,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   const speakPrayer = async (text) => {
     console.log('speakPrayer called with provider:', ttsProvider, 'isPremium:', isPremium);
     
-    // ElevenLabs removed due to cost - using Google and enhanced browser voices
+    // Simplified to Free (browser) and Premium (Azure) voices only
     switch (ttsProvider) {
-      case 'google':
-        await speakWithGoogleCloud(text);
-        break;
       case 'azure':
         await speakWithAzureTTS(text);
         break;
@@ -2289,116 +2225,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     setCurrentUtterance(null);
   };
 
-  // Google Cloud Text-to-Speech functions
-  // eslint-disable-next-line no-unused-vars
-  const getGoogleCloudVoices = async () => {
-    try {
-      const response = await fetch('/api/google-voices');
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // setGoogleVoices(data.voices); // This function doesn't exist, removing
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching Google Cloud voices:', error);
-      // Fallback to system voices
-      setTtsProvider('browser');
-    }
-  };
 
-  const speakWithGoogleCloud = async (text) => {
-    try {
-      console.log('Attempting Google Cloud TTS...');
-      setIsPlaying(true);
-      setIsPaused(false);
-      
-      const selectedGoogleVoice = googleCloudVoices[googleVoiceType];
-      
-      const requestBody = {
-        text,
-        languageCode: selectedGoogleVoice.languageCode,
-        voiceName: selectedGoogleVoice.voiceName,
-        ssmlGender: selectedGoogleVoice.gender,
-        speakingRate: speechRate
-      };
-
-      console.log('Making Google TTS API request with:', requestBody);
-      console.log('Attempting to reach Netlify function at:', '/.netlify/functions/google-tts');
-      const response = await fetch('/.netlify/functions/google-tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-      console.log('Google TTS API response status:', response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Google TTS API response data:', data);
-        if (data.success) {
-          // Convert base64 audio to blob and play
-          const audioData = atob(data.audioContent);
-          const audioArray = new Uint8Array(audioData.length);
-          for (let i = 0; i < audioData.length; i++) {
-            audioArray[i] = audioData.charCodeAt(i);
-          }
-          
-          const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          
-          const audio = new Audio(audioUrl);
-          setAudioElement(audio);
-          
-          audio.onplay = () => {
-            setIsPlaying(true);
-            setIsPaused(false);
-          };
-          
-          audio.onended = () => {
-            setIsPlaying(false);
-            setIsPaused(false);
-            setAudioElement(null);
-            URL.revokeObjectURL(audioUrl);
-          };
-          
-          audio.onerror = (e) => {
-            console.error('Audio playback error:', e);
-            setIsPlaying(false);
-            setIsPaused(false);
-            setAudioElement(null);
-            URL.revokeObjectURL(audioUrl);
-            // Fallback to enhanced system voice
-            speakWithEnhancedSystemVoice(text);
-          };
-          
-          await audio.play();
-          console.log('Google TTS audio playback started successfully');
-        } else {
-          console.error('Google TTS API returned success=false:', data);
-          throw new Error(data.error || 'Google TTS API returned unsuccessful response');
-        }
-      } else {
-        console.error('Google TTS API request failed with status:', response.status);
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Error response:', errorData);
-        throw new Error(errorData.error || `Google Cloud TTS API request failed with status ${response.status}`);
-      }
-      
-    } catch (error) {
-      console.error('Google Cloud TTS error:', error);
-      setIsPlaying(false);
-      setIsPaused(false);
-      
-      // Show error to user with setup instructions
-      alert(`Google Cloud TTS needs to be configured. Error: ${error.message}\n\nUsing enhanced system voice as fallback.`);
-      
-      // Fallback to enhanced system voice
-      speakWithEnhancedSystemVoice(text);
-    }
-  };
 
   // Enhanced system voice with better settings to simulate premium quality
   const speakWithEnhancedSystemVoice = (text) => {
@@ -2412,30 +2239,19 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Find best quality English voice based on Google voice type selection
-    let preferredVoice;
-    const googleVoiceConfig = googleCloudVoices[googleVoiceType];
-    
-    // Map Google voice types to system voice preferences
-    const voiceMapping = {
-      warm: (voices) => voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female')),
-      confident: (voices) => voices.find(v => v.name.includes('Alex') || v.name.includes('Daniel') || v.name.includes('Google US English Male')) || voices.find(v => v.name.includes('Male')),
-      gentle: (voices) => voices.find(v => v.name.includes('Victoria') || v.name.includes('Zira') || v.name.includes('Google UK English Female')) || voices.find(v => v.name.includes('Female')),
-      steady: (voices) => voices.find(v => v.name.includes('David') || v.name.includes('Mark') || v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Male')),
-      peaceful: (voices) => voices.find(v => v.name.includes('Fiona') || v.name.includes('Moira') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female')),
-      wise: (voices) => voices.find(v => v.name.includes('Oliver') || v.name.includes('Thomas') || v.name.includes('Google UK English Male')) || voices.find(v => v.name.includes('Male')),
-      hopeful: (voices) => voices.find(v => v.name.includes('Allison') || v.name.includes('Susan') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female')),
-      understanding: (voices) => voices.find(v => v.name.includes('Veena') || v.name.includes('Tessa') || v.name.includes('Google US English Female')) || voices.find(v => v.name.includes('Female'))
-    };
-    
+    // Find best quality English voice
     const englishVoices = availableVoices.filter(voice => voice.lang.startsWith('en'));
-    preferredVoice = voiceMapping[googleVoiceType]?.(englishVoices) || englishVoices[0] || availableVoices[0];
+    const preferredVoice = englishVoices.find(voice => 
+      voice.name.includes('Samantha') || 
+      voice.name.includes('Alex') || 
+      voice.name.includes('Google')
+    ) || englishVoices[0] || availableVoices[0];
     
     utterance.voice = preferredVoice;
     
     // Enhanced voice settings for better quality
     utterance.rate = speechRate * 0.9; // Slightly slower for prayer reading
-    utterance.pitch = googleVoiceConfig.name.includes('Male') ? 0.8 : 1.1; // Adjust pitch based on voice type
+    utterance.pitch = 1.0; // Standard pitch
     utterance.volume = 0.9;
     
     // Event handlers
@@ -3981,47 +3797,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           Voice Settings
                         </h4>
                         
-                        {/* Voice Type Toggle */}
-                        <div style={{ marginBottom: '16px' }}>
-                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
-                            Voice Quality:
-                          </label>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              onClick={() => setUseHumanVoice(true)}
-                              style={{
-                                flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: useHumanVoice ? '#10b981' : '#f3f4f6',
-                                color: useHumanVoice ? 'white' : '#6b7280',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              🎭 Human-like
-                            </button>
-                            <button
-                              onClick={() => setUseHumanVoice(false)}
-                              style={{
-                                flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: !useHumanVoice ? '#10b981' : '#f3f4f6',
-                                color: !useHumanVoice ? 'white' : '#6b7280',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              🤖 System
-                            </button>
-                          </div>
-                        </div>
-
                         {/* Voice Tier Selection */}
                         <div style={{ marginBottom: '16px' }}>
                           <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
@@ -4032,12 +3807,13 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               onClick={() => setTtsProvider('browser')}
                               style={{
                                 flex: 1,
-                                padding: '8px 12px',
+                                padding: '10px 16px',
                                 backgroundColor: ttsProvider === 'browser' ? '#10b981' : '#f3f4f6',
                                 color: ttsProvider === 'browser' ? 'white' : '#6b7280',
                                 border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                fontWeight: '500',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s'
                               }}
@@ -4045,58 +3821,39 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               Free
                             </button>
                             <button
-                              onClick={() => {
-                                console.log('Standard button clicked! Current isPremium:', isPremium, 'Current ttsProvider:', ttsProvider);
-                                setTtsProvider('google');
-                                console.log('Set ttsProvider to google');
-                              }}
-                              style={{
-                                flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: ttsProvider === 'google' ? '#3b82f6' : '#f3f4f6',
-                                color: ttsProvider === 'google' ? 'white' : '#6b7280',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              Standard $4.99
-                            </button>
-                            <button
                               onClick={() => setTtsProvider('azure')}
                               style={{
                                 flex: 1,
-                                padding: '8px 12px',
+                                padding: '10px 16px',
                                 backgroundColor: ttsProvider === 'azure' ? '#6366f1' : '#f3f4f6',
                                 color: ttsProvider === 'azure' ? 'white' : '#6b7280',
                                 border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                fontWeight: '500',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s'
                               }}
                             >
-                              Premium (Azure)
+                              Premium
                             </button>
                           </div>
                         </div>
 
-                        {/* FREE TIER: No voice selection */}
+                        {/* FREE TIER: System voices */}
                         {ttsProvider === 'browser' && (
                           <div style={{
                             textAlign: 'center',
                             color: '#6b7280',
                             fontSize: '14px',
-                            padding: '20px',
+                            padding: '16px',
                             backgroundColor: '#f9fafb',
                             borderRadius: '8px',
                             border: '1px solid #e5e7eb'
                           }}>
                             🎤 Using system voices (Free tier)
                             <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                              No voice selection needed
+                              Standard device voices
                             </div>
                           </div>
                         )}
@@ -4162,53 +3919,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               </div>
                             )}
 
-                            {/* STANDARD TIER: Google Cloud TTS Voices */}
-                            {ttsProvider === 'google' && (
-                              <div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                  {Object.entries(googleCloudVoices).map(([key, voice]) => (
-                                  <button
-                                    key={key}
-                                    onClick={() => setGoogleVoiceType(key)}
-                                    style={{
-                                      padding: '12px',
-                                      backgroundColor: googleVoiceType === key ? '#dbeafe' : '#ffffff',
-                                      border: googleVoiceType === key ? '2px solid #3b82f6' : '1px solid #e5e7eb',
-                                      borderRadius: '6px',
-                                      textAlign: 'left',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s'
-                                    }}
-                                  >
-                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
-                                      {voice.name}
-                                    </div>
-                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                      {voice.description}
-                                    </div>
-                                  </button>
-                                ))}
-                                </div>
-                              </div>
-                            )}
 
-                            {/* FREE TIER: No voice selection */}
-                            {ttsProvider === 'browser' && (
-                              <div style={{
-                                textAlign: 'center',
-                                color: '#6b7280',
-                                fontSize: '14px',
-                                padding: '20px',
-                                backgroundColor: '#f9fafb',
-                                borderRadius: '8px',
-                                border: '1px solid #e5e7eb'
-                              }}>
-                                🎤 Using system voices (Free tier)
-                                <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                                  Choose Standard or Premium for more voice options
-                                </div>
-                              </div>
-                            )}
                             
                             <div style={{ 
                               fontSize: '11px', 
