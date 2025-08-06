@@ -1,0 +1,9 @@
+This file exists only to force a fresh deployment.
+Timestamp: 2025-08-06 05:40:00
+Version: 2.1 with button position changes and voice settings fixes
+
+Changes should include:
+- Guest button first, Google button second
+- System/Human-like buttons with System on left
+- No Standard $4.99 button
+- Premium Azure voices working

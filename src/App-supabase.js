@@ -5057,7 +5057,7 @@ let appInitialized = false;
 const App = () => {
   if (!appInitialized) {
     console.log('App component initializing...');
-  console.log('DEPLOYMENT UPDATE v2.1 - Button positions updated, voice settings fixed');
+  console.log('🚀 FORCED DEPLOYMENT v2.1 - Changes MUST be visible now! Button positions and voice settings updated!');
     appInitialized = true;
   }
   const [user, setUser] = useState(null);
