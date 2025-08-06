@@ -3020,7 +3020,42 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
               </div>
 
-              {/* Google Sign In Button */}
+              {/* Continue as Guest Button - moved to top position */}
+              <button
+                onClick={() => {
+                  setUser({ id: 'guest', email: 'guest@demo.com' });
+                  setUserSession(null);
+                  setShowSignUp(false);
+                  setGuestPrayerCount(getGuestPrayerCount());
+                }}
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  color: '#6b7280',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  border: '1px solid #e5e7eb',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontSize: '14px',
+                  marginBottom: '12px'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#f9fafb';
+                  e.target.style.color = '#374151';
+                  e.target.style.borderColor = '#d1d5db';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#6b7280';
+                  e.target.style.borderColor = '#e5e7eb';
+                }}
+              >
+{t('continueAsGuest')}
+              </button>
+
+              {/* Google Sign In Button - moved to bottom position */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -3089,40 +3124,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </p>
             </div>
 
-            {/* Guest Access Button */}
-            <div style={{ marginTop: '16px', textAlign: 'center' }}>
-              <button
-                onClick={() => {
-                  setUser({ id: 'guest', email: 'guest@demo.com' });
-                  setUserSession(null);
-                  setShowSignUp(false);
-                  setGuestPrayerCount(getGuestPrayerCount());
-                }}
-                style={{
-                  background: 'transparent',
-                  color: '#6b7280',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontWeight: '400',
-                  border: '1px solid #e5e7eb',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  fontSize: '14px'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.background = '#f9fafb';
-                  e.target.style.color = '#374151';
-                  e.target.style.borderColor = '#d1d5db';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'transparent';
-                  e.target.style.color = '#6b7280';
-                  e.target.style.borderColor = '#e5e7eb';
-                }}
-              >
-{t('continueAsGuest')}
-              </button>
-            </div>
 
             <div style={{ marginTop: '16px', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
