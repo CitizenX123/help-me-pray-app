@@ -1,5 +1,6 @@
 // Azure TTS using REST API instead of SDK
 // This avoids complex dependency issues with the Azure SDK
+// Updated for reliable deployment
 
 exports.handler = async (event, context) => {
   // Handle CORS preflight
