@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils } from 'lucide-react';
+import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Volume2, Play, Pause, Square } from 'lucide-react';
 import { supabase } from './supabaseClient';
-import { SubscriptionProvider } from './SubscriptionContext';
+import { SubscriptionProvider, useSubscription } from './SubscriptionContext';
 
-const HelpMePrayApp = () => {
+const PrayerAppContent = ({ user: propUser }) => {
+  const { isPremium } = useSubscription();
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
   const [currentPrayer, setCurrentPrayer] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   
-  // Authentication state
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Authentication state (managed by parent wrapper)
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  
+  // Text-to-Speech state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [ttsProvider, setTtsProvider] = useState('browser');
+  const [selectedVoice, setSelectedVoice] = useState('en-US-AvaMultilingualNeural');
+  const [currentAudio, setCurrentAudio] = useState(null);
   
   // Custom prayer form state
   const [customRequest, setCustomRequest] = useState('');
@@ -29,37 +35,8 @@ const HelpMePrayApp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
 
-  // Initialize authentication
-  useEffect(() => {
-    if (!supabase) {
-      console.warn('Running in offline mode - no authentication available');
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  // Use passed user prop or create guest user
+  const [user, setUser] = useState(propUser || { id: 'guest', email: '', isGuest: true });
 
   // Authentication functions
   const handleLogin = async (e) => {
@@ -163,6 +140,159 @@ const HelpMePrayApp = () => {
 
   const continueAsGuest = () => {
     setUser({ id: 'guest', email: '', isGuest: true });
+  };
+
+  // Text-to-Speech functions
+  const speakPrayer = async (text) => {
+    try {
+      // Stop any currently playing audio
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        setCurrentAudio(null);
+      }
+
+      setIsPlaying(true);
+      setIsPaused(false);
+
+      // Use Azure TTS for premium users, browser TTS for others
+      if (isPremium && ttsProvider === 'azure') {
+        await speakWithAzureTTS(text);
+      } else {
+        await speakWithBrowserTTS(text);
+      }
+    } catch (error) {
+      console.error('Error speaking prayer:', error);
+      setIsPlaying(false);
+    }
+  };
+
+  const speakWithAzureTTS = async (text) => {
+    try {
+      const response = await fetch('/api/azure-tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: text,
+          voiceName: selectedVoice,
+          speakingRate: 0.9,
+          pitch: 0
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Azure TTS request failed');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Convert base64 audio to playable format
+        const audioBlob = new Blob([Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))], {
+          type: 'audio/mpeg'
+        });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        setCurrentAudio(audio);
+        
+        audio.onended = () => {
+          setIsPlaying(false);
+          setCurrentAudio(null);
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        audio.onerror = () => {
+          setIsPlaying(false);
+          setCurrentAudio(null);
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        await audio.play();
+      }
+    } catch (error) {
+      console.error('Azure TTS Error:', error);
+      // Fallback to browser TTS
+      await speakWithBrowserTTS(text);
+    }
+  };
+
+  const speakWithBrowserTTS = async (text) => {
+    return new Promise((resolve, reject) => {
+      if (!window.speechSynthesis) {
+        reject(new Error('Speech synthesis not supported'));
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      
+      // Try to use a good quality voice
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Enhanced') || 
+        voice.name.includes('Premium') ||
+        voice.name.includes('Neural')
+      );
+      
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.onend = () => {
+        setIsPlaying(false);
+        resolve();
+      };
+
+      utterance.onerror = (event) => {
+        setIsPlaying(false);
+        reject(new Error(event.error));
+      };
+
+      window.speechSynthesis.speak(utterance);
+    });
+  };
+
+  const pauseAudio = () => {
+    if (currentAudio && isPlaying) {
+      currentAudio.pause();
+      setIsPaused(true);
+      setIsPlaying(false);
+    } else if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+      setIsPlaying(false);
+    }
+  };
+
+  const resumeAudio = () => {
+    if (currentAudio && isPaused) {
+      currentAudio.play();
+      setIsPaused(false);
+      setIsPlaying(true);
+    } else if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+      setIsPlaying(true);
+    }
+  };
+
+  const stopAudio = () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setCurrentAudio(null);
+    }
+    
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
+    
+    setIsPlaying(false);
+    setIsPaused(false);
   };
 
   // Dynamic prayer components for generating unique prayers
@@ -894,9 +1024,97 @@ const HelpMePrayApp = () => {
                         {currentPrayer}
                       </p>
                     </div>
+                    
+                    {/* Audio Controls */}
+                    <div className="flex justify-center space-x-3 mb-4">
+                      {!isPlaying && !isPaused ? (
+                        <button
+                          onClick={() => speakPrayer(currentPrayer)}
+                          className="flex items-center space-x-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors shadow-md"
+                        >
+                          <Volume2 size={18} />
+                          <span>Listen</span>
+                        </button>
+                      ) : (
+                        <div className="flex space-x-2">
+                          {isPlaying ? (
+                            <button
+                              onClick={pauseAudio}
+                              className="flex items-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors shadow-md"
+                            >
+                              <Pause size={18} />
+                              <span>Pause</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={resumeAudio}
+                              className="flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors shadow-md"
+                            >
+                              <Play size={18} />
+                              <span>Resume</span>
+                            </button>
+                          )}
+                          <button
+                            onClick={stopAudio}
+                            className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-colors shadow-md"
+                          >
+                            <Square size={18} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Voice Settings for Premium Users */}
+                    {isPremium && (
+                      <div className="mb-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                        <div className="text-center">
+                          <h4 className="text-sm font-semibold text-purple-800 mb-2">Premium Voice Options</h4>
+                          <div className="flex justify-center space-x-4 mb-3">
+                            <button
+                              onClick={() => setTtsProvider('browser')}
+                              className={`px-3 py-1 rounded-md text-xs transition-colors ${
+                                ttsProvider === 'browser'
+                                  ? 'bg-purple-600 text-white'
+                                  : 'bg-white text-purple-600 hover:bg-purple-100'
+                              }`}
+                            >
+                              Browser Voice
+                            </button>
+                            <button
+                              onClick={() => setTtsProvider('azure')}
+                              className={`px-3 py-1 rounded-md text-xs transition-colors ${
+                                ttsProvider === 'azure'
+                                  ? 'bg-purple-600 text-white'
+                                  : 'bg-white text-purple-600 hover:bg-purple-100'
+                              }`}
+                            >
+                              Azure Premium
+                            </button>
+                          </div>
+                          {ttsProvider === 'azure' && (
+                            <select
+                              value={selectedVoice}
+                              onChange={(e) => setSelectedVoice(e.target.value)}
+                              className="text-xs px-2 py-1 border rounded-md bg-white"
+                            >
+                              <option value="en-US-AvaMultilingualNeural">Ava (Warm Female)</option>
+                              <option value="en-US-AndrewMultilingualNeural">Andrew (Professional Male)</option>
+                              <option value="en-US-EmmaMultilingualNeural">Emma (Gentle Female)</option>
+                              <option value="en-US-BrianMultilingualNeural">Brian (Friendly Male)</option>
+                              <option value="en-US-AriaNeural">Aria (Expressive Female)</option>
+                              <option value="en-US-DavisNeural">Davis (Professional Male)</option>
+                            </select>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="text-gray-500 text-center">
                       <div className="w-16 h-0.5 bg-gradient-to-r from-indigo-300 to-purple-300 mx-auto mb-2"></div>
                       <p className="text-sm">May this prayer bring you peace and guidance</p>
+                      {isPremium && ttsProvider === 'azure' && (
+                        <p className="text-xs text-purple-600 mt-1">Using premium Azure neural voice</p>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -931,6 +1149,66 @@ const HelpMePrayApp = () => {
     </div>
     </SubscriptionProvider>
   );
+};
+
+// Main App wrapper that handles authentication and subscription context
+const HelpMePrayApp = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!supabase) {
+      console.warn('Running in offline mode - no authentication available');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-4">
+            <RefreshCw size={32} className="text-white animate-spin" />
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <SubscriptionProvider user={user}>
+        <PrayerAppContent user={user} />
+      </SubscriptionProvider>
+    );
+  } else {
+    return <PrayerAppContent user={null} />;
+  }
 };
 
 export default HelpMePrayApp;
