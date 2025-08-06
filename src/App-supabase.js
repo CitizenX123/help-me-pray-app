@@ -281,6 +281,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [currentUtterance, setCurrentUtterance] = useState(null);
   // Simplified voice system - removed Google and ElevenLabs due to cost
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
+  const [useHumanVoice, setUseHumanVoice] = useState(false); // System vs Human-like toggle
   const [currentAudioBlob, setCurrentAudioBlob] = useState(null);
   const [audioElement, setAudioElement] = useState(null);
 
@@ -2146,14 +2147,18 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   const speakPrayer = async (text) => {
     console.log('speakPrayer called with provider:', ttsProvider, 'isPremium:', isPremium);
     
-    // Simplified to Free (browser) and Premium (Azure) voices only
+    // Handle different voice providers and quality settings
     switch (ttsProvider) {
       case 'azure':
         await speakWithAzureTTS(text);
         break;
       case 'browser':
       default:
-        speakWithEnhancedSystemVoice(text);
+        if (useHumanVoice) {
+          speakWithEnhancedSystemVoice(text);
+        } else {
+          speakWithSystemVoice(text);
+        }
         break;
     }
   };
@@ -3797,6 +3802,47 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           Voice Settings
                         </h4>
                         
+                        {/* Voice Quality Selection */}
+                        <div style={{ marginBottom: '16px' }}>
+                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                            Voice Quality:
+                          </label>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                              onClick={() => setUseHumanVoice(false)}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                backgroundColor: !useHumanVoice ? '#10b981' : '#f3f4f6',
+                                color: !useHumanVoice ? 'white' : '#6b7280',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              🤖 System
+                            </button>
+                            <button
+                              onClick={() => setUseHumanVoice(true)}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                backgroundColor: useHumanVoice ? '#10b981' : '#f3f4f6',
+                                color: useHumanVoice ? 'white' : '#6b7280',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              🎭 Human-like
+                            </button>
+                          </div>
+                        </div>
+
                         {/* Voice Tier Selection */}
                         <div style={{ marginBottom: '16px' }}>
                           <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
@@ -3840,6 +3886,38 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           </div>
                         </div>
 
+                        {/* System Voice Selection */}
+                        {!useHumanVoice && (
+                          <div style={{ marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
+                              Select System Voice:
+                            </label>
+                            <select
+                              value={selectedVoice?.name || ''}
+                              onChange={(e) => {
+                                const voice = availableVoices.find(v => v.name === e.target.value);
+                                setSelectedVoice(voice);
+                              }}
+                              style={{
+                                width: '100%',
+                                padding: '6px 8px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '13px',
+                                backgroundColor: 'white'
+                              }}
+                            >
+                              {availableVoices
+                                .filter(voice => voice.lang.startsWith('en'))
+                                .map((voice) => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        )}
+
                         {/* FREE TIER: System voices */}
                         {ttsProvider === 'browser' && (
                           <div style={{
@@ -3853,7 +3931,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           }}>
                             🎤 Using system voices (Free tier)
                             <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                              Standard device voices
+                              {useHumanVoice ? 'Enhanced browser voices' : 'Standard device voices'}
                             </div>
                           </div>
                         )}
