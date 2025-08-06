@@ -282,6 +282,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   // ElevenLabs voice variables removed due to cost
   const [googleVoiceType, setGoogleVoiceType] = useState('warm');
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
+  const [useHumanVoice, setUseHumanVoice] = useState(false);
   // Google Cloud TTS voices to match ElevenLabs selection
   const googleCloudVoices = {
     warm: {

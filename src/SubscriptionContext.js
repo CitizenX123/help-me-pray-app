@@ -38,7 +38,7 @@ export const SubscriptionProvider = ({ children, user }) => {
   }, [user]);
 
   useEffect(() => {
-    if (user && !user.isGuest) {
+    if (user && user.id && user.id !== 'guest' && !user.isGuest) {
       loadSubscription();
     } else {
       setSubscription(null);
@@ -49,7 +49,7 @@ export const SubscriptionProvider = ({ children, user }) => {
 
   const upgradeToPremiun = async () => {
     try {
-      if (!user || user.isGuest) {
+      if (!user || user.isGuest || user.id === 'guest') {
         throw new Error('Must be logged in to upgrade');
       }
 
