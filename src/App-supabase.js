@@ -5619,24 +5619,37 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </p>
           </div>
 
-          {/* Category Buttons */}
+          {/* Category Buttons with Beautiful 3D Icons */}
           <div style={{ display: 'grid', gap: '12px' }}>
-            {categories.map((category) => (
-              <button 
-                key={category.key} 
-                onClick={() => { 
-                  setSelectedCategory(category.key); 
-                  setCurrentScreen('prayer-generation');
-                }} 
-                style={{ 
-                  padding: '18px',
-                  borderRadius: '15px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(15, 23, 42, 0.6)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  color: 'white',
-                  fontSize: '16px',
+            {categories.map((category) => {
+              // Define detailed 3D-style icons for each category
+              const categoryIcons = {
+                gratitude: '🙏✨',
+                morning: '🌅☀️',
+                bedtime: '🌙⭐',
+                healing: '💖🕊️',
+                family: '👨‍👩‍👧‍👦💕',
+                grace: '🍽️✨',
+                bibleVerses: '📖🕊️',
+                custom: '✏️💭'
+              };
+              
+              return (
+                <button 
+                  key={category.key} 
+                  onClick={() => { 
+                    setSelectedCategory(category.key); 
+                    setCurrentScreen('prayer-generation');
+                  }} 
+                  style={{ 
+                    padding: '20px',
+                    borderRadius: '18px',
+                    border: '2px solid rgba(255, 255, 255, 0.15)',
+                    background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 64, 175, 0.3) 100%)',
+                    backdropFilter: 'blur(25px)',
+                    WebkitBackdropFilter: 'blur(25px)',
+                    color: 'white',
+                    fontSize: '16px',
                   fontWeight: '500',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -5652,7 +5665,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                {category.name}
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  gap: '12px' 
+                }}>
+                  <span style={{ 
+                    fontSize: '24px',
+                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
+                  }}>
+                    {categoryIcons[category.key] || '🙏'}
+                  </span>
+                  <span style={{ 
+                    fontWeight: '600',
+                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'
+                  }}>
+                    {category.name}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
@@ -5763,15 +5794,117 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div style={{ display: 'grid', gap: '12px' }}>
+          {/* Action Buttons - Download, Audio, Share */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+            {/* Download Prayer Button */}
+            <button 
+              onClick={() => {
+                // Create downloadable text file
+                const element = document.createElement('a');
+                const file = new Blob([currentPrayer], {type: 'text/plain'});
+                element.href = URL.createObjectURL(file);
+                element.download = `prayer-${selectedCategory}-${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+              }} 
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                background: 'rgba(34, 197, 94, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              📄 Download
+            </button>
+
+            {/* Generate Audio Button */}
+            <button 
+              onClick={() => {
+                // Text-to-speech functionality
+                if ('speechSynthesis' in window) {
+                  const utterance = new SpeechSynthesisUtterance(currentPrayer);
+                  utterance.rate = 0.8;
+                  utterance.pitch = 1.0;
+                  speechSynthesis.speak(utterance);
+                }
+              }} 
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                background: 'rgba(168, 85, 247, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              🔊 Listen
+            </button>
+          </div>
+
+          {/* Share Button */}
+          <button 
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'My Prayer',
+                  text: currentPrayer
+                });
+              } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(currentPrayer);
+                alert('Prayer copied to clipboard!');
+              }
+            }} 
+            style={{ 
+              width: '100%',
+              padding: '16px',
+              borderRadius: '15px',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              background: 'rgba(59, 130, 246, 0.6)',
+              backdropFilter: 'blur(20px)',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              marginBottom: '12px'
+            }}
+          >
+            📤 Share Prayer
+          </button>
+
+          {/* Navigation Buttons */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <button 
               onClick={() => setCurrentScreen('prayer-selection')} 
               style={{ 
                 padding: '16px',
                 borderRadius: '15px',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                background: 'rgba(59, 130, 246, 0.6)',
+                background: 'rgba(15, 23, 42, 0.6)',
                 backdropFilter: 'blur(20px)',
                 color: 'white',
                 fontSize: '16px',
@@ -5780,7 +5913,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}
             >
-              Generate Another Prayer
+              🔙 New Prayer
             </button>
             
             <button 
@@ -5798,7 +5931,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}
             >
-              Logout
+              🚪 Logout
             </button>
           </div>
         </div>
