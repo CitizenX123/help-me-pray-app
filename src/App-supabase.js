@@ -24,7 +24,7 @@ backgroundStyles.textContent = `
   }
 `;
 document.head.appendChild(backgroundStyles);
-// Force cache bust v2.5 - MOBILE SCREENS ACTIVE - OLD UI BYPASSED
+// Force cache bust v2.6 - ACTUAL BACKGROUND IMAGE DEPLOYED - GITHUB SYNC TEST
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
 // import PremiumUpgradeModal from './PremiumUpgradeModal';
