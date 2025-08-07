@@ -24,7 +24,7 @@ backgroundStyles.textContent = `
   }
 `;
 document.head.appendChild(backgroundStyles);
-// Force cache bust v2.4 - MOBILE ARCHITECTURE DEPLOYED
+// Force cache bust v2.5 - MOBILE SCREENS ACTIVE - OLD UI BYPASSED
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
 // import PremiumUpgradeModal from './PremiumUpgradeModal';
@@ -3091,8 +3091,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
   // User state is now managed by parent App component
 
-  // Login/Signup Landing Page
-  if (!user) {
+  // OLD LOGIN CODE REMOVED - USING MOBILE SCREENS INSTEAD
+  // Mobile screen router handles login state
+  if (false && !user) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -3528,8 +3529,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     );
   }
 
-  // Main Prayer App (after login)
-  return (
+  // OLD MAIN APP REMOVED - USING MOBILE SCREENS INSTEAD
+  // Mobile screen router handles all states
+  if (false) return (
     <div style={{
       minHeight: '100vh',
       background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
