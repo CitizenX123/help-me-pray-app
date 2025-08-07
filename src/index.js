@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App-supabase';
+import App from './App';
 import ErrorBoundary from './ErrorBoundary';
 import reportWebVitals from './reportWebVitals';
 
