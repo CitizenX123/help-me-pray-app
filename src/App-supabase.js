@@ -1,6 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book } from 'lucide-react';
 import { supabase } from './supabaseClient';
+
+// Add beautiful animated background CSS
+const backgroundStyles = document.createElement('style');
+backgroundStyles.textContent = `
+  @keyframes curvedFlow {
+    0%, 100% { 
+      background-position: 0% 50%, 100% 50%, 50% 0%; 
+    }
+    33% { 
+      background-position: 100% 0%, 0% 100%, 100% 50%; 
+    }
+    66% { 
+      background-position: 100% 100%, 0% 0%, 50% 100%; 
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+  }
+`;
+document.head.appendChild(backgroundStyles);
 // Force cache bust v2.3
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
@@ -2697,9 +2720,226 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   };
 
   const CategoryButton = ({ categoryKey, category }) => {
-    const IconComponent = category.icon;
     const isCustom = categoryKey === 'custom';
     const isSelected = selectedCategory === categoryKey;
+    
+    // Icon gradient backgrounds
+    const getIconGradient = () => {
+      switch (categoryKey) {
+        case 'gratitude':
+          return 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)';
+        case 'morning':
+          return 'linear-gradient(135deg, #fef3c7 0%, #fde047 50%, #eab308 100%)';
+        case 'bedtime':
+          return 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #312e81 100%)';
+        case 'healing':
+          return 'linear-gradient(135deg, #dcfce7 0%, #22c55e 50%, #16a34a 100%)';
+        case 'family':
+          return 'linear-gradient(135deg, #fecaca 0%, #f87171 50%, #dc2626 100%)';
+        case 'grace':
+          return 'linear-gradient(135deg, #e0e7ff 0%, #8b5cf6 50%, #7c3aed 100%)';
+        case 'bibleVerses':
+          return 'linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #ea580c 100%)';
+        default:
+          return 'linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #64748b 100%)';
+      }
+    };
+    
+    // Ultra-detailed macOS-style icons
+    const getDetailedIcon = () => {
+      switch (categoryKey) {
+        case 'gratitude':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="gratitudeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fbbf24" />
+                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#d97706" />
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              {/* Heart shape */}
+              <path d="M24,42 C24,42 6,30 6,18 C6,12 10,8 16,8 C19,8 22,10 24,13 C26,10 29,8 32,8 C38,8 42,12 42,18 C42,30 24,42 24,42 Z" 
+                    fill="url(#gratitudeGrad)" filter="url(#glow)" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+              {/* Sparkles */}
+              <circle cx="18" cy="20" r="2" fill="#fff" opacity="0.8"/>
+              <circle cx="30" cy="22" r="1.5" fill="#fff" opacity="0.6"/>
+              <circle cx="24" cy="16" r="1" fill="#fff" opacity="0.9"/>
+            </svg>
+          );
+        
+        case 'morning':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <radialGradient id="sunGrad" cx="50%" cy="50%">
+                  <stop offset="0%" stopColor="#fef3c7" />
+                  <stop offset="70%" stopColor="#fde047" />
+                  <stop offset="100%" stopColor="#eab308" />
+                </radialGradient>
+              </defs>
+              {/* Sun rays */}
+              {[0,45,90,135,180,225,270,315].map(angle => (
+                <line key={angle} 
+                      x1={24 + Math.cos(angle * Math.PI / 180) * 20} 
+                      y1={24 + Math.sin(angle * Math.PI / 180) * 20}
+                      x2={24 + Math.cos(angle * Math.PI / 180) * 16} 
+                      y2={24 + Math.sin(angle * Math.PI / 180) * 16}
+                      stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+              ))}
+              {/* Sun circle */}
+              <circle cx="24" cy="24" r="12" fill="url(#sunGrad)" stroke="rgba(255,255,255,0.4)" strokeWidth="1"/>
+              {/* Face */}
+              <circle cx="20" cy="20" r="1.5" fill="#d97706"/>
+              <circle cx="28" cy="20" r="1.5" fill="#d97706"/>
+              <path d="M19,28 Q24,32 29,28" stroke="#d97706" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            </svg>
+          );
+          
+        case 'bedtime':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6366f1" />
+                  <stop offset="50%" stopColor="#4f46e5" />
+                  <stop offset="100%" stopColor="#312e81" />
+                </linearGradient>
+              </defs>
+              {/* Crescent moon */}
+              <path d="M30,8 C22,8 16,14 16,24 C16,34 22,40 30,40 C26,40 22,36 22,24 C22,12 26,8 30,8 Z" 
+                    fill="url(#moonGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+              {/* Stars */}
+              {[[10,12],[38,16],[14,30],[36,32],[8,24]].map(([x,y], i) => (
+                <g key={i}>
+                  <path d={`M${x},${y-3} L${x+1},${y-1} L${x+3},${y} L${x+1},${y+1} L${x},${y+3} L${x-1},${y+1} L${x-3},${y} L${x-1},${y-1} Z`} 
+                        fill="#fff" opacity={0.6 + i * 0.1}/>
+                </g>
+              ))}
+            </svg>
+          );
+          
+        case 'healing':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="healingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#dcfce7" />
+                  <stop offset="50%" stopColor="#22c55e" />
+                  <stop offset="100%" stopColor="#16a34a" />
+                </linearGradient>
+              </defs>
+              {/* Medical cross */}
+              <rect x="20" y="8" width="8" height="32" fill="url(#healingGrad)" rx="2"/>
+              <rect x="8" y="20" width="32" height="8" fill="url(#healingGrad)" rx="2"/>
+              {/* Gentle glow */}
+              <rect x="20" y="8" width="8" height="32" fill="rgba(255,255,255,0.2)" rx="2"/>
+              <rect x="8" y="20" width="32" height="8" fill="rgba(255,255,255,0.2)" rx="2"/>
+              {/* Healing particles */}
+              <circle cx="12" cy="12" r="2" fill="#22c55e" opacity="0.6"/>
+              <circle cx="36" cy="14" r="1.5" fill="#16a34a" opacity="0.7"/>
+              <circle cx="14" cy="36" r="1" fill="#22c55e" opacity="0.8"/>
+              <circle cx="34" cy="34" r="2" fill="#16a34a" opacity="0.5"/>
+            </svg>
+          );
+          
+        case 'family':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="familyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fecaca" />
+                  <stop offset="50%" stopColor="#f87171" />
+                  <stop offset="100%" stopColor="#dc2626" />
+                </linearGradient>
+              </defs>
+              {/* Family figures */}
+              {/* Parent 1 */}
+              <circle cx="16" cy="16" r="4" fill="url(#familyGrad)"/>
+              <rect x="12" y="20" width="8" height="12" fill="url(#familyGrad)" rx="2"/>
+              {/* Parent 2 */}
+              <circle cx="32" cy="16" r="4" fill="url(#familyGrad)"/>
+              <rect x="28" y="20" width="8" height="12" fill="url(#familyGrad)" rx="2"/>
+              {/* Child */}
+              <circle cx="24" cy="26" r="3" fill="url(#familyGrad)"/>
+              <rect x="21" y="29" width="6" height="8" fill="url(#familyGrad)" rx="2"/>
+              {/* Hearts */}
+              <path d="M24,40 C24,40 18,36 18,32 C18,30 19,29 21,29 C22,29 23,30 24,31 C25,30 26,29 27,29 C29,29 30,30 30,32 C30,36 24,40 24,40 Z" 
+                    fill="#fff" opacity="0.8"/>
+            </svg>
+          );
+          
+        case 'grace':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="graceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#e0e7ff" />
+                  <stop offset="50%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#7c3aed" />
+                </linearGradient>
+              </defs>
+              {/* Dove silhouette */}
+              <path d="M12,20 Q16,16 24,18 Q32,20 36,16 Q38,18 36,22 Q34,24 32,24 Q28,26 24,25 Q20,24 16,26 Q14,24 12,22 Q10,20 12,20 Z" 
+                    fill="url(#graceGrad)"/>
+              {/* Wing details */}
+              <path d="M16,22 Q20,20 24,22 Q28,20 32,22" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none"/>
+              {/* Olive branch */}
+              <path d="M24,25 Q26,28 28,30 Q30,32 32,30" stroke="#22c55e" strokeWidth="2" fill="none"/>
+              <ellipse cx="29" cy="29" rx="2" ry="1" fill="#22c55e" opacity="0.8"/>
+              <ellipse cx="31" cy="31" rx="1.5" ry="0.8" fill="#22c55e" opacity="0.8"/>
+            </svg>
+          );
+          
+        case 'bibleVerses':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="bibleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fed7aa" />
+                  <stop offset="50%" stopColor="#fb923c" />
+                  <stop offset="100%" stopColor="#ea580c" />
+                </linearGradient>
+              </defs>
+              {/* Book cover */}
+              <rect x="10" y="8" width="28" height="32" fill="url(#bibleGrad)" rx="2"/>
+              <rect x="10" y="8" width="28" height="32" fill="rgba(255,255,255,0.1)" rx="2"/>
+              {/* Cross on cover */}
+              <rect x="22" y="16" width="4" height="16" fill="#fff" opacity="0.9" rx="1"/>
+              <rect x="16" y="22" width="16" height="4" fill="#fff" opacity="0.9" rx="1"/>
+              {/* Book spine */}
+              <rect x="8" y="8" width="4" height="32" fill="#c2410c" rx="2"/>
+              {/* Pages */}
+              <rect x="12" y="10" width="24" height="28" fill="rgba(255,255,255,0.2)" rx="1"/>
+              {/* Bookmark */}
+              <rect x="32" y="8" width="3" height="16" fill="#dc2626"/>
+              <path d="M32,24 L35,24 L33.5,20 Z" fill="#dc2626"/>
+            </svg>
+          );
+          
+        default:
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="defaultGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#e2e8f0" />
+                  <stop offset="50%" stopColor="#94a3b8" />
+                  <stop offset="100%" stopColor="#64748b" />
+                </linearGradient>
+              </defs>
+              <circle cx="24" cy="24" r="16" fill="url(#defaultGrad)"/>
+              <path d="M18,20 L30,20 M18,24 L30,24 M18,28 L26,28" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          );
+      }
+    };
     
     return (
       <button
@@ -2713,45 +2953,119 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: '16px',
-          borderRadius: '12px',
-          border: 'none',
+          padding: '20px',
+          borderRadius: '20px',
           cursor: 'pointer',
           width: '100%',
-          marginBottom: '12px',
-          transition: 'all 0.2s ease',
-          background: isSelected ? category.color : '#f3f4f6',
-          color: isSelected ? 'white' : '#374151',
-          boxShadow: isSelected ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none',
-          transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+          marginBottom: '16px',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          background: isSelected 
+            ? 'rgba(59, 130, 246, 0.4)' 
+            : 'rgba(15, 23, 42, 0.6)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: isSelected 
+            ? '1px solid rgba(255, 255, 255, 0.3)' 
+            : '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: isSelected 
+            ? '0 20px 40px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+            : '0 8px 25px -8px rgba(0, 0, 0, 0.3)',
+          transform: isSelected ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
         }}
         onMouseOver={(e) => {
           if (!isSelected) {
-            e.target.style.backgroundColor = '#e5e7eb';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+            e.currentTarget.style.transform = 'translateY(-1px) scale(1.01)';
+            e.currentTarget.style.boxShadow = '0 12px 30px -8px rgba(0, 0, 0, 0.35)';
           }
         }}
         onMouseOut={(e) => {
           if (!isSelected) {
-            e.target.style.backgroundColor = '#f3f4f6';
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.4)';
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+            e.currentTarget.style.boxShadow = '0 8px 25px -8px rgba(0, 0, 0, 0.3)';
           }
         }}
       >
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '18px' }}>
-            {isCustom ? (
-              <img src="/logo192.png" alt="Praying hands" style={{ 
-                width: '29px', 
-                height: '29px',
-                filter: isSelected ? 'brightness(0) invert(1)' : 'brightness(0)' 
-              }} />
-            ) : (
-              <IconComponent size={24} />
-            )}
-            <span style={{ marginLeft: '8px' }}>{category.name}</span>
-          </div>
-          <div style={{ fontSize: '14px', marginTop: '4px', opacity: 0.9 }}>{category.description}</div>
+        {/* 3D Icon Container */}
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '16px',
+          background: getIconGradient(),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: '20px',
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2) inset',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Glossy highlight effect */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '50%',
+            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%)',
+            borderRadius: '16px 16px 0 0'
+          }} />
+          
+          {isCustom ? (
+            <img src="/logo192.png" alt="Praying hands" style={{ 
+              width: '32px', 
+              height: '32px',
+              filter: 'brightness(0) invert(1)',
+              position: 'relative',
+              zIndex: 1
+            }} />
+          ) : (
+            getDetailedIcon()
+          )}
         </div>
+        
+        {/* Text Content */}
+        <div style={{ textAlign: 'left', flex: 1 }}>
+          <div style={{ 
+            fontWeight: '600', 
+            fontSize: '18px',
+            color: 'white',
+            marginBottom: '4px',
+            textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
+          }}>
+            {category.name}
+          </div>
+          <div style={{ 
+            fontSize: '14px', 
+            color: 'rgba(255, 255, 255, 0.8)',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+          }}>
+            {category.description}
+          </div>
+        </div>
+        
+        {/* Selection Indicator */}
+        {isSelected && (
+          <div style={{
+            width: '24px',
+            height: '24px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{ 
+              width: '8px', 
+              height: '8px', 
+              background: 'rgba(255, 255, 255, 0.9)', 
+              borderRadius: '50%',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+            }} />
+          </div>
+        )}
       </button>
     );
   };
@@ -2763,7 +3077,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #dbeafe, #e0e7ff, #fce7f3)',
+        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
+        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
+        animation: 'curvedFlow 20s ease-in-out infinite',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -2781,7 +3097,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 padding: '8px 12px',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
+                color: 'rgba(255, 255, 255, 0.8)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 backdropFilter: 'blur(4px)'
@@ -2844,30 +3160,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
           {/* Login/Signup Form */}
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
             padding: '32px',
-            border: '1px solid #e5e7eb'
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'white', marginBottom: '8px', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                 {showSignUp ? t('createAccount') : t('welcomeBack')}
               </h2>
-              <p style={{ color: '#6b7280', fontSize: '14px' }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                 {showSignUp ? t('joinCommunity') : t('signInToContinue')}
               </p>
             </div>
 
             {authError && (
               <div style={{
-                backgroundColor: authError.includes('Check your email') ? '#d1fae5' : '#fee2e2',
-                color: authError.includes('Check your email') ? '#065f46' : '#991b1b',
+                background: authError.includes('Check your email') ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                color: authError.includes('Check your email') ? 'rgba(134, 239, 172, 1)' : 'rgba(252, 165, 165, 1)',
                 padding: '12px',
                 borderRadius: '8px',
                 marginBottom: '16px',
                 fontSize: '14px',
-                textAlign: 'center'
+                textAlign: 'center',
+                border: authError.includes('Check your email') ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}>
                 {authError}
               </div>
@@ -2876,7 +3198,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             <form onSubmit={showSignUp ? handleSignUp : handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {showSignUp && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('fullName')}
                   </label>
                   <input
@@ -2887,23 +3209,33 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      border: '1px solid #d1d5db',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
                       borderRadius: '8px',
                       fontSize: '16px',
                       textAlign: 'center',
                       outline: 'none',
-                      transition: 'border-color 0.2s ease',
-                      boxSizing: 'border-box'
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box',
+                      color: 'white',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
                     required
                   />
                 </div>
               )}
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('emailAddress')}
                 </label>
                 <input
@@ -2914,22 +3246,32 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   style={{
                     width: '100%',
                     padding: '12px 16px',
-                    border: '1px solid #d1d5db',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
                     fontSize: '16px',
                     textAlign: 'center',
                     outline: 'none',
-                    transition: 'border-color 0.2s ease',
-                    boxSizing: 'border-box'
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box',
+                    color: 'white',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
                   required
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('password')}
                 </label>
                 <input
@@ -2940,23 +3282,33 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   style={{
                     width: '100%',
                     padding: '12px 16px',
-                    border: '1px solid #d1d5db',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
                     fontSize: '16px',
                     textAlign: 'center',
                     outline: 'none',
-                    transition: 'border-color 0.2s ease',
-                    boxSizing: 'border-box'
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box',
+                    color: 'white',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
                   required
                 />
               </div>
 
               {showSignUp && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('confirmPassword')}
                   </label>
                   <input
@@ -2967,16 +3319,26 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      border: '1px solid #d1d5db',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
                       borderRadius: '8px',
                       fontSize: '16px',
                       textAlign: 'center',
                       outline: 'none',
-                      transition: 'border-color 0.2s ease',
-                      boxSizing: 'border-box'
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box',
+                      color: 'white',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
                     required
                   />
                 </div>
@@ -3031,7 +3393,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 style={{
                   width: '100%',
                   background: 'transparent',
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '12px 24px',
                   borderRadius: '8px',
                   fontWeight: '500',
@@ -3063,7 +3425,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 style={{
                   width: '100%',
                   background: 'white',
-                  color: '#374151',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '12px 24px',
                   borderRadius: '8px',
                   fontWeight: '500',
@@ -3151,7 +3513,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #dbeafe, #e0e7ff, #fce7f3)',
+      background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
+      backgroundSize: '100% 100%, 80% 80%, 90% 90%',
+      animation: 'curvedFlow 20s ease-in-out infinite',
       padding: '16px'
     }}>
       <div style={{ maxWidth: '1024px', margin: '0 auto' }}>
@@ -3211,13 +3575,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           <h1 style={{
             fontSize: '48px',
             fontWeight: '300',
-            background: 'linear-gradient(135deg, #4338ca, #7c3aed)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            color: 'white',
             marginBottom: '8px',
-            letterSpacing: '2px'
+            letterSpacing: '2px',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
           }}>{t('appTitle')}</h1>
-          <p style={{ color: '#6b7280', textAlign: 'center' }}>{t('appSubtitle')}</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center', textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>{t('appSubtitle')}</p>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
             <div style={{
               width: '96px',
@@ -3229,7 +3592,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           
           {/* User info */}
           <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '14px', margin: 0, textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
               Welcome, {user?.user_metadata?.full_name || user?.email}
             </p>
           </div>
@@ -3238,17 +3601,20 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           {/* Usage Counter for all non-premium users */}
           {!isPremium && (
             <div style={{
-              backgroundColor: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#fef2f2' : '#f0f9ff',
-              border: `1px solid ${(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#fecaca' : '#bae6fd'}`,
+              background: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+              border: `1px solid ${(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
               borderRadius: '8px',
               padding: '12px 16px',
               marginTop: '16px',
-              textAlign: 'center'
+              textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
             }}>
               <div style={{
-                color: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#dc2626' : '#0369a1',
+                color: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? 'rgba(252, 165, 165, 1)' : 'rgba(147, 197, 253, 1)',
                 fontSize: '14px',
-                fontWeight: '500'
+                fontWeight: '500',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}>
                 {(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 
                   ? '⚠️ Daily limit reached' 
@@ -3256,7 +3622,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </div>
               {(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 && (
                 <div style={{
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   fontSize: '12px',
                   marginTop: '4px'
                 }}>
@@ -3274,7 +3640,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         }}>
           {/* Categories */}
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px', textAlign: 'center' }}>{t('chooseCategory')}</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'white', marginBottom: '16px', textAlign: 'center', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>{t('chooseCategory')}</h2>
             {Object.entries(prayerCategories).map(([key, category]) => (
               <CategoryButton key={key} categoryKey={key} category={category} />
             ))}
@@ -3283,11 +3649,13 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           {/* Prayer Display */}
           <div>
             <div style={{
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              background: 'rgba(15, 23, 42, 0.6)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
               padding: '32px',
-              border: '1px solid #e5e7eb'
+              border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
               {showCustomForm ? (
                 <>
@@ -3304,7 +3672,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     }}>
                       <img src="/logo192.png" alt="Praying hands" style={{ width: '24px', height: '24px' }} />
                     </div>
-                    <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
+                    <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'white', margin: 0, textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                       Create Custom Prayer
                     </h2>
                   </div>
@@ -3312,7 +3680,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   <div style={{ marginBottom: '24px' }}>
                     {/* Who is this prayer for? */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         This prayer is for:
                       </label>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
@@ -3325,9 +3693,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             padding: '8px 16px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerFor === 'myself' ? '#6366f1' : '#d1d5db',
-                            backgroundColor: prayerFor === 'myself' ? '#eef2ff' : 'white',
-                            color: prayerFor === 'myself' ? '#4338ca' : '#374151',
+                            borderColor: prayerFor === 'myself' ? 'rgba(99, 102, 241, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerFor === 'myself' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                            color: prayerFor === 'myself' ? 'rgba(199, 210, 254, 1)' : 'rgba(255, 255, 255, 0.8)',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease'
                           }}
@@ -3344,9 +3712,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             padding: '8px 16px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerFor === 'someone' ? '#8b5cf6' : '#d1d5db',
-                            backgroundColor: prayerFor === 'someone' ? '#f3e8ff' : 'white',
-                            color: prayerFor === 'someone' ? '#7c3aed' : '#374151',
+                            borderColor: prayerFor === 'someone' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerFor === 'someone' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                            color: prayerFor === 'someone' ? 'rgba(221, 214, 254, 1)' : 'rgba(255, 255, 255, 0.8)',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease'
                           }}
@@ -3360,7 +3728,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Person's name */}
                     {prayerFor === 'someone' && (
                       <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                           Person's name:
                         </label>
                         <input
@@ -3390,7 +3758,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                     {/* Special occasion */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         Special occasion (optional):
                       </label>
                       <select
@@ -3434,7 +3802,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                     {/* Prayer length */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         Prayer length:
                       </label>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
@@ -3444,8 +3812,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             padding: '6px 12px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerLength === 'brief' ? '#10b981' : '#d1d5db',
-                            backgroundColor: prayerLength === 'brief' ? '#d1fae5' : 'white',
+                            borderColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                             color: prayerLength === 'brief' ? '#047857' : '#374151',
                             cursor: 'pointer',
                             fontSize: '12px'
@@ -3459,8 +3827,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             padding: '6px 12px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerLength === 'medium' ? '#6366f1' : '#d1d5db',
-                            backgroundColor: prayerLength === 'medium' ? '#eef2ff' : 'white',
+                            borderColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                             color: prayerLength === 'medium' ? '#4338ca' : '#374151',
                             cursor: 'pointer',
                             fontSize: '12px'
@@ -3474,8 +3842,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             padding: '6px 12px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerLength === 'comprehensive' ? '#8b5cf6' : '#d1d5db',
-                            backgroundColor: prayerLength === 'comprehensive' ? '#f3e8ff' : 'white',
+                            borderColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                             color: prayerLength === 'comprehensive' ? '#7c3aed' : '#374151',
                             cursor: 'pointer',
                             fontSize: '12px'
@@ -3488,7 +3856,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                     {/* Prayer request */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         What would you like to pray about?
                       </label>
                       <div style={{ 
@@ -3552,7 +3920,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           borderRadius: '8px',
                           border: '2px solid',
                           borderColor: prayerLength === 'brief' ? '#10b981' : '#d1d5db',
-                          backgroundColor: prayerLength === 'brief' ? '#ecfdf5' : 'white',
+                          backgroundColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                           color: prayerLength === 'brief' ? '#047857' : '#374151',
                           cursor: 'pointer',
                           fontSize: '14px',
@@ -3569,7 +3937,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           borderRadius: '8px',
                           border: '2px solid',
                           borderColor: prayerLength === 'medium' ? '#6366f1' : '#d1d5db',
-                          backgroundColor: prayerLength === 'medium' ? '#eef2ff' : 'white',
+                          backgroundColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                           color: prayerLength === 'medium' ? '#4338ca' : '#374151',
                           cursor: 'pointer',
                           fontSize: '14px',
@@ -3586,7 +3954,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           borderRadius: '8px',
                           border: '2px solid',
                           borderColor: prayerLength === 'comprehensive' ? '#8b5cf6' : '#d1d5db',
-                          backgroundColor: prayerLength === 'comprehensive' ? '#f3e8ff' : 'white',
+                          backgroundColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                           color: prayerLength === 'comprehensive' ? '#7c3aed' : '#374151',
                           cursor: 'pointer',
                           fontSize: '14px',
@@ -3654,19 +4022,23 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 {(currentPrayer && currentPrayer.trim() && !isGenerating) ? (
                   <div style={{ textAlign: 'center', width: '100%', maxWidth: '600px' }}>
                     <div style={{
-                      background: 'linear-gradient(135deg, #eef2ff, #f3e8ff, #fef7f7)',
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
                       padding: '24px',
                       borderRadius: '12px',
                       marginBottom: '16px',
-                      border: '1px solid #c7d2fe',
-                      margin: '0 auto 16px'
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      margin: '0 auto 16px',
+                      boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
                     }}>
                       <p style={{
                         fontSize: '18px',
-                        color: '#374151',
+                        color: 'white',
                         lineHeight: '1.6',
                         textAlign: 'center',
-                        margin: 0
+                        margin: 0,
+                        textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
                       }}>
                         {currentPrayer}
                       </p>
@@ -3680,11 +4052,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       gap: '12px', 
                       marginBottom: '16px',
                       padding: '12px',
-                      background: '#f8fafc',
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
                       borderRadius: '8px',
-                      border: '1px solid #e2e8f0'
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      boxShadow: '0 4px 15px -4px rgba(0, 0, 0, 0.3)'
                     }}>
-                      <Volume2 size={20} color="#64748b" />
+                      <Volume2 size={20} color="rgba(255, 255, 255, 0.8)" />
                       
                       {!isPlaying ? (
                         <button
@@ -3794,18 +4169,21 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       <div style={{
                         marginBottom: '16px',
                         padding: '16px',
-                        background: '#ffffff',
-                        border: '1px solid #e2e8f0',
+                        background: 'rgba(15, 23, 42, 0.6)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '8px',
-                        textAlign: 'left'
+                        textAlign: 'left',
+                        boxShadow: '0 4px 15px -4px rgba(0, 0, 0, 0.3)'
                       }}>
-                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: 'white', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                           Voice Settings
                         </h4>
                         
                         {/* Voice Quality Selection */}
                         <div style={{ marginBottom: '16px' }}>
-                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                          <label style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '8px', display: 'block', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                             Voice Quality:
                           </label>
                           <div style={{ display: 'flex', gap: '8px' }}>
@@ -3814,8 +4192,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               style={{
                                 flex: 1,
                                 padding: '8px 12px',
-                                backgroundColor: !useHumanVoice ? '#10b981' : '#f3f4f6',
-                                color: !useHumanVoice ? 'white' : '#6b7280',
+                                backgroundColor: !useHumanVoice ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                                color: !useHumanVoice ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '4px',
                                 fontSize: '12px',
@@ -3830,8 +4208,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               style={{
                                 flex: 1,
                                 padding: '8px 12px',
-                                backgroundColor: useHumanVoice ? '#10b981' : '#f3f4f6',
-                                color: useHumanVoice ? 'white' : '#6b7280',
+                                backgroundColor: useHumanVoice ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                                color: useHumanVoice ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '4px',
                                 fontSize: '12px',
@@ -3846,7 +4224,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                         {/* Voice Tier Selection */}
                         <div style={{ marginBottom: '16px' }}>
-                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                          <label style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '8px', display: 'block', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                             Choose voice tier:
                           </label>
                           <div style={{ display: 'flex', gap: '8px' }}>
@@ -3855,8 +4233,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               style={{
                                 flex: 1,
                                 padding: '10px 16px',
-                                backgroundColor: ttsProvider === 'browser' ? '#10b981' : '#f3f4f6',
-                                color: ttsProvider === 'browser' ? 'white' : '#6b7280',
+                                backgroundColor: ttsProvider === 'browser' ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                                color: ttsProvider === 'browser' ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '6px',
                                 fontSize: '13px',
@@ -3872,8 +4250,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               style={{
                                 flex: 1,
                                 padding: '10px 16px',
-                                backgroundColor: ttsProvider === 'azure' ? '#6366f1' : '#f3f4f6',
-                                color: ttsProvider === 'azure' ? 'white' : '#6b7280',
+                                backgroundColor: ttsProvider === 'azure' ? '#6366f1' : 'rgba(255, 255, 255, 0.1)',
+                                color: ttsProvider === 'azure' ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '6px',
                                 fontSize: '13px',
@@ -3923,7 +4301,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         {ttsProvider === 'browser' && (
                           <div style={{
                             textAlign: 'center',
-                            color: '#6b7280',
+                            color: 'rgba(255, 255, 255, 0.8)',
                             fontSize: '14px',
                             padding: '16px',
                             backgroundColor: '#f9fafb',
@@ -4470,18 +4848,21 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           padding: '16px'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '500px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
             width: '100%',
             maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+            overflowY: 'auto'
           }}>
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#1f2937' }}>
+              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                 Share this prayer
               </h3>
               <button
@@ -4491,7 +4872,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '4px'
                 }}
               >
@@ -4500,7 +4881,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </div>
 
             {/* Anonymous sharing toggle */}
-            <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+            <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '8px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
@@ -4599,7 +4980,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 </div>
                 <div style={{ 
                   fontSize: '12px', 
-                  color: '#6b7280', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
                   backgroundColor: '#f3f4f6', 
                   padding: '8px', 
                   borderRadius: '4px' 
@@ -4805,7 +5186,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 style={{
                   padding: '8px 16px',
                   backgroundColor: '#f3f4f6',
-                  color: '#374151',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '14px',
@@ -4835,22 +5216,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           padding: '20px'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '12px',
             maxWidth: '800px',
             width: '100%',
             maxHeight: '80vh',
             overflow: 'hidden',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{
               padding: '24px',
-              borderBottom: '1px solid #e5e7eb',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <h2 style={{ margin: 0, color: '#1f2937', fontSize: '24px', fontWeight: 'bold' }}>
+              <h2 style={{ margin: 0, color: 'white', fontSize: '24px', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                 {t('myPrayers')}
               </h2>
               <button
@@ -4860,7 +5244,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '4px'
                 }}
               >
@@ -4892,7 +5276,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     }}>
                       <div style={{
                         fontSize: '12px',
-                        color: '#6b7280',
+                        color: 'rgba(255, 255, 255, 0.8)',
                         marginBottom: '8px'
                       }}>
                         {t('createdOn')} {new Date(prayer.created_at).toLocaleString()}
@@ -4951,11 +5335,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           padding: '20px'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '12px',
             maxWidth: '500px',
             width: '100%',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{
               padding: '24px',
@@ -5020,7 +5407,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   onClick={() => setShowUpgradeModal(false)}
                   style={{
                     backgroundColor: '#f3f4f6',
-                    color: '#374151',
+                    color: 'rgba(255, 255, 255, 0.8)',
                     border: 'none',
                     padding: '12px 24px',
                     borderRadius: '8px',
@@ -5057,7 +5444,7 @@ let appInitialized = false;
 const App = () => {
   if (!appInitialized) {
     console.log('App component initializing...');
-  console.log('🚀 FORCED DEPLOYMENT v2.1 - Changes MUST be visible now! Button positions and voice settings updated!');
+  console.log('🔥 HELP ME PRAY V2 - Development Version - Ready for experiments!');
     appInitialized = true;
   }
   const [user, setUser] = useState(null);
