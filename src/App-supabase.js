@@ -236,13 +236,30 @@ const translations = {
 };
 
 const HelpMePrayApp = ({ user, setUser }) => {
-  // const { isPremium, upgradeToPremiun } = useSubscription();
+  // Mobile Screen Navigation State
+  const [currentScreen, setCurrentScreen] = useState(user ? 'prayer-selection' : 'login');
+  
+  // Prayer App State
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
   
   // Clear prayer when category changes to force icon display
   useEffect(() => {
     setCurrentPrayer('');
   }, [selectedCategory]);
+
+  // Screen Navigation Functions for Mobile
+  const goToScreen = (screenName) => {
+    setCurrentScreen(screenName);
+  };
+
+  // Update screen when user state changes
+  useEffect(() => {
+    if (!user) {
+      setCurrentScreen('login');
+    } else if (currentScreen === 'login') {
+      setCurrentScreen('prayer-selection');
+    }
+  }, [user, currentScreen]);
   const [currentPrayer, setCurrentPrayer] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -2683,6 +2700,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         }
         
         setIsGenerating(false);
+        goToScreen('prayer-view');
       }, 1200);
     } else {
       setIsGenerating(true);
@@ -2715,6 +2733,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         }
         
         setIsGenerating(false);
+        goToScreen('prayer-view');
       }, 800);
     }
   };
@@ -5437,6 +5456,356 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       `}</style>
     </div>
   );
+
+  // ===== MOBILE SCREEN ARCHITECTURE =====
+  
+  // Categories for mobile screens
+  const categories = [
+    { key: 'gratitude', name: t('gratitude') },
+    { key: 'morning', name: t('morning') },
+    { key: 'bedtime', name: t('bedtime') },
+    { key: 'healing', name: t('healing') },
+    { key: 'family', name: t('family') },
+    { key: 'grace', name: t('grace') },
+    { key: 'bibleVerses', name: t('bibleVerses') },
+    { key: 'custom', name: t('custom') }
+  ];
+
+  // Mobile Screen Router
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'login':
+        return renderLoginScreen();
+      case 'prayer-selection':
+        return renderPrayerSelectionScreen();
+      case 'prayer-generation':
+        return renderPrayerGenerationScreen();
+      case 'prayer-view':
+        return renderPrayerViewScreen();
+      default:
+        return renderLoginScreen();
+    }
+  };
+
+  // Screen 1: Login Screen
+  const renderLoginScreen = () => {
+    if (user) {
+      setCurrentScreen('prayer-selection');
+      return null;
+    }
+    
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
+        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
+        animation: 'curvedFlow 20s ease-in-out infinite',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <div style={{ width: '100%', maxWidth: '400px' }}>
+          {/* App Title */}
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h1 style={{ 
+              color: 'white', 
+              fontSize: '28px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              marginBottom: '8px'
+            }}>
+              Help Me Pray
+            </h1>
+            <p style={{ 
+              color: 'rgba(255, 255, 255, 0.8)', 
+              fontSize: '16px',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
+            }}>
+              Find peace through prayer ✨
+            </p>
+          </div>
+
+          {/* Login Form */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '30px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+          }}>
+            <div style={{ display: 'grid', gap: '15px' }}>
+              <button
+                onClick={handleGoogleSignIn}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+              >
+                Continue with Google
+              </button>
+              
+              <button
+                onClick={() => setUser({ id: 'guest', email: 'guest@demo.com' })}
+                style={{
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+              >
+                🙏 Continue as Guest
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 2: Prayer Selection Screen
+  const renderPrayerSelectionScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
+        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
+        animation: 'curvedFlow 20s ease-in-out infinite',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <h1 style={{ 
+              color: 'white', 
+              fontSize: '24px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              marginBottom: '8px'
+            }}>
+              Choose Your Prayer
+            </h1>
+            <p style={{ 
+              color: 'rgba(255, 255, 255, 0.8)', 
+              fontSize: '14px',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
+            }}>
+              Select a category that speaks to your heart
+            </p>
+          </div>
+
+          {/* Category Buttons */}
+          <div style={{ display: 'grid', gap: '12px' }}>
+            {categories.map((category) => (
+              <button 
+                key={category.key} 
+                onClick={() => { 
+                  setSelectedCategory(category.key); 
+                  setCurrentScreen('prayer-generation');
+                }} 
+                style={{ 
+                  padding: '18px',
+                  borderRadius: '15px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center',
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'rgba(59, 130, 246, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'rgba(15, 23, 42, 0.6)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={() => setUser(null)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              marginTop: '20px',
+              borderRadius: '12px',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              background: 'rgba(239, 68, 68, 0.2)',
+              color: 'rgba(252, 165, 165, 1)',
+              fontSize: '14px',
+              cursor: 'pointer',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 3: Prayer Generation Screen
+  const renderPrayerGenerationScreen = () => {
+    // Auto-start generation if not already generating
+    if (!isGenerating) {
+      setTimeout(() => generatePrayer(), 100);
+    }
+    
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
+        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
+        animation: 'curvedFlow 20s ease-in-out infinite',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <div style={{ textAlign: 'center', color: 'white' }}>
+          <div style={{ 
+            fontSize: '22px', 
+            fontWeight: '500',
+            marginBottom: '30px',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+          }}>
+            Generating your prayer...
+          </div>
+          <div style={{ 
+            width: '60px', 
+            height: '60px', 
+            border: '4px solid rgba(255,255,255,0.3)', 
+            borderTop: '4px solid white', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite', 
+            margin: '0 auto' 
+          }}></div>
+          <div style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255, 0.7)',
+            marginTop: '20px',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+          }}>
+            Creating something beautiful for you...
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 4: Prayer View/Share/Audio Screen
+  const renderPrayerViewScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
+        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
+        animation: 'curvedFlow 20s ease-in-out infinite',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          {/* Prayer Display */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '30px',
+            marginBottom: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <p style={{
+              color: 'white',
+              fontSize: '18px',
+              lineHeight: '1.6',
+              textAlign: 'center',
+              margin: 0,
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
+            }}>
+              {currentPrayer}
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'grid', gap: '12px' }}>
+            <button 
+              onClick={() => setCurrentScreen('prayer-selection')} 
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(59, 130, 246, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              Generate Another Prayer
+            </button>
+            
+            <button 
+              onClick={() => setUser(null)} 
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // MOBILE SCREEN ROUTER - Use this instead of the old complex UI
+  return renderScreen();
 };
 
 // Main App component with subscription context
