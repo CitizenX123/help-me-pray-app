@@ -34,7 +34,9 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "deploy-check": "node deployment-agent.js",
-    "precommit": "node deployment-agent.js"
+    "precommit": "node deployment-agent.js",
+    "ios-sim": "open -a Simulator && open http://localhost:3000",
+    "mobile-dev": "BROWSER='open -a \"Google Chrome\" --args --user-agent=\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1\"' npm start"
   },
   "eslintConfig": {
     "extends": [

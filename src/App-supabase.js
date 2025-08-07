@@ -3097,10 +3097,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundImage: 'url(/curved-blue-background.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -5500,10 +5501,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundImage: 'url(/curved-blue-background.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -5595,10 +5597,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundImage: 'url(/curved-blue-background.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
         padding: '20px'
       }}>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
@@ -5625,16 +5628,27 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           {/* Category Buttons with Beautiful 3D Icons */}
           <div style={{ display: 'grid', gap: '12px' }}>
             {categories.map((category) => {
-              // Define detailed 3D-style icons for each category
+              // Define better Lucide React icons for each category
               const categoryIcons = {
-                gratitude: '🙏✨',
-                morning: '🌅☀️',
-                bedtime: '🌙⭐',
-                healing: '💖🕊️',
-                family: '👨‍👩‍👧‍👦💕',
-                grace: '🍽️✨',
-                bibleVerses: '📖🕊️',
-                custom: '✏️💭'
+                gratitude: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                morning: <Sun size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                bedtime: <Moon size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                healing: <Sparkles size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                family: <Users size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                grace: <Utensils size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                bibleVerses: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+                custom: <Send size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+              };
+
+              const categoryDescriptions = {
+                gratitude: "Prayers for thanksgiving and expressing appreciation",
+                morning: "Prayers to start your day with purpose and hope", 
+                bedtime: "Prayers for reflection, rest, and peaceful sleep",
+                healing: "Prayers for physical, emotional, and spiritual restoration",
+                family: "Prayers for relationships and loved ones",
+                grace: "Dedicated to blessing the meals",
+                bibleVerses: "Prayers inspired by Scripture",
+                custom: "Generate personalized prayers for any situation"
               };
               
               return (
@@ -5647,10 +5661,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   style={{ 
                     padding: '20px',
                     borderRadius: '18px',
-                    border: '2px solid rgba(255, 255, 255, 0.15)',
-                    background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 64, 175, 0.3) 100%)',
-                    backdropFilter: 'blur(25px)',
-                    WebkitBackdropFilter: 'blur(25px)',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
                     color: 'white',
                     fontSize: '16px',
                   fontWeight: '500',
@@ -5670,21 +5684,32 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               >
                 <div style={{ 
                   display: 'flex', 
+                  flexDirection: 'column',
                   alignItems: 'center', 
-                  justifyContent: 'center',
-                  gap: '12px' 
+                  gap: '8px' 
                 }}>
-                  <span style={{ 
-                    fontSize: '24px',
-                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '12px' 
                   }}>
-                    {categoryIcons[category.key] || '🙏'}
-                  </span>
+                    {categoryIcons[category.key]}
+                    <span style={{ 
+                      fontWeight: '600',
+                      fontSize: '18px',
+                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
+                    }}>
+                      {category.name}
+                    </span>
+                  </div>
                   <span style={{ 
-                    fontWeight: '600',
-                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'
+                    fontSize: '13px',
+                    opacity: 0.9,
+                    textAlign: 'center',
+                    lineHeight: '1.3',
+                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.8)'
                   }}>
-                    {category.name}
+                    {categoryDescriptions[category.key]}
                   </span>
                 </div>
               </button>
@@ -5725,10 +5750,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundImage: 'url(/curved-blue-background.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -5770,10 +5796,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundImage: 'url(/curved-blue-background.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
         padding: '20px'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
