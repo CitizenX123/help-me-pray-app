@@ -3097,9 +3097,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
-        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
-        animation: 'curvedFlow 20s ease-in-out infinite',
+        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -5499,9 +5500,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
-        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
-        animation: 'curvedFlow 20s ease-in-out infinite',
+        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -5593,9 +5595,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
-        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
-        animation: 'curvedFlow 20s ease-in-out infinite',
+        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         padding: '20px'
       }}>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
@@ -5721,9 +5724,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
-        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
-        animation: 'curvedFlow 20s ease-in-out infinite',
+        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -5765,9 +5769,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse 150% 100% at 70% 20%, #60a5fa 0%, #3b82f6 15%, #2563eb 30%, #1e40af 50%, #1e293b 70%, #0f172a 100%), radial-gradient(ellipse 120% 80% at 30% 80%, #3b82f6 0%, #1e40af 25%, #1e293b 50%, #0f172a 100%), radial-gradient(ellipse 100% 60% at 80% 60%, #60a5fa 0%, #2563eb 30%, #1e293b 70%, #0f172a 100%)',
-        backgroundSize: '100% 100%, 80% 80%, 90% 90%',
-        animation: 'curvedFlow 20s ease-in-out infinite',
+        backgroundImage: 'url(./curved-blue-background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         padding: '20px'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
