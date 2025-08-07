@@ -32,7 +32,9 @@
     "test:playwright:debug": "playwright test --debug",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "deploy-check": "node deployment-agent.js",
+    "precommit": "node deployment-agent.js"
   },
   "eslintConfig": {
     "extends": [
