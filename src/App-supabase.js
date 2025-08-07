@@ -24,7 +24,7 @@ backgroundStyles.textContent = `
   }
 `;
 document.head.appendChild(backgroundStyles);
-// Force cache bust v2.3
+// Force cache bust v2.4 - MOBILE ARCHITECTURE DEPLOYED
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
 // import PremiumUpgradeModal from './PremiumUpgradeModal';

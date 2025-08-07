@@ -1,0 +1,167 @@
+# Page snapshot
+
+```yaml
+- button "🇪🇸 Español"
+- img "Praying Hands"
+- heading "Help Me Pray" [level=1]
+- paragraph: Find inspiration and guidance through meaningful prayers
+- paragraph: Welcome, guest@demo.com
+- text: 🎯 2 prayers left today
+- heading "Choose a Category" [level=2]
+- button "Gratitude Prayers for thanksgiving and expressing appreciation":
+  - img
+  - text: Gratitude Prayers for thanksgiving and expressing appreciation
+- button "Morning Prayers to start your day with purpose and hope":
+  - img
+  - text: Morning Prayers to start your day with purpose and hope
+- button "Bedtime Prayers for reflection, rest, and peaceful sleep":
+  - img
+  - text: Bedtime Prayers for reflection, rest, and peaceful sleep
+- button "Healing Prayers for physical, emotional, and spiritual restoration":
+  - img
+  - text: Healing Prayers for physical, emotional, and spiritual restoration
+- button "Family & Friends Prayers for relationships and loved ones":
+  - img
+  - text: Family & Friends Prayers for relationships and loved ones
+- button "Grace Dedicated to blessing the meals":
+  - img
+  - text: Grace Dedicated to blessing the meals
+- button "Bible Prayers inspired by Scripture":
+  - img
+  - text: Bible Prayers inspired by Scripture
+- button "Praying hands Create Custom Prayer Generate personalized prayers for any situation":
+  - img "Praying hands"
+  - text: Create Custom Prayer Generate personalized prayers for any situation
+- heading "Morning Prayer" [level=2]
+- text: "Prayer length:"
+- button "Brief & Beautiful"
+- button "Perfectly Timed"
+- button "Rich & Meaningful"
+- paragraph: A perfectly timed prayer with good depth (2-3 paragraphs)
+- button "Generate Prayer"
+- paragraph: Heavenly Father, grant me strength for today's challenges and wisdom for today's decisions. Help me to start this day with a grateful heart and an open mind. We come before you with humble hearts, acknowledging your sovereignty and grace in our lives. Furthermore, guide my steps and help me be a source of light to others. As I begin this new day, fill my heart with hope and my mind with clarity. We trust in your perfect timing and boundless mercy. May your will be done in every aspect of our lives. May I be present in each moment and kind in every interaction. May this day be filled with grace and growth. We offer this prayer in faith, believing in your goodness and love. In Jesus' name we pray, Amen.
+- button "Listen"
+- button "Voice settings"
+- heading "Voice Settings" [level=4]
+- text: "Voice Quality:"
+- button "🤖 System"
+- button "🎭 Human-like"
+- text: "Choose voice tier:"
+- button "Free"
+- button "Premium"
+- text: "Select System Voice:"
+- combobox:
+  - option "Ava (en-US)"
+  - option "Aaron (en-US)"
+  - option "Albert (en-US)"
+  - option "Arthur (en-GB)"
+  - option "Bad News (en-US)"
+  - option "Bahh (en-US)"
+  - option "Bells (en-US)"
+  - option "Boing (en-US)"
+  - option "Bubbles (en-US)"
+  - option "Catherine (en-AU)"
+  - option "Cellos (en-US)"
+  - option "Daniel (English (United Kingdom)) (en-GB)"
+  - option "Eddy (English (United Kingdom)) (en-GB)"
+  - option "Eddy (English (United States)) (en-US)"
+  - option "Flo (English (United Kingdom)) (en-GB)"
+  - option "Flo (English (United States)) (en-US)"
+  - option "Fred (en-US)"
+  - option "Good News (en-US)"
+  - option "Gordon (en-AU)"
+  - option "Grandma (English (United Kingdom)) (en-GB)"
+  - option "Grandma (English (United States)) (en-US)"
+  - option "Grandpa (English (United Kingdom)) (en-GB)"
+  - option "Grandpa (English (United States)) (en-US)"
+  - option "Jester (en-US)"
+  - option "Junior (en-US)"
+  - option "Karen (en-AU)"
+  - option "Kathy (en-US)"
+  - option "Martha (en-GB)"
+  - option "Moira (en-IE)"
+  - option "Nicky (en-US)"
+  - option "Organ (en-US)"
+  - option "Ralph (en-US)"
+  - option "Reed (English (United Kingdom)) (en-GB)"
+  - option "Reed (English (United States)) (en-US)"
+  - option "Rishi (en-IN)"
+  - option "Rocko (English (United Kingdom)) (en-GB)"
+  - option "Rocko (English (United States)) (en-US)"
+  - option "Samantha (en-US)" [selected]
+  - option "Sandy (English (United Kingdom)) (en-GB)"
+  - option "Sandy (English (United States)) (en-US)"
+  - option "Serena (en-GB)"
+  - option "Shelley (English (United Kingdom)) (en-GB)"
+  - option "Shelley (English (United States)) (en-US)"
+  - option "Superstar (en-US)"
+  - option "Susan (en-US)"
+  - option "Tessa (en-ZA)"
+  - option "Trinoids (en-US)"
+  - option "Whisper (en-US)"
+  - option "Wobble (en-US)"
+  - option "Zarvox (en-US)"
+  - option "Zoe (en-US)"
+- text: "🎤 Using system voices (Free tier) Standard device voices 💡 Choose your preferred voice tier above. Select System Voice:"
+- combobox:
+  - option "Ava (en-US)"
+  - option "Aaron (en-US)"
+  - option "Albert (en-US)"
+  - option "Arthur (en-GB)"
+  - option "Bad News (en-US)"
+  - option "Bahh (en-US)"
+  - option "Bells (en-US)"
+  - option "Boing (en-US)"
+  - option "Bubbles (en-US)"
+  - option "Catherine (en-AU)"
+  - option "Cellos (en-US)"
+  - option "Daniel (English (United Kingdom)) (en-GB)"
+  - option "Eddy (English (United Kingdom)) (en-GB)"
+  - option "Eddy (English (United States)) (en-US)"
+  - option "Flo (English (United Kingdom)) (en-GB)"
+  - option "Flo (English (United States)) (en-US)"
+  - option "Fred (en-US)"
+  - option "Good News (en-US)"
+  - option "Gordon (en-AU)"
+  - option "Grandma (English (United Kingdom)) (en-GB)"
+  - option "Grandma (English (United States)) (en-US)"
+  - option "Grandpa (English (United Kingdom)) (en-GB)"
+  - option "Grandpa (English (United States)) (en-US)"
+  - option "Jester (en-US)"
+  - option "Junior (en-US)"
+  - option "Karen (en-AU)"
+  - option "Kathy (en-US)"
+  - option "Martha (en-GB)"
+  - option "Moira (en-IE)"
+  - option "Nicky (en-US)"
+  - option "Organ (en-US)"
+  - option "Ralph (en-US)"
+  - option "Reed (English (United Kingdom)) (en-GB)"
+  - option "Reed (English (United States)) (en-US)"
+  - option "Rishi (en-IN)"
+  - option "Rocko (English (United Kingdom)) (en-GB)"
+  - option "Rocko (English (United States)) (en-US)"
+  - option "Samantha (en-US)" [selected]
+  - option "Sandy (English (United Kingdom)) (en-GB)"
+  - option "Sandy (English (United States)) (en-US)"
+  - option "Serena (en-GB)"
+  - option "Shelley (English (United Kingdom)) (en-GB)"
+  - option "Shelley (English (United States)) (en-US)"
+  - option "Superstar (en-US)"
+  - option "Susan (en-US)"
+  - option "Tessa (en-ZA)"
+  - option "Trinoids (en-US)"
+  - option "Whisper (en-US)"
+  - option "Wobble (en-US)"
+  - option "Zarvox (en-US)"
+  - option "Zoe (en-US)"
+- text: "Speed: 1x"
+- slider: "1"
+- button "Share this prayer"
+- paragraph: May this prayer bring you peace and guidance
+- button "📸 Download Image"
+- button "Prayer History"
+- button "Upgrade"
+- button "Sign Out"
+- paragraph: Take a moment to reflect, find peace, and connect with what matters most to you.
+```

@@ -1,0 +1,159 @@
+# Page snapshot
+
+```yaml
+- button "🇪🇸 Español"
+- img "Praying Hands"
+- heading "Help Me Pray" [level=1]
+- paragraph: Find inspiration and guidance through meaningful prayers
+- paragraph: Welcome, guest@demo.com
+- text: 🎯 2 prayers left today
+- heading "Choose a Category" [level=2]
+- button "Gratitude Prayers for thanksgiving and expressing appreciation":
+  - img
+  - text: Gratitude Prayers for thanksgiving and expressing appreciation
+- button "Morning Prayers to start your day with purpose and hope":
+  - img
+  - text: Morning Prayers to start your day with purpose and hope
+- button "Bedtime Prayers for reflection, rest, and peaceful sleep":
+  - img
+  - text: Bedtime Prayers for reflection, rest, and peaceful sleep
+- button "Healing Prayers for physical, emotional, and spiritual restoration":
+  - img
+  - text: Healing Prayers for physical, emotional, and spiritual restoration
+- button "Family & Friends Prayers for relationships and loved ones":
+  - img
+  - text: Family & Friends Prayers for relationships and loved ones
+- button "Grace Dedicated to blessing the meals":
+  - img
+  - text: Grace Dedicated to blessing the meals
+- button "Bible Prayers inspired by Scripture":
+  - img
+  - text: Bible Prayers inspired by Scripture
+- button "Praying hands Create Custom Prayer Generate personalized prayers for any situation":
+  - img "Praying hands"
+  - text: Create Custom Prayer Generate personalized prayers for any situation
+- heading "Gratitude Prayer" [level=2]
+- text: "Prayer length:"
+- button "Brief & Beautiful"
+- button "Perfectly Timed"
+- button "Rich & Meaningful"
+- paragraph: A perfectly timed prayer with good depth (2-3 paragraphs)
+- button "Generate Prayer"
+- paragraph: Our Father, thank you for the gift of this new day and all the opportunities it brings. Thank you for my health, my family, and my ability to make a positive difference. We come before you with humble hearts, acknowledging your sovereignty and grace in our lives. Therefore, I give thanks for the simple joys and everyday miracles you provide. Thank you for your strength during difficult times and your presence in good times. We trust in your perfect timing and boundless mercy. May your will be done in every aspect of our lives. Guide me to share this abundance with others. Help me to never take these blessings for granted. We offer this prayer in faith, believing in your goodness and love. In Jesus' name we pray, Amen.
+- button "Listen"
+- button "Voice settings"
+- heading "Voice Settings" [level=4]
+- text: "Voice Quality:"
+- button "🤖 System"
+- button "🎭 Human-like"
+- text: "Choose voice tier:"
+- button "Free"
+- button "Premium"
+- text: "Select System Voice:"
+- combobox:
+  - option "Karen (en-AU)"
+  - option "Rocko (en-GB)"
+  - option "Shelley (en-GB)"
+  - option "Daniel (en-GB)"
+  - option "Grandma (en-GB)"
+  - option "Grandpa (en-GB)"
+  - option "Flo (en-GB)"
+  - option "Eddy (en-GB)"
+  - option "Reed (en-GB)"
+  - option "Sandy (en-GB)"
+  - option "Moira (en-IE)"
+  - option "Rishi (en-IN)"
+  - option "Flo (en-US)"
+  - option "Bahh (en-US)"
+  - option "Albert (en-US)"
+  - option "Fred (en-US)"
+  - option "Jester (en-US)"
+  - option "Organ (en-US)"
+  - option "Cellos (en-US)"
+  - option "Zarvox (en-US)"
+  - option "Rocko (en-US)"
+  - option "Shelley (en-US)"
+  - option "Superstar (en-US)"
+  - option "Grandma (en-US)"
+  - option "Eddy (en-US)"
+  - option "Bells (en-US)"
+  - option "Grandpa (en-US)"
+  - option "Trinoids (en-US)"
+  - option "Kathy (en-US)"
+  - option "Reed (en-US)"
+  - option "Boing (en-US)"
+  - option "Whisper (en-US)"
+  - option "Good News (en-US)"
+  - option "Wobble (en-US)"
+  - option "Bad News (en-US)"
+  - option "Bubbles (en-US)"
+  - option "Samantha (en-US)" [selected]
+  - option "Sandy (en-US)"
+  - option "Junior (en-US)"
+  - option "Ralph (en-US)"
+  - option "Tessa (en-ZA)"
+  - option "Moira (en-IE)"
+  - option "Tessa (en-ZA)"
+  - option "Karen (en-AU)"
+  - option "Daniel (en-GB)"
+  - option "Rishi (en-IN)"
+  - option "Samantha (en-US)"
+- text: "🎤 Using system voices (Free tier) Standard device voices 💡 Choose your preferred voice tier above. Select System Voice:"
+- combobox:
+  - option "Karen (en-AU)"
+  - option "Rocko (en-GB)"
+  - option "Shelley (en-GB)"
+  - option "Daniel (en-GB)"
+  - option "Grandma (en-GB)"
+  - option "Grandpa (en-GB)"
+  - option "Flo (en-GB)"
+  - option "Eddy (en-GB)"
+  - option "Reed (en-GB)"
+  - option "Sandy (en-GB)"
+  - option "Moira (en-IE)"
+  - option "Rishi (en-IN)"
+  - option "Flo (en-US)"
+  - option "Bahh (en-US)"
+  - option "Albert (en-US)"
+  - option "Fred (en-US)"
+  - option "Jester (en-US)"
+  - option "Organ (en-US)"
+  - option "Cellos (en-US)"
+  - option "Zarvox (en-US)"
+  - option "Rocko (en-US)"
+  - option "Shelley (en-US)"
+  - option "Superstar (en-US)"
+  - option "Grandma (en-US)"
+  - option "Eddy (en-US)"
+  - option "Bells (en-US)"
+  - option "Grandpa (en-US)"
+  - option "Trinoids (en-US)"
+  - option "Kathy (en-US)"
+  - option "Reed (en-US)"
+  - option "Boing (en-US)"
+  - option "Whisper (en-US)"
+  - option "Good News (en-US)"
+  - option "Wobble (en-US)"
+  - option "Bad News (en-US)"
+  - option "Bubbles (en-US)"
+  - option "Samantha (en-US)" [selected]
+  - option "Sandy (en-US)"
+  - option "Junior (en-US)"
+  - option "Ralph (en-US)"
+  - option "Tessa (en-ZA)"
+  - option "Moira (en-IE)"
+  - option "Tessa (en-ZA)"
+  - option "Karen (en-AU)"
+  - option "Daniel (en-GB)"
+  - option "Rishi (en-IN)"
+  - option "Samantha (en-US)"
+- text: "Speed: 1x"
+- slider: "1"
+- button "Share this prayer"
+- paragraph: May this prayer bring you peace and guidance
+- button "📸 Download Image"
+- button "Prayer History"
+- button "Upgrade"
+- button "Sign Out"
+- paragraph: Take a moment to reflect, find peace, and connect with what matters most to you.
+```
