@@ -1207,6 +1207,34 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Let us never take your blessings for granted.",
         "Guide us to share your love with others."
       ]
+    },
+    bibleVerses: {
+      openings: [
+        "Heavenly Father,",
+        "Lord,",
+        "God,",
+        "Our Father,",
+        "Dear Lord,",
+        "Almighty God,"
+      ],
+      subjects: [
+        "your word is a lamp unto my feet and a light unto my path",
+        "help me to hide your word in my heart that I might not sin against you",
+        "let your scriptures guide my thoughts and actions today",
+        "may your promises bring comfort to my troubled heart",
+        "thank you for the wisdom and truth found in your holy word",
+        "help me to meditate on your teachings day and night",
+        "let your word transform my mind and renew my spirit",
+        "may the truth of your scriptures set me free from fear and doubt"
+      ],
+      closings: [
+        "May your word dwell richly within me.",
+        "Help me to live according to your scriptural truths.",
+        "Let your promises anchor my hope in uncertain times.",
+        "Guide me by the light of your holy word.",
+        "May your scriptures bring peace to my soul.",
+        "Help me to share your word with others through my life."
+      ]
     }
   };
 
@@ -1292,58 +1320,6 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Prepara mi corazón para las posibilidades del mañana."
       ]
     },
-    strength: {
-      openings: [
-        "Dios Todopoderoso,",
-        "Señor,",
-        "Padre Celestial,",
-        "Querido Dios,",
-        "Padre Nuestro,",
-        "Dios,"
-      ],
-      subjects: [
-        "en este momento de necesidad, busco tu fuerza y sabiduría",
-        "cuando me siento débil, recuerdo que tu poder se perfecciona en mi debilidad",
-        "ayúdame a encontrar valor en medio de la incertidumbre",
-        "dame la resistencia para perseverar a través de los desafíos",
-        "fortalece mi fe cuando las dudas nublan mi mente",
-        "ayúdame a confiar en tu plan incluso cuando no puedo ver el camino"
-      ],
-      closings: [
-        "Que tu fuerza sea mi refugio y mi roca.",
-        "En ti encuentro el valor para enfrentar cualquier tormenta.",
-        "Ayúdame a caminar en fe, no en temor.",
-        "Que tu paz calme mi espíritu ansioso.",
-        "Dame la gracia para confiar en tu tiempo perfecto.",
-        "Fortalece mi corazón para los días venideros."
-      ]
-    },
-    peace: {
-      openings: [
-        "Príncipe de Paz,",
-        "Señor,",
-        "Padre Celestial,",
-        "Dios,",
-        "Querido Señor,",
-        "Padre Nuestro,"
-      ],
-      subjects: [
-        "en medio del caos de la vida, busco tu paz que sobrepasa todo entendimiento",
-        "calma las tormentas en mi corazón y mente",
-        "ayúdame a encontrar serenidad en tu presencia",
-        "que tu paz fluya a través de mí hacia otros",
-        "en momentos de ansiedad, recuérdame de tu control soberano",
-        "ayúdame a descansar en la seguridad de tu amor"
-      ],
-      closings: [
-        "Que tu paz guarde mi corazón y pensamientos.",
-        "En ti encuentro el descanso que mi alma anhela.",
-        "Ayúdame a ser un portador de tu paz a otros.",
-        "Que la tranquilidad de tu espíritu llene mi ser.",
-        "Dame la serenidad para aceptar lo que no puedo cambiar.",
-        "Que tu paz perfecta reine en mi vida."
-      ]
-    },
     family: {
       openings: [
         "Padre Amoroso,",
@@ -1399,6 +1375,60 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Gracias por tu cuidado y provisión constantes.",
         "No nos permitas dar por sentadas tus bendiciones.",
         "Guíanos para compartir tu amor con otros."
+      ]
+    },
+    healing: {
+      openings: [
+        "Señor,",
+        "Divino Sanador,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Padre Celestial,",
+        "Gran Médico,"
+      ],
+      subjects: [
+        "concede sanidad a todos los que sufren en cuerpo, mente o espíritu",
+        "ayúdame a sanar de heridas pasadas y encuentra el valor para perdonar",
+        "restaura lo que está roto dentro de mí y a mi alrededor",
+        "trae consuelo a los afligidos y fuerza a sus cuidadores",
+        "sana las heridas que el tiempo solo no puede curar",
+        "transforma el dolor en sabiduría y el sufrimiento en compasión"
+      ],
+      closings: [
+        "Dame paciencia con el proceso de sanación y esperanza para días mejores.",
+        "Que pueda encontrar fuerza en la debilidad y paz en medio de las tormentas.",
+        "Ayúdame a confiar en tu tiempo perfecto para la restauración.",
+        "Deja que la sanación fluya a través de cada parte de mi ser.",
+        "Concédeme la serenidad para aceptar lo que no puedo cambiar.",
+        "Que tu poder sanador obre milagros en mi vida y en la de otros."
+      ]
+    },
+    bibleVerses: {
+      openings: [
+        "Padre Celestial,",
+        "Señor,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Querido Señor,",
+        "Dios Todopoderoso,"
+      ],
+      subjects: [
+        "tu palabra es lámpara a mis pies y lumbrera a mi camino",
+        "ayúdame a guardar tu palabra en mi corazón para no pecar contra ti",
+        "que tus escrituras guíen mis pensamientos y acciones hoy",
+        "que tus promesas traigan consuelo a mi corazón turbado",
+        "gracias por la sabiduría y verdad encontradas en tu santa palabra",
+        "ayúdame a meditar en tus enseñanzas día y noche",
+        "que tu palabra transforme mi mente y renueve mi espíritu",
+        "que la verdad de tus escrituras me libere del temor y la duda"
+      ],
+      closings: [
+        "Que tu palabra more abundantemente en mí.",
+        "Ayúdame a vivir según tus verdades bíblicas.",
+        "Que tus promesas anclen mi esperanza en tiempos inciertos.",
+        "Guíame por la luz de tu santa palabra.",
+        "Que tus escrituras traigan paz a mi alma.",
+        "Ayúdame a compartir tu palabra con otros a través de mi vida."
       ]
     }
   };
