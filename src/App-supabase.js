@@ -6757,9 +6757,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 fontSize: '18px', 
                 fontWeight: '600',
                 margin: '0 0 16px 0',
-                textAlign: 'center'
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
               }}>
-                📱 Share Prayer Image
+                <Share2 size={20} color="#10b981" />
+                Share Prayer Image
               </h3>
               <p style={{ 
                 color: 'rgba(255, 255, 255, 0.8)', 
@@ -6808,9 +6813,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 fontSize: '18px', 
                 fontWeight: '600',
                 margin: '0 0 16px 0',
-                textAlign: 'center'
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
               }}>
-                🔊 Share Audio Prayer
+                <Volume2 size={20} color="#8b5cf6" />
+                Share Audio Prayer
               </h3>
               <p style={{ 
                 color: 'rgba(255, 255, 255, 0.8)', 
@@ -6822,13 +6832,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </p>
               <button
                 onClick={() => {
-                  // Text-to-speech functionality
-                  if ('speechSynthesis' in window) {
-                    const utterance = new SpeechSynthesisUtterance(currentPrayer);
-                    utterance.rate = 0.8;
-                    utterance.pitch = 1.0;
-                    speechSynthesis.speak(utterance);
-                  }
+                  // Use the existing TTS system
+                  speakPrayer(currentPrayer);
                 }}
                 style={{
                   width: '100%',
