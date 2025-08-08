@@ -276,14 +276,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Category icons and colors - defined at component level for global access
   const categoryIcons = {
-    gratitude: <Heart size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    morning: <Sun size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    bedtime: <Moon size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    healing: <Sparkles size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    family: <Users size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    grace: <Utensils size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    bibleVerses: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    custom: <img src="/prayhands.png" alt="Praying hands" style={{ width: '36px', height: '36px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5)) brightness(0) invert(1)' }} />
+    gratitude: <Heart size={28} style={{ color: '#60a5fa', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    morning: <Sun size={28} style={{ color: '#eab308', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    bedtime: <Moon size={28} style={{ color: '#a855f7', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    healing: <Sparkles size={28} style={{ color: '#22c55e', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    family: <Users size={28} style={{ color: '#ec4899', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    grace: <Utensils size={28} style={{ color: '#f59e0b', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    bibleVerses: <Book size={28} style={{ color: '#f97316', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    custom: <img src="/prayhands.png" alt="Praying hands" style={{ width: '36px', height: '36px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5)) brightness(0) saturate(100%) invert(41%) sepia(72%) saturate(1815%) hue-rotate(165deg) brightness(95%) contrast(98%)' }} />
   };
 
   const categoryColors = {
@@ -6003,16 +6003,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       width: '32px',
                       height: '32px'
                     }}>
-                      <div style={{ 
-                        filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8))'
-                      }}>
+                      <div>
                         {categoryIcons[category.key]}
                       </div>
                     </div>
                     <div style={{ 
                       fontWeight: '600',
                       fontSize: '16px',
-                      color: categoryColors[category.key] || '#ffffff',
+                      color: '#ffffff',
                       textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
                       flex: 1,
                       textAlign: 'center',
@@ -6411,7 +6409,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   borderRadius: '12px',
                   border: 'none',
                   background: (selectedCategory === 'custom' && !customRequest.trim()) ? 'rgba(107, 114, 128, 0.6)' : 'rgba(59, 130, 246, 0.8)',
-                  color: (selectedCategory === 'custom' && !customRequest.trim()) ? 'white' : (categoryColors[selectedCategory] || '#ffffff'),
+                  color: 'white',
                   fontSize: '16px',
                   fontWeight: '600',
                   cursor: (selectedCategory === 'custom' && !customRequest.trim()) ? 'not-allowed' : 'pointer',
