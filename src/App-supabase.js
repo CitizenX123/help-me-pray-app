@@ -916,17 +916,6 @@ const HelpMePrayApp = ({ user, setUser }) => {
           // Center the entire branding group
           const startX = (canvas.width - totalWidth) / 2;
           
-          // Add subtle background behind branding for better visibility
-          const paddingX = 16;
-          const paddingY = 8;
-          const bgX = startX - paddingX;
-          const bgY = brandingY - logoSize / 2 - paddingY;
-          const bgWidth = totalWidth + paddingX * 2;
-          const bgHeight = logoSize + paddingY * 2;
-          
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-          ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
-          
           // Draw logo with white filter
           // Create a temporary canvas to apply white filter to the logo
           const tempCanvas = document.createElement('canvas');
