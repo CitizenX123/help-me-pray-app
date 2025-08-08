@@ -5517,18 +5517,19 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <div style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '12px',
+              gap: '16px',
               marginBottom: '8px'
             }}>
               <img 
                 src="/hands.png" 
                 alt="Praying hands" 
                 style={{ 
-                  width: '40px', 
-                  height: '40px',
-                  filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                  width: '120px', 
+                  height: '120px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
                 }} 
               />
               <h1 style={{ 
@@ -5625,15 +5626,44 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h1 style={{ 
+            {/* App Title with Logo */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/hands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                color: 'white', 
+                fontSize: '28px', 
+                fontWeight: '600',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                margin: '0'
+              }}>
+                Help Me Pray
+              </h1>
+            </div>
+            
+            <h2 style={{ 
               color: 'white', 
-              fontSize: '24px', 
+              fontSize: '20px', 
               fontWeight: '600',
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               marginBottom: '8px'
             }}>
               Choose Your Prayer
-            </h1>
+            </h2>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
               fontSize: '14px',
