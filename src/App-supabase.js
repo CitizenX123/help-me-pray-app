@@ -4661,7 +4661,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             if (currentPrayer) e.target.style.backgroundColor = '#059669';
                           }}
                         >
-                          📸 Download Image
+                          Download Image
                         </button>
                         
                         <button
@@ -4849,7 +4849,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             if (currentPrayer) e.target.style.backgroundColor = '#059669';
                           }}
                         >
-                          📸 Download Image
+                          Download Image
                         </button>
                         
                         <button
@@ -6431,7 +6431,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}
             >
-              📄 Download Text
+              Download Text
             </button>
 
             {/* Download Prayer Image Button */}
@@ -6456,7 +6456,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 opacity: currentPrayer ? 1 : 0.6
               }}
             >
-              🖼️ Download Image
+              Download Image
             </button>
           </div>
 
@@ -6535,7 +6535,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}
             >
-              🚪 Logout
+              Logout
             </button>
           </div>
         </div>
