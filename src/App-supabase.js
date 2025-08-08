@@ -1888,8 +1888,47 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     setAuthLoading(false);
   };
 
+  // Password strength validation
+  const validatePassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!minLength) return 'Password must be at least 8 characters long';
+    if (!hasUpperCase) return 'Password must contain at least one uppercase letter';
+    if (!hasLowerCase) return 'Password must contain at least one lowercase letter';
+    if (!hasNumbers) return 'Password must contain at least one number';
+    if (!hasSpecialChar) return 'Password must contain at least one special character (!@#$%^&*)';
+    
+    return null; // Password is valid
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
+    
+    // Validate full name
+    if (!fullName.trim()) {
+      setAuthError('Please enter your full name');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setAuthError('Please enter a valid email address');
+      return;
+    }
+    
+    // Validate password strength
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setAuthError(passwordError);
+      return;
+    }
+    
+    // Check password confirmation
     if (password !== confirmPassword) {
       setAuthError('Passwords do not match');
       return;
@@ -1904,26 +1943,48 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          full_name: fullName,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+          // Enable email confirmation
+          emailRedirectTo: window.location.origin
         }
-      }
-    });
+      });
 
-    if (error) {
-      setAuthError(error.message);
-    } else {
-      setAuthError('Check your email for the confirmation link!');
-      // Clear form
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setFullName('');
+      if (error) {
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          setAuthError('An account with this email already exists. Please sign in instead.');
+        } else if (error.message.includes('Invalid email')) {
+          setAuthError('Please enter a valid email address.');
+        } else if (error.message.includes('Password should be at least')) {
+          setAuthError('Password must be at least 6 characters long.');
+        } else {
+          setAuthError(error.message);
+        }
+      } else {
+        // Success - show verification message
+        setAuthError('✅ Account created! Please check your email for a verification link before signing in.');
+        // Clear form
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setFullName('');
+        // Switch back to sign in mode after a delay
+        setTimeout(() => {
+          setShowSignUp(false);
+        }, 3000);
+      }
+    } catch (err) {
+      setAuthError('An unexpected error occurred. Please try again.');
+      console.error('Signup error:', err);
     }
+    
     setAuthLoading(false);
   };
 
@@ -6077,6 +6138,50 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       }}
                       placeholder="Enter your password"
                     />
+                    {/* Password strength indicator */}
+                    {password && (
+                      <div style={{ marginTop: '8px' }}>
+                        <div style={{ 
+                          display: 'flex', 
+                          gap: '2px', 
+                          marginBottom: '6px' 
+                        }}>
+                          {[1, 2, 3, 4, 5].map((level) => {
+                            const passwordStrength = (() => {
+                              let score = 0;
+                              if (password.length >= 8) score++;
+                              if (/[A-Z]/.test(password)) score++;
+                              if (/[a-z]/.test(password)) score++;
+                              if (/\d/.test(password)) score++;
+                              if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+                              return score;
+                            })();
+                            
+                            return (
+                              <div
+                                key={level}
+                                style={{
+                                  height: '4px',
+                                  flex: 1,
+                                  borderRadius: '2px',
+                                  background: level <= passwordStrength 
+                                    ? passwordStrength <= 2 ? '#ef4444' 
+                                      : passwordStrength <= 3 ? '#f59e0b' 
+                                      : '#10b981'
+                                    : 'rgba(255, 255, 255, 0.2)'
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: 'rgba(255, 255, 255, 0.7)' 
+                        }}>
+                          Password must contain: 8+ chars, uppercase, lowercase, number, special char
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -6112,11 +6217,17 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                   {authError && (
                     <div style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      background: authError.includes('✅') || authError.includes('Account created') 
+                        ? 'rgba(16, 185, 129, 0.1)' 
+                        : 'rgba(239, 68, 68, 0.1)',
+                      border: authError.includes('✅') || authError.includes('Account created')
+                        ? '1px solid rgba(16, 185, 129, 0.3)'
+                        : '1px solid rgba(239, 68, 68, 0.3)',
                       borderRadius: '8px',
                       padding: '12px',
-                      color: '#fca5a5',
+                      color: authError.includes('✅') || authError.includes('Account created')
+                        ? '#6ee7b7'
+                        : '#fca5a5',
                       fontSize: '14px',
                       textAlign: 'center'
                     }}>
