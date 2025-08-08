@@ -6048,6 +6048,75 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 </select>
               </div>
 
+              {/* Prayer Length Selection */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '14px', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  marginBottom: '12px',
+                  textAlign: 'center'
+                }}>
+                  Prayer length:
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <button
+                    onClick={() => setPrayerLength('brief')}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: prayerLength === 'brief' ? '600' : '400',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>{t('briefBeautiful')}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{t('briefDesc')}</div>
+                  </button>
+                  <button
+                    onClick={() => setPrayerLength('medium')}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: prayerLength === 'medium' ? '600' : '400',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>{t('perfectlyTimed')}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{t('mediumDesc')}</div>
+                  </button>
+                  <button
+                    onClick={() => setPrayerLength('comprehensive')}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: prayerLength === 'comprehensive' ? '600' : '400',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>{t('richMeaningful')}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{t('comprehensiveDesc')}</div>
+                  </button>
+                </div>
+              </div>
+
               {/* Prayer Request Text Area */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ 
