@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart } from 'lucide-react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Add beautiful animated background CSS
@@ -62,7 +62,7 @@ const translations = {
     signIn: "Sign In",
     signUp: "Sign Up",
     continueWithGoogle: "Continue with Google",
-    continueAsGuest: "🙏 Continue as Guest",
+    continueAsGuest: "Continue as Guest",
     fullName: "Full Name",
     emailAddress: "Email Address",
     password: "Password",
@@ -5801,24 +5801,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                 margin: '0'
               }}>
-                🙏 Help Me Pray App ✨
+                Help Me Pray App
               </h1>
             </div>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
               fontSize: '16px',
-              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
-              marginBottom: '8px'
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
             }}>
-              Find peace through prayer 🕊️
-            </p>
-            <p style={{ 
-              color: 'rgba(255, 255, 255, 0.7)', 
-              fontSize: '14px',
-              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
-              fontStyle: 'italic'
-            }}>
-              🌟 Faith • Hope • Love • Gratitude 💖
+              Find peace through prayer
             </p>
           </div>
 
@@ -5854,12 +5845,17 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
               >
+                <User size={20} />
                 Continue with Google
               </button>
               
               <button
                 onClick={() => setUser({ id: 'guest', email: 'guest@demo.com' })}
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
                   padding: '16px',
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -5873,7 +5869,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
               >
-                🙏 Continue as Guest
+                <UserCheck size={20} />
+                Continue as Guest
               </button>
             </div>
           </div>
