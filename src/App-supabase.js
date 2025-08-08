@@ -6443,14 +6443,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           )}
         </div>
         
-        {/* Navigation Arrow - In blue background, underneath content box on left side */}
+        {/* Navigation Arrow - In blue background, under the left side of content box */}
         <div style={{
           marginTop: '20px',
-          display: 'flex',
-          justifyContent: 'center'
+          textAlign: 'left',
+          paddingLeft: 'calc(50% - 200px)'
         }}>
-          <div style={{ maxWidth: '400px', width: '100%' }}>
-            <div style={{ textAlign: 'left' }}>
           <button
             onClick={() => setCurrentScreen('prayer-selection')}
             style={{
@@ -6468,8 +6466,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           >
             ←
           </button>
-            </div>
-          </div>
         </div>
       </div>
     );
