@@ -5091,37 +5091,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           </div>
         </div>
 
-        {/* Simple Navigation Arrow - shown when prayer is displayed */}
-        {currentPrayer && currentPrayer.trim() && !isGenerating && (
-          <div style={{ 
-            textAlign: 'center', 
-            marginTop: '20px' 
-          }}>
-            <button
-              onClick={() => {
-                setCurrentPrayer('');
-                setSelectedCategory('');
-                setPersonName('');
-                setPrayerFor('myself');
-                setCustomRequest('');
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'white',
-                fontSize: '32px',
-                cursor: 'pointer',
-                padding: '8px',
-                borderRadius: '4px',
-                transition: 'opacity 0.2s'
-              }}
-              onMouseOver={(e) => e.target.style.opacity = '0.7'}
-              onMouseOut={(e) => e.target.style.opacity = '1'}
-            >
-              ←
-            </button>
-          </div>
-        )}
 
         <div style={{ marginTop: '32px', textAlign: 'center', color: '#6b7280', fontSize: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
@@ -5901,8 +5870,34 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundColor: '#1e40af',
-        padding: '20px'
+        padding: '20px',
+        position: 'relative'
       }}>
+        {/* Navigation Arrow - Left Side */}
+        <div style={{
+          position: 'absolute',
+          left: '20px',
+          top: '50%',
+          transform: 'translateY(-50%)'
+        }}>
+          <button
+            onClick={() => setUser(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              fontSize: '32px',
+              cursor: 'pointer',
+              padding: '8px',
+              borderRadius: '4px',
+              transition: 'opacity 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.opacity = '0.7'}
+            onMouseOut={(e) => e.target.style.opacity = '1'}
+          >
+            ←
+          </button>
+        </div>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '30px' }}>
@@ -6073,29 +6068,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             })}
           </div>
 
-          {/* Simple Navigation Arrow */}
-          <div style={{ 
-            textAlign: 'center', 
-            marginTop: '20px' 
-          }}>
-            <button
-              onClick={() => setUser(null)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'white',
-                fontSize: '32px',
-                cursor: 'pointer',
-                padding: '8px',
-                borderRadius: '4px',
-                transition: 'opacity 0.2s'
-              }}
-              onMouseOver={(e) => e.target.style.opacity = '0.7'}
-              onMouseOut={(e) => e.target.style.opacity = '1'}
-            >
-              ←
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -6116,8 +6088,34 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px'
+        padding: '20px',
+        position: 'relative'
       }}>
+        {/* Navigation Arrow - Left Side */}
+        <div style={{
+          position: 'absolute',
+          left: '20px',
+          top: '50%',
+          transform: 'translateY(-50%)'
+        }}>
+          <button
+            onClick={() => setCurrentScreen('prayer-selection')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              fontSize: '32px',
+              cursor: 'pointer',
+              padding: '8px',
+              borderRadius: '4px',
+              transition: 'opacity 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.opacity = '0.7'}
+            onMouseOut={(e) => e.target.style.opacity = '1'}
+          >
+            ←
+          </button>
+        </div>
         <div style={{ textAlign: 'center', color: 'white' }}>
           {/* App Title with Logo */}
           <div style={{
@@ -6441,32 +6439,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 {selectedCategory === 'custom' ? 'Generate Custom Prayer' : `Generate ${categories.find(c => c.key === selectedCategory)?.name || 'Prayer'}`}
               </button>
 
-              {/* Back Button */}
-              <button
-                onClick={() => setCurrentScreen('prayer-selection')}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.color = 'white';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                  e.target.style.color = 'rgba(255, 255, 255, 0.8)';
-                }}
-              >
-                ←
-              </button>
               </div> {/* Close content section */}
             </div>
           ) : (
@@ -6513,8 +6485,41 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundColor: '#1e40af',
-        padding: '20px'
+        padding: '20px',
+        position: 'relative'
       }}>
+        {/* Navigation Arrow - Left Side */}
+        <div style={{
+          position: 'absolute',
+          left: '20px',
+          top: '50%',
+          transform: 'translateY(-50%)'
+        }}>
+          <button
+            onClick={() => {
+              setCurrentPrayer('');
+              setSelectedCategory('');
+              setPersonName('');
+              setPrayerFor('myself');
+              setCustomRequest('');
+              setCurrentScreen('prayer-selection');
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              fontSize: '32px',
+              cursor: 'pointer',
+              padding: '8px',
+              borderRadius: '4px',
+              transition: 'opacity 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.opacity = '0.7'}
+            onMouseOut={(e) => e.target.style.opacity = '1'}
+          >
+            ←
+          </button>
+        </div>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           {/* App Title with Logo */}
           <div style={{ 
