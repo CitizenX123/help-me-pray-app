@@ -5933,7 +5933,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               marginBottom: '8px'
             }}>
-              🌸 Choose Your Prayer 🌙
+              Choose Your Prayer
             </h2>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
