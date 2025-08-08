@@ -823,18 +823,29 @@ const HelpMePrayApp = ({ user, setUser }) => {
           });
           
           // Position logo and text at the bottom (properly centered)
-          const brandingY = canvas.height - 30;
-          const logoSize = 32;
+          const brandingY = canvas.height - 40;
+          const logoSize = 60;
           const brandingText = 'Help Me Pray App';
           
           // Measure text width for proper centering
-          ctx.font = '16px Arial';
+          ctx.font = '18px Arial';
           const textWidth = ctx.measureText(brandingText).width;
           const spacing = 8; // Space between logo and text
           const totalWidth = logoSize + spacing + textWidth;
           
           // Center the entire branding group
           const startX = (canvas.width - totalWidth) / 2;
+          
+          // Add subtle background behind branding for better visibility
+          const paddingX = 16;
+          const paddingY = 8;
+          const bgX = startX - paddingX;
+          const bgY = brandingY - logoSize / 2 - paddingY;
+          const bgWidth = totalWidth + paddingX * 2;
+          const bgHeight = logoSize + paddingY * 2;
+          
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
           
           // Draw logo
           ctx.drawImage(logoImg, startX, brandingY - logoSize / 2, logoSize, logoSize);
@@ -846,10 +857,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           
         } catch (error) {
           // Fallback to text-only branding if logo fails to load
-          ctx.font = '16px Arial';
+          ctx.font = '18px Arial';
           ctx.fillStyle = 'white';
           ctx.textAlign = 'center';
-          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 30);
+          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 40);
         }
       };
       
