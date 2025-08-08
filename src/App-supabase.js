@@ -5730,61 +5730,82 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     setCurrentScreen('prayer-generation');
                   }} 
                   style={{ 
-                    padding: '20px',
+                    padding: '0',
                     borderRadius: '18px',
                     border: '2px solid rgba(255, 255, 255, 0.2)',
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    color: 'white',
-                    fontSize: '16px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  textAlign: 'center',
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = 'rgba(59, 130, 246, 0.4)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  alignItems: 'center', 
-                  gap: '8px' 
-                }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '12px' 
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.4)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+                  }}
+                >
+                  {/* Header Section - Bluish Gray like Notes app */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    borderTopLeftRadius: '16px',
+                    borderTopRightRadius: '16px'
                   }}>
-                    {categoryIcons[category.key]}
+                    <div style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '8px',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      backdropFilter: 'blur(10px)'
+                    }}>
+                      {categoryIcons[category.key]}
+                    </div>
                     <span style={{ 
                       fontWeight: '600',
                       fontSize: '18px',
                       color: categoryColors[category.key] || '#ffffff',
-                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
+                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
+                      flex: 1,
+                      textAlign: 'left'
                     }}>
                       {category.name}
                     </span>
                   </div>
-                  <span style={{ 
-                    fontSize: '13px',
-                    opacity: 0.9,
-                    textAlign: 'center',
-                    lineHeight: '1.3',
-                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.8)'
+
+                  {/* Content Section - Black like Notes app */}
+                  <div style={{
+                    background: 'rgba(0, 0, 0, 0.9)',
+                    padding: '16px 20px',
+                    borderBottomLeftRadius: '16px',
+                    borderBottomRightRadius: '16px',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    minHeight: '60px',
+                    display: 'flex',
+                    alignItems: 'center'
                   }}>
-                    {categoryDescriptions[category.key]}
-                  </span>
-                </div>
-              </button>
+                    <span style={{ 
+                      fontSize: '13px',
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      textAlign: 'left',
+                      lineHeight: '1.4',
+                      textShadow: '0 1px 3px rgba(0, 0, 0, 0.8)'
+                    }}>
+                      {categoryDescriptions[category.key]}
+                    </span>
+                  </div>
+                </button>
             );
             })}
           </div>
