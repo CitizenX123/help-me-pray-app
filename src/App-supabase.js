@@ -1969,7 +1969,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         }
       } else {
         // Success - show verification message
-        setAuthError('✅ Account created! Please check your email for a verification link before signing in.');
+        if (data.user && !data.user.email_confirmed_at) {
+          setAuthError('✅ Account created! Please check your email (including spam folder) for a verification link. You must verify your email before signing in.');
+        } else {
+          setAuthError('✅ Account created successfully! You can now sign in.');
+        }
+        
+        console.log('Signup successful:', data);
+        console.log('Email confirmation required:', !data.user?.email_confirmed_at);
+        
+        // Developer troubleshooting info
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📧 EMAIL VERIFICATION TROUBLESHOOTING:');
+          console.log('1. Check Supabase Dashboard > Authentication > Settings');
+          console.log('2. Ensure "Enable email confirmations" is ON');
+          console.log('3. Configure email templates if needed');
+          console.log('4. Check spam folder for verification emails');
+          console.log('5. Verify SMTP settings in Supabase project');
+        }
+        
         // Clear form
         setEmail('');
         setPassword('');
@@ -1978,7 +1996,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         // Switch back to sign in mode after a delay
         setTimeout(() => {
           setShowSignUp(false);
-        }, 3000);
+        }, 4000);
       }
     } catch (err) {
       setAuthError('An unexpected error occurred. Please try again.');
