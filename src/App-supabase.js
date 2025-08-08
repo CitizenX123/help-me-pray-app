@@ -5960,7 +5960,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             marginBottom: '40px'
           }}>
             <img 
-              src="/hands.png" 
+              src="/prayhands.png" 
               alt="Praying hands" 
               style={{ 
                 width: '80px', 
@@ -6358,7 +6358,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             gap: '12px'
           }}>
             <img 
-              src="/hands.png" 
+              src="/prayhands.png" 
               alt="Praying hands" 
               style={{ 
                 width: '80px', 
