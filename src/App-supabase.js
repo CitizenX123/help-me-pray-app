@@ -282,7 +282,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
     family: <Users size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
     grace: <Utensils size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
     bibleVerses: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-    custom: <img src="/prayhands.png" alt="Praying hands" style={{ width: '28px', height: '28px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+    custom: <img src="/prayhands.png" alt="Praying hands" style={{ width: '32px', height: '32px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5)) brightness(0) invert(1)' }} />
   };
 
   const categoryColors = {
@@ -5873,9 +5873,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       lineHeight: '1.2'
                     }}>
                       {category.key === 'custom' ? (
-                        <>
+                        <div style={{ lineHeight: '1.1' }}>
                           Create Custom<br />Prayer
-                        </>
+                        </div>
                       ) : (
                         category.name
                       )}
