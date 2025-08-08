@@ -6422,7 +6422,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   borderRadius: '12px',
                   border: 'none',
                   background: (selectedCategory === 'custom' && !customRequest.trim()) ? 'rgba(107, 114, 128, 0.6)' : 'rgba(59, 130, 246, 0.8)',
-                  color: 'white',
+                  color: (selectedCategory === 'custom' && !customRequest.trim()) ? 'white' : (categoryColors[selectedCategory] || '#ffffff'),
                   fontSize: '16px',
                   fontWeight: '600',
                   cursor: (selectedCategory === 'custom' && !customRequest.trim()) ? 'not-allowed' : 'pointer',
@@ -6431,7 +6431,19 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   marginBottom: '12px'
                 }}
               >
-                {selectedCategory === 'custom' ? 'Generate Custom Prayer' : `Generate ${categories.find(c => c.key === selectedCategory)?.name || 'Prayer'}`}
+                {(() => {
+                  const buttonTextMap = {
+                    gratitude: 'Generate A Prayer for Gratitude',
+                    morning: 'Generate A Prayer to Start Your Day', 
+                    bedtime: 'Generate A Prayer for a Good Night',
+                    healing: 'Generate A Prayer for Healing',
+                    family: 'Generate A Prayer for Family and Friends',
+                    grace: 'Generate A Prayer for Saying Grace',
+                    bibleVerses: 'Generate A Bible Verse Prayer',
+                    custom: 'Generate A Custom Prayer'
+                  };
+                  return buttonTextMap[selectedCategory] || 'Generate Prayer';
+                })()}
               </button>
 
               </div> {/* Close content section */}
