@@ -815,7 +815,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
         try {
           // Load the actual praying hands logo
           const logoImg = new Image();
-          logoImg.src = '/logo192.png';
+          logoImg.src = '/prayhands.png';
           
           await new Promise((resolve, reject) => {
             logoImg.onload = resolve;
@@ -824,7 +824,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
           
           // Position logo and text at the bottom (properly centered)
           const brandingY = canvas.height - 30;
-          const logoSize = 20;
+          const logoSize = 32;
           const brandingText = 'Help Me Pray App';
           
           // Measure text width for proper centering
@@ -6504,8 +6504,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               style={{ 
                 padding: '16px',
                 borderRadius: '15px',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                background: currentPrayer ? 'rgba(59, 130, 246, 0.6)' : 'rgba(107, 114, 128, 0.6)',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                background: currentPrayer ? 'rgba(34, 197, 94, 0.6)' : 'rgba(107, 114, 128, 0.6)',
                 backdropFilter: 'blur(20px)',
                 color: 'white',
                 fontSize: '16px',
