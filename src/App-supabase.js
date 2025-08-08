@@ -6103,6 +6103,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           }}>
             Creating something beautiful for you...
           </div>
+            </>
+          )}
         </div>
       </div>
     );
