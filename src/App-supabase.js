@@ -1395,6 +1395,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Internal prayer generator (called by uniqueness checker)
   const generatePrayerInternal = (category, length = 'medium') => {
+    try {
     // Special handling for Bible Verses category
     if (category === 'bibleVerses') {
       const bibleVerses = [
@@ -1587,6 +1588,21 @@ ${subjects[2]}. ${subjects[3]}. Your word reminds us that you are working all th
 ${randomTransition1}, we bring before you these concerns: ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')} We ask for your divine intervention, knowing that nothing is too difficult for you and that your power is made perfect in our weakness.
 
 ${randomGratitude}. We celebrate your faithfulness in the past, trust in your provision for today, and have hope in your promises for tomorrow. ${randomTransition2}, ${closings[0]} ${closings[1]} ${closings[2]} ${t('finalClosingLong')}`;
+    }
+    } catch (error) {
+      console.error(`Prayer generation error for category: ${category}, length: ${length}`, error);
+      
+      // Fallback: Generate a simple prayer if there's an error
+      const templates = prayerTemplates[category];
+      if (templates && templates.openings && templates.subjects && templates.closings) {
+        const opening = templates.openings[0];
+        const subject = templates.subjects[0];
+        const closing = templates.closings[0];
+        return `${opening} ${subject}. ${closing} In your holy name, Amen.`;
+      }
+      
+      // Ultimate fallback
+      return `Dear God, we come to you with grateful hearts. Bless us and guide us in your love. In your holy name, Amen.`;
     }
   };
 
