@@ -5707,9 +5707,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               };
 
               const categoryColors = {
-                gratitude: "#3b82f6", // Blue - peaceful, thankful
+                gratitude: "#60a5fa", // Brighter Blue - peaceful, thankful
                 morning: "#eab308",   // Yellow - sunshine, new day
-                bedtime: "#7c3aed",   // Deep purple - calm, restful
+                bedtime: "#a855f7",   // Brighter Purple - calm, restful
                 healing: "#22c55e",   // Green - growth, restoration
                 family: "#ec4899",    // Pink/Rose - love, warmth
                 grace: "#f59e0b",     // Gold - blessed, divine
@@ -5722,11 +5722,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   key={category.key} 
                   onClick={() => { 
                     setSelectedCategory(category.key); 
-                    if (category.key === 'custom') {
-                      setShowCustomForm(true);
-                    } else {
-                      setShowCustomForm(false);
-                    }
+                    setShowCustomForm(true);  // ALL categories now show custom form
                     setCurrentScreen('prayer-generation');
                   }} 
                   style={{ 
@@ -5893,29 +5889,55 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </h1>
           </div>
           
-          {selectedCategory === 'custom' && showCustomForm ? (
-            // Custom Prayer Form
+          {showCustomForm ? (
+            // Custom Prayer Form - Now for ALL categories
             <div style={{
               background: 'rgba(0, 0, 0, 0.8)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               borderRadius: '20px',
-              padding: '30px',
+              padding: '0',  // Remove padding since header will have its own
               border: '1px solid rgba(255, 255, 255, 0.1)',
               boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)',
               marginBottom: '20px',
               maxWidth: '400px',
-              width: '100%'
+              width: '100%',
+              overflow: 'hidden'  // Ensure header bars fit cleanly
             }}>
-              <h2 style={{ 
-                color: 'white', 
-                fontSize: '20px', 
-                fontWeight: '600',
-                marginBottom: '20px',
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+              {/* Header Section - Match category button design */}
+              <div style={{
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
+                padding: '12px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                borderTopLeftRadius: '19px',
+                borderTopRightRadius: '19px'
               }}>
-                Create Your Custom Prayer
-              </h2>
+                {/* Category icon with white filter */}
+                <div style={{ 
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8))',
+                  fontSize: '16px'
+                }}>
+                  {categoryIcons[selectedCategory] || categoryIcons.custom}
+                </div>
+                
+                {/* Category-specific title */}
+                <div style={{ 
+                  color: categoryColors[selectedCategory] || categoryColors.custom,
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
+                }}>
+                  Customize Your {categories.find(c => c.key === selectedCategory)?.name || 'Custom'} Prayer
+                </div>
+              </div>
+
+              {/* Content Section */}
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.95)',
+                padding: '24px 30px 30px 30px'
+              }}>
 
               {/* Prayer For Selection */}
               <div style={{ marginBottom: '20px' }}>
@@ -6083,6 +6105,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               >
                 Generate Custom Prayer
               </button>
+              </div> {/* Close content section */}
             </div>
           ) : (
             <>
