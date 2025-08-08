@@ -6441,31 +6441,30 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           </div>
             </>
           )}
-        </div>
-        
-        {/* Navigation Arrow - In blue background, under the left side of content box */}
-        <div style={{
-          marginTop: '20px',
-          textAlign: 'left',
-          paddingLeft: 'calc(50% - 200px)'
-        }}>
-          <button
-            onClick={() => setCurrentScreen('prayer-selection')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'white',
-              fontSize: '32px',
-              cursor: 'pointer',
-              padding: '8px',
-              borderRadius: '4px',
-              transition: 'opacity 0.2s'
-            }}
-            onMouseOver={(e) => e.target.style.opacity = '0.7'}
-            onMouseOut={(e) => e.target.style.opacity = '1'}
-          >
-            ←
-          </button>
+          
+          {/* Navigation Arrow - Below content, aligned left */}
+          <div style={{
+            marginTop: '20px',
+            textAlign: 'left'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-selection')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+          </div>
         </div>
       </div>
     );
