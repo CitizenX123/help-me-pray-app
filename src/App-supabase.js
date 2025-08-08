@@ -241,7 +241,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   
   // Prayer App State
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
-  const [currentPrayerInfo, setCurrentPrayerInfo] = useState({ category: '', verseReference: '' });
+  const [currentPrayerInfo, setCurrentPrayerInfo] = useState({ category: '', verseReference: '', customTopic: '' });
   
   // Clear prayer when category changes to force icon display
   useEffect(() => {
@@ -2796,14 +2796,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         
         // Set prayer info for title bar
         let verseReference = '';
+        let customTopic = '';
+        
         if (selectedCategory === 'bibleVerses' && generatedPrayer) {
           // Extract verse reference from Bible verse prayer (format: "verse text" - Reference)
           const referenceMatch = generatedPrayer.match(/" - ([^"\n]+)/);
           if (referenceMatch) {
             verseReference = referenceMatch[1];
           }
+        } else if (selectedCategory === 'custom' && customRequest) {
+          // Create summary for custom prayer
+          const summary = customRequest.length > 50 ? customRequest.substring(0, 47) + '...' : customRequest;
+          if (prayerFor === 'someone' && personName) {
+            customTopic = `Prayer for ${personName}: ${summary}`;
+          } else {
+            customTopic = summary;
+          }
         }
-        setCurrentPrayerInfo({ category: selectedCategory, verseReference });
+        
+        setCurrentPrayerInfo({ category: selectedCategory, verseReference, customTopic });
         
         // Save to prayer history if user is logged in (but not guest)
         if (user && user.id !== 'guest' && supabase) {
@@ -2840,6 +2851,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         
         // Set prayer info for title bar
         let verseReference = '';
+        let customTopic = '';
+        
         if (selectedCategory === 'bibleVerses' && randomPrayer) {
           // Extract verse reference from Bible verse prayer (format: "verse text" - Reference)
           const referenceMatch = randomPrayer.match(/" - ([^"\n]+)/);
@@ -2847,7 +2860,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             verseReference = referenceMatch[1];
           }
         }
-        setCurrentPrayerInfo({ category: selectedCategory, verseReference });
+        // Note: This path is for non-custom categories, so customTopic remains empty
+        
+        setCurrentPrayerInfo({ category: selectedCategory, verseReference, customTopic });
         
         // Save to prayer history if user is logged in (but not guest)
         if (user && user.id !== 'guest' && supabase) {
@@ -6444,6 +6459,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 }}>
                   {currentPrayerInfo.category === 'bibleVerses' && currentPrayerInfo.verseReference 
                     ? currentPrayerInfo.verseReference 
+                    : currentPrayerInfo.category === 'custom' && currentPrayerInfo.customTopic
+                    ? currentPrayerInfo.customTopic
                     : (() => {
                         const categoryNames = {
                           gratitude: 'Gratitude Prayer',
