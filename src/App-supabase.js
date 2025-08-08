@@ -6549,12 +6549,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     ? currentPrayerInfo.customTopic
                     : (() => {
                         const categoryNames = {
-                          gratitude: 'Gratitude Prayer',
-                          morning: 'Morning Prayer', 
-                          bedtime: 'Bedtime Prayer',
-                          healing: 'Healing Prayer',
-                          family: 'Family & Friends Prayer',
-                          grace: 'Grace Prayer',
+                          gratitude: 'Prayer for Gratitude',
+                          morning: 'Prayer to Start Your Day', 
+                          bedtime: 'Prayer for a Good Night',
+                          healing: 'Prayer for Healing',
+                          family: 'Prayer for Family and Friends',
+                          grace: 'Prayer for Saying Grace',
                           bibleVerses: 'Bible Verse Prayer',
                           custom: 'Custom Prayer'
                         };
