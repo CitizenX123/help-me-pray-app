@@ -5751,10 +5751,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)';
                   }}
                 >
-                  {/* Header Section - Bluish Gray like Notes app */}
+                  {/* Header Section - Darker Bluish Gray like Notes app */}
                   <div style={{
-                    background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
-                    padding: '16px 20px',
+                    background: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
+                    padding: '12px 20px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
@@ -5765,35 +5765,42 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '8px',
-                      background: 'rgba(255, 255, 255, 0.2)',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      background: 'rgba(255, 255, 255, 0.15)',
                       backdropFilter: 'blur(10px)'
                     }}>
                       {categoryIcons[category.key]}
                     </div>
-                    <span style={{ 
+                    <div style={{ 
                       fontWeight: '600',
-                      fontSize: '18px',
+                      fontSize: '16px',
                       color: categoryColors[category.key] || '#ffffff',
                       textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
                       flex: 1,
-                      textAlign: 'left'
+                      textAlign: 'left',
+                      lineHeight: '1.2'
                     }}>
-                      {category.name}
-                    </span>
+                      {category.key === 'custom' ? (
+                        <>
+                          Create Custom<br />Prayer
+                        </>
+                      ) : (
+                        category.name
+                      )}
+                    </div>
                   </div>
 
                   {/* Content Section - Black like Notes app */}
                   <div style={{
                     background: 'rgba(0, 0, 0, 0.9)',
-                    padding: '16px 20px',
+                    padding: '14px 20px',
                     borderBottomLeftRadius: '16px',
                     borderBottomRightRadius: '16px',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
-                    minHeight: '60px',
+                    minHeight: '50px',
                     display: 'flex',
                     alignItems: 'center'
                   }}>
