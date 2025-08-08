@@ -5873,8 +5873,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       lineHeight: '1.2'
                     }}>
                       {category.key === 'custom' ? (
-                        <div style={{ lineHeight: '1.1' }}>
-                          Create Custom<br />Prayer
+                        <div style={{ lineHeight: '1.1', whiteSpace: 'pre-line' }}>
+                          Create Custom{'\n'}Prayer
                         </div>
                       ) : (
                         category.name
