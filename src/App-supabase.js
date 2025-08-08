@@ -774,7 +774,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
         .trim();
       
       // Calculate dynamic font size based on text length and available space
-      const availableHeight = canvas.height - 240; // Reserve space for title (120px) and branding (120px)
+      const availableHeight = canvas.height - 280; // Reserve space for title (140px) and branding (140px)
       const textLength = cleanPrayer.length;
       const maxWidth = canvas.width - 120;
       
@@ -853,10 +853,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Final calculation for positioning
       totalTextHeight = lines.length * lineHeight;
-      const startY = 120 + (availableHeight - totalTextHeight) / 2;
+      const startY = 160 + (availableHeight - totalTextHeight) / 2;
       
       // Ensure text doesn't go below branding area
-      const maxEndY = canvas.height - 120;
+      const maxEndY = canvas.height - 140;
       const actualEndY = startY + totalTextHeight;
       
       // If text is too long, adjust starting position
@@ -909,8 +909,23 @@ const HelpMePrayApp = ({ user, setUser }) => {
           ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
           ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
           
-          // Draw logo
-          ctx.drawImage(logoImg, startX, brandingY - logoSize / 2, logoSize, logoSize);
+          // Draw logo with white filter
+          // Create a temporary canvas to apply white filter to the logo
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCanvas.width = logoSize;
+          tempCanvas.height = logoSize;
+          
+          // Draw logo on temp canvas
+          tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
+          
+          // Apply white filter
+          tempCtx.globalCompositeOperation = 'source-atop';
+          tempCtx.fillStyle = 'white';
+          tempCtx.fillRect(0, 0, logoSize, logoSize);
+          
+          // Draw the white-filtered logo on main canvas
+          ctx.drawImage(tempCanvas, startX, brandingY - logoSize / 2, logoSize, logoSize);
           
           // Draw text next to logo
           ctx.fillStyle = 'white';
@@ -4882,6 +4897,40 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       </div>
                     )}
                   </div>
+                  
+                  {/* Simple Navigation Arrow */}
+                  <div style={{ 
+                    textAlign: 'center', 
+                    marginTop: '20px' 
+                  }}>
+                    <button
+                      onClick={() => {
+                        setCurrentPrayer('');
+                        setSelectedCategory('');
+                        setCurrentPrayerType('');
+                        setCurrentBibleVerse('');
+                        setCustomCategory('');
+                        setPersonName('');
+                        setPrayerFor('');
+                        setPrayerRequest('');
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'white',
+                        fontSize: '32px',
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '4px',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.opacity = '0.7'}
+                      onMouseOut={(e) => e.target.style.opacity = '1'}
+                      title="Back to categories"
+                    >
+                      ←
+                    </button>
+                  </div>
                 ) : (
                   <div style={{ textAlign: 'center', color: '#6b7280' }}>
                     <div style={{
@@ -6464,71 +6513,34 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {/* Back Arrow and App Title with Logo */}
+          {/* App Title with Logo */}
           <div style={{ 
             textAlign: 'center', 
             marginBottom: '30px',
-            position: 'relative'
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
           }}>
-            {/* Back to Categories Arrow */}
-            <button
-              onClick={() => setCurrentScreen('prayer-selection')}
-              style={{
-                position: 'absolute',
-                left: '0',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'rgba(255, 255, 255, 0.2)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: 'white',
-                fontSize: '18px',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-              }}
-            >
-              ↑
-            </button>
-
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px'
+            <img 
+              src="/prayhands.png" 
+              alt="Praying hands" 
+              style={{ 
+                width: '80px', 
+                height: '80px',
+                filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+              }} 
+            />
+            <h1 style={{ 
+              color: 'white', 
+              fontSize: '28px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              margin: '0'
             }}>
-              <img 
-                src="/prayhands.png" 
-                alt="Praying hands" 
-                style={{ 
-                  width: '80px', 
-                  height: '80px',
-                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
-                }} 
-              />
-              <h1 style={{ 
-                color: 'white', 
-                fontSize: '28px', 
-                fontWeight: '600',
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                margin: '0'
-              }}>
-                Help Me Pray
-              </h1>
-            </div>
+              Help Me Pray
+            </h1>
           </div>
 
           {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
