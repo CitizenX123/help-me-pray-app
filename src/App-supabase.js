@@ -5753,7 +5753,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 >
                   {/* Header Section - Darker Bluish Gray like Notes app */}
                   <div style={{
-                    background: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
                     padding: '12px 20px',
                     display: 'flex',
                     alignItems: 'center',
@@ -5766,17 +5766,16 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       alignItems: 'center',
                       justifyContent: 'center',
                       width: '32px',
-                      height: '32px',
-                      borderRadius: '6px',
-                      background: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(10px)'
+                      height: '32px'
                     }}>
-                      {categoryIcons[category.key]}
+                      <div style={{ filter: 'brightness(0) invert(1)' }}>
+                        {categoryIcons[category.key]}
+                      </div>
                     </div>
                     <div style={{ 
                       fontWeight: '600',
                       fontSize: '16px',
-                      color: categoryColors[category.key] || '#ffffff',
+                      color: '#ffffff',
                       textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
                       flex: 1,
                       textAlign: 'left',
@@ -5794,13 +5793,13 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                   {/* Content Section - Black like Notes app */}
                   <div style={{
-                    background: 'rgba(0, 0, 0, 0.9)',
+                    background: 'rgba(0, 0, 0, 0.95)',
                     padding: '14px 20px',
                     borderBottomLeftRadius: '16px',
                     borderBottomRightRadius: '16px',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
-                    minHeight: '50px',
+                    flex: 1,
                     display: 'flex',
                     alignItems: 'center'
                   }}>
