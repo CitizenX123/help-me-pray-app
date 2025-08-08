@@ -5953,7 +5953,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </p>
           </div>
 
-          {/* Action Buttons - Download, Audio, Share */}
+          {/* Action Buttons - Download Text, Download Image, Audio, Share */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Download Prayer Button */}
             <button 
@@ -5984,9 +5984,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}
             >
-              📄 Download
+              📄 Download Text
             </button>
 
+            {/* Download Prayer Image Button */}
+            <button 
+              onClick={downloadPrayerImage}
+              disabled={!currentPrayer}
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                background: currentPrayer ? 'rgba(59, 130, 246, 0.6)' : 'rgba(107, 114, 128, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: currentPrayer ? 'pointer' : 'not-allowed',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                opacity: currentPrayer ? 1 : 0.6
+              }}
+            >
+              🖼️ Download Image
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Generate Audio Button */}
             <button 
               onClick={() => {
