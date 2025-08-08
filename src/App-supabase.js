@@ -5722,6 +5722,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   key={category.key} 
                   onClick={() => { 
                     setSelectedCategory(category.key); 
+                    if (category.key === 'custom') {
+                      setShowCustomForm(true);
+                    } else {
+                      setShowCustomForm(false);
+                    }
                     setCurrentScreen('prayer-generation');
                   }} 
                   style={{ 
@@ -5809,8 +5814,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
   // Screen 3: Prayer Generation Screen
   const renderPrayerGenerationScreen = () => {
-    // Auto-start generation if not already generating
-    if (!isGenerating) {
+    // Auto-start generation if not already generating (but not for custom prayers)
+    if (!isGenerating && selectedCategory !== 'custom') {
       setTimeout(() => generatePrayer(), 100);
     }
     
@@ -5857,16 +5862,209 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </h1>
           </div>
           
-          <div style={{ 
-            fontSize: '22px', 
-            fontWeight: '500',
-            marginBottom: '30px',
-            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-          }}>
-            Generating your prayer...
-          </div>
-          <div style={{ 
-            width: '60px', 
+          {selectedCategory === 'custom' && showCustomForm ? (
+            // Custom Prayer Form
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '30px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)',
+              marginBottom: '20px',
+              maxWidth: '400px',
+              width: '100%'
+            }}>
+              <h2 style={{ 
+                color: 'white', 
+                fontSize: '20px', 
+                fontWeight: '600',
+                marginBottom: '20px',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+              }}>
+                Create Your Custom Prayer
+              </h2>
+
+              {/* Prayer For Selection */}
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '12px', fontSize: '14px' }}>
+                  This prayer is for:
+                </p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => setPrayerFor('myself')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerFor === 'myself' ? '#3b82f6' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerFor === 'myself' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Myself
+                  </button>
+                  <button
+                    onClick={() => setPrayerFor('someone')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerFor === 'someone' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerFor === 'someone' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Someone Else
+                  </button>
+                </div>
+              </div>
+
+              {/* Person's Name Input */}
+              {prayerFor === 'someone' && (
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: '14px', 
+                    color: 'rgba(255, 255, 255, 0.8)', 
+                    marginBottom: '8px' 
+                  }}>
+                    Person's name:
+                  </label>
+                  <input
+                    type="text"
+                    value={personName}
+                    onChange={(e) => setPersonName(e.target.value)}
+                    placeholder="Enter their name..."
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      fontSize: '14px',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Special Occasion Dropdown */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '14px', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  marginBottom: '8px' 
+                }}>
+                  Special occasion (optional):
+                </label>
+                <select
+                  value={selectedOccasion}
+                  onChange={(e) => setSelectedOccasion(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    fontSize: '14px',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <option value="">Select an occasion (optional)</option>
+                  <option value="birthday">Birthday</option>
+                  <option value="anniversary">Anniversary</option>
+                  <option value="graduation">Graduation</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="funeral">Funeral/Memorial</option>
+                  <option value="illness">Illness</option>
+                  <option value="surgery">Surgery</option>
+                  <option value="pregnancy">Pregnancy</option>
+                  <option value="retirement">Retirement</option>
+                  <option value="moving">Moving/New Home</option>
+                  <option value="addiction">Recovery/Addiction</option>
+                </select>
+              </div>
+
+              {/* Prayer Request Text Area */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '14px', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  marginBottom: '8px' 
+                }}>
+                  What would you like to pray about?
+                </label>
+                <textarea
+                  value={customRequest}
+                  onChange={(e) => setCustomRequest(e.target.value.slice(0, 500))}
+                  placeholder="Describe what you'd like to pray about..."
+                  style={{
+                    width: '100%',
+                    height: '120px',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    fontSize: '14px',
+                    resize: 'vertical',
+                    boxSizing: 'border-box',
+                    fontFamily: 'inherit'
+                  }}
+                />
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: 'rgba(255, 255, 255, 0.6)', 
+                  textAlign: 'right', 
+                  marginTop: '4px' 
+                }}>
+                  {customRequest.length}/500 characters
+                </div>
+              </div>
+
+              {/* Generate Prayer Button */}
+              <button
+                onClick={generatePrayer}
+                disabled={!customRequest.trim()}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: customRequest.trim() ? 'rgba(59, 130, 246, 0.8)' : 'rgba(107, 114, 128, 0.6)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: customRequest.trim() ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.2s ease',
+                  opacity: customRequest.trim() ? 1 : 0.6
+                }}
+              >
+                Generate Custom Prayer
+              </button>
+            </div>
+          ) : (
+            <>
+              <div style={{ 
+                fontSize: '22px', 
+                fontWeight: '500',
+                marginBottom: '30px',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+              }}>
+                Generating your prayer...
+              </div>
+              <div style={{ 
+                width: '60px', 
             height: '60px', 
             border: '4px solid rgba(255,255,255,0.3)', 
             borderTop: '4px solid white', 
