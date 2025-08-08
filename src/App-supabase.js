@@ -5872,6 +5872,311 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 <UserCheck size={20} />
                 Continue as Guest
               </button>
+
+              {/* Divider */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '12px',
+                margin: '20px 0'
+              }}>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }}></div>
+                <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>or</span>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }}></div>
+              </div>
+
+              {/* Email/Password Sign In Form */}
+              {!showSignUp ? (
+                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+
+                  {authError && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      color: '#fca5a5',
+                      fontSize: '14px',
+                      textAlign: 'center'
+                    }}>
+                      {authError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    style={{
+                      width: '100%',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: authLoading ? 'rgba(107, 114, 128, 0.6)' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: authLoading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {authLoading ? 'Signing In...' : 'Sign In'}
+                  </button>
+                </form>
+              ) : (
+                // Sign Up Form
+                <form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Confirm your password"
+                    />
+                  </div>
+
+                  {authError && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      color: '#fca5a5',
+                      fontSize: '14px',
+                      textAlign: 'center'
+                    }}>
+                      {authError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    style={{
+                      width: '100%',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: authLoading ? 'rgba(107, 114, 128, 0.6)' : 'linear-gradient(135deg, #10b981, #059669)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: authLoading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {authLoading ? 'Creating Account...' : 'Create Account'}
+                  </button>
+                </form>
+              )}
+
+              {/* Sign Up / Sign In Toggle */}
+              <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px', margin: '0 0 8px 0' }}>
+                  {showSignUp ? 'Already have an account?' : "Don't have an account?"}
+                </p>
+                <button
+                  onClick={() => {
+                    setShowSignUp(!showSignUp);
+                    setAuthError('');
+                    setEmail('');
+                    setPassword('');
+                    setConfirmPassword('');
+                    setFullName('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#60a5fa',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseOver={(e) => e.target.style.color = '#3b82f6'}
+                  onMouseOut={(e) => e.target.style.color = '#60a5fa'}
+                >
+                  {showSignUp ? 'Sign In' : 'Sign Up'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
