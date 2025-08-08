@@ -6498,6 +6498,21 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
           </div>
+
+          {/* User Status Indicator */}
+          {user && (
+            <div style={{
+              position: 'fixed',
+              bottom: '20px',
+              right: '20px',
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.6)',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+              textAlign: 'right'
+            }}>
+              Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -7111,6 +7126,21 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
           </div>
+
+          {/* User Status Indicator */}
+          {user && (
+            <div style={{
+              position: 'fixed',
+              bottom: '20px',
+              right: '20px',
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.6)',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+              textAlign: 'right'
+            }}>
+              Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -7300,6 +7330,21 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
           </div>
+
+          {/* User Status Indicator */}
+          {user && (
+            <div style={{
+              position: 'fixed',
+              bottom: '20px',
+              right: '20px',
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.6)',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+              textAlign: 'right'
+            }}>
+              Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+            </div>
+          )}
         </div>
       </div>
     );
