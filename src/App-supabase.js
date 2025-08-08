@@ -5801,15 +5801,24 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                 margin: '0'
               }}>
-                Help Me Pray App
+                🙏 Help Me Pray App ✨
               </h1>
             </div>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
               fontSize: '16px',
-              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+              marginBottom: '8px'
             }}>
-              Find peace through prayer ✨
+              Find peace through prayer 🕊️
+            </p>
+            <p style={{ 
+              color: 'rgba(255, 255, 255, 0.7)', 
+              fontSize: '14px',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+              fontStyle: 'italic'
+            }}>
+              🌟 Faith • Hope • Love • Gratitude 💖
             </p>
           </div>
 
@@ -5924,7 +5933,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               marginBottom: '8px'
             }}>
-              Choose Your Prayer
+              🌸 Choose Your Prayer 🌙
             </h2>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
