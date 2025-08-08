@@ -6154,9 +6154,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 borderTopLeftRadius: '19px',
                 borderTopRightRadius: '19px'
               }}>
-                {/* Category icon with white filter */}
+                {/* Category icon with category color */}
                 <div style={{ 
-                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8))',
                   fontSize: '16px'
                 }}>
                   {categoryIcons[selectedCategory] || categoryIcons.custom}
@@ -6164,7 +6163,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 
                 {/* Category-specific title */}
                 <div style={{ 
-                  color: categoryColors[selectedCategory] || categoryColors.custom,
+                  color: 'white',
                   fontSize: '16px',
                   fontWeight: '600',
                   textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
