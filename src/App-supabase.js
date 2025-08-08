@@ -6489,40 +6489,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </div>
           </div>
 
-          {/* Action Buttons - Download Text, Download Image, Audio, Share */}
+          {/* Action Buttons - Download Image, Listen, Share, Logout */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-            {/* Download Prayer Button */}
-            <button 
-              onClick={() => {
-                // Create downloadable text file
-                const element = document.createElement('a');
-                const file = new Blob([currentPrayer], {type: 'text/plain'});
-                element.href = URL.createObjectURL(file);
-                element.download = `prayer-${selectedCategory}-${new Date().toISOString().split('T')[0]}.txt`;
-                document.body.appendChild(element);
-                element.click();
-                document.body.removeChild(element);
-              }} 
-              style={{ 
-                padding: '16px',
-                borderRadius: '15px',
-                border: '1px solid rgba(34, 197, 94, 0.3)',
-                background: 'rgba(34, 197, 94, 0.6)',
-                backdropFilter: 'blur(20px)',
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              Download Text
-            </button>
-
             {/* Download Prayer Image Button */}
             <button 
               onClick={downloadPrayerImage}
@@ -6547,9 +6515,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             >
               Download Image
             </button>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Listen Button */}
             <button 
               onClick={() => {
@@ -6581,7 +6547,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               <Volume2 size={20} />
               Listen
             </button>
+          </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Share Prayer Button */}
             <button 
               onClick={() => setShowShareModal(true)}
@@ -6605,10 +6573,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               <Share2 size={20} />
               Share
             </button>
-          </div>
 
-          {/* Navigation Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {/* Logout Button */}
             <button 
               onClick={() => setUser(null)} 
               style={{ 
@@ -6621,7 +6587,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 fontSize: '16px',
                 fontWeight: '500',
                 cursor: 'pointer',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
               }}
             >
               Logout
