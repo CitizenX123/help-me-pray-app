@@ -571,14 +571,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Use the same category names as in prayer view screen
       const categoryTitles = {
-        gratitude: 'Prayer for Gratitude',
-        morning: 'Prayer to Start Your Day', 
-        bedtime: 'Prayer for a Good Night',
-        healing: 'Prayer for Healing',
-        family: 'Prayer for Family and Friends',
-        grace: 'Prayer for Saying Grace',
-        bibleVerses: 'Bible Verse Prayer',
-        custom: 'Custom Prayer'
+        gratitude: 'A Prayer for Gratitude',
+        morning: 'A Prayer to Start Your Day', 
+        bedtime: 'A Prayer for a Good Night',
+        healing: 'A Prayer for Healing',
+        family: 'A Prayer for Family and Friends',
+        grace: 'A Prayer for Saying Grace',
+        bibleVerses: 'A Bible Verse Prayer',
+        custom: 'A Custom Prayer'
       };
       
       categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
@@ -6573,14 +6573,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     ? currentPrayerInfo.customTopic
                     : (() => {
                         const categoryNames = {
-                          gratitude: 'Prayer for Gratitude',
-                          morning: 'Prayer to Start Your Day', 
-                          bedtime: 'Prayer for a Good Night',
-                          healing: 'Prayer for Healing',
-                          family: 'Prayer for Family and Friends',
-                          grace: 'Prayer for Saying Grace',
-                          bibleVerses: 'Bible Verse Prayer',
-                          custom: 'Custom Prayer'
+                          gratitude: 'A Prayer for Gratitude',
+                          morning: 'A Prayer to Start Your Day', 
+                          bedtime: 'A Prayer for a Good Night',
+                          healing: 'A Prayer for Healing',
+                          family: 'A Prayer for Family and Friends',
+                          grace: 'A Prayer for Saying Grace',
+                          bibleVerses: 'A Bible Verse Prayer',
+                          custom: 'A Custom Prayer'
                         };
                         return categoryNames[currentPrayerInfo.category] || `${currentPrayerInfo.category.charAt(0).toUpperCase() + currentPrayerInfo.category.slice(1)} Prayer`;
                       })()
