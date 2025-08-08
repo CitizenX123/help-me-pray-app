@@ -414,9 +414,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Set canvas size
+      // Set canvas size with higher resolution
       canvas.width = 800;
       canvas.height = 1000;
+      
+      // Enable high-quality image rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       
       // Create photo-realistic backgrounds using actual photographs
       const createPhotoRealisticBackground = async () => {
@@ -886,7 +890,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
           
           // Position logo and text at the bottom (properly centered)
           const brandingY = canvas.height - 40;
-          const logoSize = 60;
+          const logoSize = 120; // Increased from 60px for better quality
           const brandingText = 'Help Me Pray App';
           
           // Measure text width for proper centering
@@ -915,6 +919,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           const tempCtx = tempCanvas.getContext('2d');
           tempCanvas.width = logoSize;
           tempCanvas.height = logoSize;
+          
+          // Enable high-quality rendering on temp canvas
+          tempCtx.imageSmoothingEnabled = true;
+          tempCtx.imageSmoothingQuality = 'high';
           
           // Draw logo on temp canvas
           tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
