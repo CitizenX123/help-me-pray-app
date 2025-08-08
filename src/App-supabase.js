@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book } from 'lucide-react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Add beautiful animated background CSS
@@ -45,7 +45,7 @@ const translations = {
     healing: "Healing",
     family: "Family & Friends",
     grace: "Grace",
-    bibleVerses: "Bible",
+    bibleVerses: "Bible Verse",
     custom: "Create Custom Prayer",
     // Prayer descriptions
     gratitudeDesc: "Prayers for thanksgiving and expressing appreciation",
@@ -146,7 +146,7 @@ const translations = {
     healing: "Sanación",
     family: "Familia y Amigos",
     grace: "Bendición",
-    bibleVerses: "Biblia",
+    bibleVerses: "Versículo Bíblico",
     custom: "Crear Oración Personalizada",
     // Prayer descriptions
     gratitudeDesc: "Oraciones de agradecimiento y expresión de aprecio",
@@ -275,7 +275,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Category icons and colors - defined at component level for global access
   const categoryIcons = {
-    gratitude: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    gratitude: <Heart size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
     morning: <Sun size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
     bedtime: <Moon size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
     healing: <Sparkles size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
