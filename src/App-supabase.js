@@ -5539,7 +5539,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                 margin: '0'
               }}>
-                Help Me Pray
+                Help Me Pray App
               </h1>
             </div>
             <p style={{ 
@@ -5651,7 +5651,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                 margin: '0'
               }}>
-                Help Me Pray
+                Help Me Pray App
               </h1>
             </div>
             
