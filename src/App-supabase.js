@@ -273,6 +273,29 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [prayerLength, setPrayerLength] = useState('medium');
   const [selectedOccasion, setSelectedOccasion] = useState('');
 
+  // Category icons and colors - defined at component level for global access
+  const categoryIcons = {
+    gratitude: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    morning: <Sun size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    bedtime: <Moon size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    healing: <Sparkles size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    family: <Users size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    grace: <Utensils size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    bibleVerses: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    custom: <Send size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+  };
+
+  const categoryColors = {
+    gratitude: "#60a5fa", // Brighter Blue - peaceful, thankful
+    morning: "#eab308",   // Yellow - sunshine, new day
+    bedtime: "#a855f7",   // Brighter Purple - calm, restful
+    healing: "#22c55e",   // Green - growth, restoration
+    family: "#ec4899",    // Pink/Rose - love, warmth
+    grace: "#f59e0b",     // Gold - blessed, divine
+    bibleVerses: "#f97316", // Orange - wisdom, enlightenment
+    custom: "#06b6d4"     // Cyan - creativity, personalization
+  };
+
   // Login/Signup form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -5683,18 +5706,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             }
           }}>
             {categories.map((category) => {
-              // Define better Lucide React icons for each category
-              const categoryIcons = {
-                gratitude: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                morning: <Sun size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                bedtime: <Moon size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                healing: <Sparkles size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                family: <Users size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                grace: <Utensils size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                bibleVerses: <Book size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
-                custom: <Send size={28} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
-              };
-
               const categoryDescriptions = {
                 gratitude: "Prayers for thanksgiving and expressing appreciation",
                 morning: "Prayers to start your day with purpose and hope", 
@@ -5704,17 +5715,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 grace: "Dedicated to blessing the meals",
                 bibleVerses: "Prayers inspired by Scripture",
                 custom: "Generate personalized prayers for any situation"
-              };
-
-              const categoryColors = {
-                gratitude: "#60a5fa", // Brighter Blue - peaceful, thankful
-                morning: "#eab308",   // Yellow - sunshine, new day
-                bedtime: "#a855f7",   // Brighter Purple - calm, restful
-                healing: "#22c55e",   // Green - growth, restoration
-                family: "#ec4899",    // Pink/Rose - love, warmth
-                grace: "#f59e0b",     // Gold - blessed, divine
-                bibleVerses: "#f97316", // Orange - wisdom, enlightenment
-                custom: "#06b6d4"     // Cyan - creativity, personalization
               };
               
               return (
