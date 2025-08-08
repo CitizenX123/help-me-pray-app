@@ -5852,10 +5852,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
   // Screen 3: Prayer Generation Screen
   const renderPrayerGenerationScreen = () => {
-    // Auto-start generation if not already generating (but not for custom prayers)
-    if (!isGenerating && selectedCategory !== 'custom') {
-      setTimeout(() => generatePrayer(), 100);
-    }
+    // No longer auto-generate since ALL categories now show custom form for user choice
     
     return (
       <div style={{
