@@ -6073,24 +6073,29 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             })}
           </div>
 
-          {/* Logout Button */}
-          <button
-            onClick={() => setUser(null)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginTop: '20px',
-              borderRadius: '12px',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              background: 'rgba(239, 68, 68, 0.2)',
-              color: 'rgba(252, 165, 165, 1)',
-              fontSize: '14px',
-              cursor: 'pointer',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
-            }}
-          >
-            Logout
-          </button>
+          {/* Simple Navigation Arrow */}
+          <div style={{ 
+            textAlign: 'center', 
+            marginTop: '20px' 
+          }}>
+            <button
+              onClick={() => setUser(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+          </div>
         </div>
       </div>
     );
