@@ -767,7 +767,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       ctx.shadowOffsetY = 2;
       
       // Prayer text styling - positioned lower to avoid title overlap
-      ctx.font = 'normal 28px Georgia, serif';
+      ctx.font = 'normal 24px Georgia, serif';
       ctx.fillStyle = 'white';
       ctx.textAlign = 'center';
       
@@ -794,11 +794,18 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Calculate proper spacing - reserve space for title (90px) and branding (80px)
-      const availableHeight = canvas.height - 170; // Total minus reserved space
-      const lineHeight = 38;
+      // Calculate proper spacing - reserve space for title (120px) and branding (120px)
+      const availableHeight = canvas.height - 240; // Total minus reserved space  
+      const lineHeight = 30; // Reduce line height to match smaller font
       const totalTextHeight = lines.length * lineHeight;
-      const startY = 140 + (availableHeight - totalTextHeight) / 2;
+      const startY = 120 + (availableHeight - totalTextHeight) / 2;
+      
+      // Ensure text doesn't go below branding area
+      const maxEndY = canvas.height - 120;
+      const actualEndY = startY + totalTextHeight;
+      
+      // If text is too long, adjust starting position
+      const adjustedStartY = actualEndY > maxEndY ? startY - (actualEndY - maxEndY) : startY;
       
       lines.forEach((line, index) => {
         // Clean the line to remove any unwanted emojis or characters
@@ -807,7 +814,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
           .replace(/\.+/g, '.') // Fix multiple periods
           .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
           .trim();
-        ctx.fillText(cleanLine, canvas.width / 2, startY + (index * lineHeight));
+        ctx.fillText(cleanLine, canvas.width / 2, adjustedStartY + (index * lineHeight));
       });
       
       // Add branding with actual logo
