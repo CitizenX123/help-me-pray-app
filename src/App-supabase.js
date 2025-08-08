@@ -2690,7 +2690,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       return;
     }
 
-    if (selectedCategory === 'custom') {
+    // Since ALL categories now show custom form, handle it for all categories
+    if (showCustomForm) {
       if (!customRequest.trim()) return;
       
       setIsGenerating(true);
@@ -2706,7 +2707,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             const { error } = await supabase.from('prayer_history').insert({
               user_id: user.id,
               prayer_content: cleanedPrayer,
-              category: 'custom'
+              category: selectedCategory  // Use actual selected category instead of hardcoded 'custom'
             });
             if (error) {
               console.error('Error saving prayer history:', error);
