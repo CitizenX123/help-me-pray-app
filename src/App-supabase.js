@@ -6448,25 +6448,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           </button>
 
           {/* Navigation Buttons */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <button 
-              onClick={() => setCurrentScreen('prayer-selection')} 
-              style={{ 
-                padding: '16px',
-                borderRadius: '15px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                background: 'rgba(15, 23, 42, 0.6)',
-                backdropFilter: 'blur(20px)',
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
-              }}
-            >
-              🔙 New Prayer
-            </button>
-            
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <button 
               onClick={() => setUser(null)} 
               style={{ 
