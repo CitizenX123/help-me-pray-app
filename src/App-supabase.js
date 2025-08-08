@@ -6415,18 +6415,18 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </h1>
           </div>
 
-          {/* Prayer Title Bar - Match Category Button Styling */}
-          {currentPrayerInfo.category && (
-            <div style={{
-              marginBottom: '20px',
-              padding: '0',
-              borderRadius: '18px',
-              border: '2px solid rgba(255, 255, 255, 0.2)',
-              background: 'transparent',
-              overflow: 'hidden',
-              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)'
-            }}>
-              {/* Header Section - Dark Bluish Gray like Category Buttons */}
+          {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
+          <div style={{
+            padding: '0',
+            borderRadius: '18px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            background: 'transparent',
+            marginBottom: '20px',
+            overflow: 'hidden',
+            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)'
+          }}>
+            {/* Header Section - Prayer Title Bar */}
+            {currentPrayerInfo.category && (
               <div style={{
                 background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
                 padding: '12px 20px',
@@ -6465,46 +6465,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   }
                 </div>
               </div>
-              
-              {/* Content Section - Black like Category Buttons */}
-              <div style={{
-                background: 'rgba(0, 0, 0, 0.95)',
-                padding: '12px 20px',
-                borderBottomLeftRadius: '16px',
-                borderBottomRightRadius: '16px',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '20px'
-              }}>
-                <div style={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '12px',
-                  textAlign: 'center'
-                }}>
-                  {new Date().toLocaleDateString()}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Prayer Display - Match Category Button Styling */}
-          <div style={{
-            padding: '0',
-            borderRadius: '18px',
-            border: '2px solid rgba(255, 255, 255, 0.2)',
-            background: 'transparent',
-            marginBottom: '20px',
-            overflow: 'hidden',
-            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)'
-          }}>
-            {/* Content Section - Black like Category Buttons */}
+            )}
+            
+            {/* Content Section - Prayer Text */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.95)',
               padding: '30px',
-              borderRadius: '16px',
+              borderBottomLeftRadius: '16px',
+              borderBottomRightRadius: '16px',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)'
             }}>
