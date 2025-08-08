@@ -6431,7 +6431,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-            {/* Generate Audio Button */}
+            {/* Listen Button */}
             <button 
               onClick={() => {
                 // Text-to-speech functionality
@@ -6459,45 +6459,34 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}
             >
-              🔊 Listen
+              <Volume2 size={20} />
+              Listen
+            </button>
+
+            {/* Share Prayer Button */}
+            <button 
+              onClick={() => setShowShareModal(true)}
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                background: 'rgba(59, 130, 246, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <Share2 size={20} />
+              Share
             </button>
           </div>
-
-          {/* Share Button */}
-          <button 
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'My Prayer',
-                  text: currentPrayer
-                });
-              } else {
-                // Fallback - copy to clipboard
-                navigator.clipboard.writeText(currentPrayer);
-                alert('Prayer copied to clipboard!');
-              }
-            }} 
-            style={{ 
-              width: '100%',
-              padding: '16px',
-              borderRadius: '15px',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              background: 'rgba(59, 130, 246, 0.6)',
-              backdropFilter: 'blur(20px)',
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              marginBottom: '12px'
-            }}
-          >
-            📤 Share Prayer
-          </button>
 
           {/* Navigation Buttons */}
           <div style={{ display: 'flex', justifyContent: 'center' }}>
