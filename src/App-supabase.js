@@ -1369,6 +1369,37 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Protege y guía a nuestra familia con tu mano amorosa.",
         "Que nuestro amor familiar refleje tu amor por nosotros."
       ]
+    },
+    grace: {
+      openings: [
+        "Señor,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Padre Celestial,",
+        "Querido Señor,",
+        "Dios Todopoderoso,"
+      ],
+      subjects: [
+        "te agradecemos por esta comida y las manos que la prepararon",
+        "bendice este alimento para nuestros cuerpos y nuestra comunión para tu gloria",
+        "estamos agradecidos por tu provisión y la abundancia ante nosotros",
+        "gracias por reunirnos alrededor de esta mesa",
+        "bendice a los que no tienen suficiente y ayúdanos a compartir",
+        "reconocemos que todo buen don viene de ti",
+        "gracias por los agricultores, trabajadores, y todos los que hicieron posible esta comida",
+        "nos reunimos en gratitud por tu provisión diaria",
+        "bendice este alimento que has provisto para nuestros cuerpos"
+      ],
+      closings: [
+        "Que esta comida nutra nuestros cuerpos y nos fortalezca para servirte.",
+        "Úsanos para ser una bendición para otros como tú nos has bendecido.",
+        "Ayúdanos a recordar siempre a los necesitados.",
+        "Que nuestra gratitud se desborde en actos de bondad.",
+        "Bendice este tiempo de comunión y conversación.",
+        "Gracias por tu cuidado y provisión constantes.",
+        "No nos permitas dar por sentadas tus bendiciones.",
+        "Guíanos para compartir tu amor con otros."
+      ]
     }
   };
 
@@ -2722,6 +2753,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         } else {
           // Generate category-specific prayer with selected length
           generatedPrayer = generateDynamicPrayer(selectedCategory, prayerLength);
+        }
+        
+        if (!generatedPrayer) {
+          console.error('Prayer generation returned null/undefined');
+          generatedPrayer = `Dear God, we come to you with grateful hearts. Thank you for your love and guidance. Please bless us and help us to grow in faith. In your holy name, Amen.`;
         }
         
         const cleanedPrayer = cleanupPrayerText(generatedPrayer);
