@@ -5768,7 +5768,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       width: '32px',
                       height: '32px'
                     }}>
-                      <div style={{ filter: 'brightness(0) invert(1)' }}>
+                      <div style={{ 
+                        filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8))'
+                      }}>
                         {categoryIcons[category.key]}
                       </div>
                     </div>
