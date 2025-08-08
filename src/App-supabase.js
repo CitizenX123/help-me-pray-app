@@ -6391,34 +6391,71 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {/* App Title with Logo */}
+          {/* Back Arrow and App Title with Logo */}
           <div style={{ 
             textAlign: 'center', 
             marginBottom: '30px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px'
+            position: 'relative'
           }}>
-            <img 
-              src="/prayhands.png" 
-              alt="Praying hands" 
-              style={{ 
-                width: '80px', 
-                height: '80px',
-                filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
-              }} 
-            />
-            <h1 style={{ 
-              color: 'white', 
-              fontSize: '28px', 
-              fontWeight: '600',
-              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-              margin: '0'
+            {/* Back to Categories Arrow */}
+            <button
+              onClick={() => setCurrentScreen('prayer-selection')}
+              style={{
+                position: 'absolute',
+                left: '0',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'white',
+                fontSize: '18px',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+            >
+              ↑
+            </button>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px'
             }}>
-              Help Me Pray
-            </h1>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                color: 'white', 
+                fontSize: '28px', 
+                fontWeight: '600',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                margin: '0'
+              }}>
+                Help Me Pray
+              </h1>
+            </div>
           </div>
 
           {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
