@@ -2804,13 +2804,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           if (referenceMatch) {
             verseReference = referenceMatch[1];
           }
-        } else if (selectedCategory === 'custom' && customRequest) {
-          // Create summary for custom prayer
-          const summary = customRequest.length > 50 ? customRequest.substring(0, 47) + '...' : customRequest;
+        } else if (selectedCategory === 'custom') {
+          // For custom prayers, only show person's name if praying for someone
           if (prayerFor === 'someone' && personName) {
-            customTopic = `Prayer for ${personName}: ${summary}`;
+            customTopic = `Prayer for ${personName}`;
           } else {
-            customTopic = summary;
+            customTopic = 'Custom Prayer';
           }
         }
         
@@ -2859,8 +2858,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           if (referenceMatch) {
             verseReference = referenceMatch[1];
           }
+        } else if (selectedCategory === 'custom') {
+          // For custom prayers, only show person's name if praying for someone
+          if (prayerFor === 'someone' && personName) {
+            customTopic = `Prayer for ${personName}`;
+          } else {
+            customTopic = 'Custom Prayer';
+          }
         }
-        // Note: This path is for non-custom categories, so customTopic remains empty
+        // Note: For non-custom categories, customTopic remains empty
         
         setCurrentPrayerInfo({ category: selectedCategory, verseReference, customTopic });
         
