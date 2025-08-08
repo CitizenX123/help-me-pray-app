@@ -2692,13 +2692,23 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
     // Since ALL categories now show custom form, handle it for all categories
     if (showCustomForm) {
-      if (!customRequest.trim()) return;
+      // Only require customRequest for 'custom' category
+      if (selectedCategory === 'custom' && !customRequest.trim()) return;
       
       setIsGenerating(true);
       setTimeout(async () => {
-        const isForSelf = prayerFor === 'myself';
-        const customPrayer = generateCustomPrayer(customRequest, isForSelf, personName, prayerLength, selectedOccasion);
-        const cleanedPrayer = cleanupPrayerText(customPrayer);
+        let generatedPrayer;
+        
+        if (selectedCategory === 'custom') {
+          // Generate fully custom prayer with user input
+          const isForSelf = prayerFor === 'myself';
+          generatedPrayer = generateCustomPrayer(customRequest, isForSelf, personName, prayerLength, selectedOccasion);
+        } else {
+          // Generate category-specific prayer with selected length
+          generatedPrayer = generateDynamicPrayer(selectedCategory, prayerLength);
+        }
+        
+        const cleanedPrayer = cleanupPrayerText(generatedPrayer);
         setCurrentPrayer(cleanedPrayer);
         
         // Save to prayer history if user is logged in (but not guest)
@@ -5911,6 +5921,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 padding: '12px 20px',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '12px',
                 borderTopLeftRadius: '19px',
                 borderTopRightRadius: '19px'
@@ -6169,16 +6180,44 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   padding: '16px',
                   borderRadius: '12px',
                   border: 'none',
-                  background: customRequest.trim() ? 'rgba(59, 130, 246, 0.8)' : 'rgba(107, 114, 128, 0.6)',
+                  background: (selectedCategory === 'custom' && !customRequest.trim()) ? 'rgba(107, 114, 128, 0.6)' : 'rgba(59, 130, 246, 0.8)',
                   color: 'white',
                   fontSize: '16px',
                   fontWeight: '600',
-                  cursor: customRequest.trim() ? 'pointer' : 'not-allowed',
+                  cursor: (selectedCategory === 'custom' && !customRequest.trim()) ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease',
-                  opacity: customRequest.trim() ? 1 : 0.6
+                  opacity: (selectedCategory === 'custom' && !customRequest.trim()) ? 0.6 : 1,
+                  marginBottom: '12px'
                 }}
               >
-                Generate Custom Prayer
+                {selectedCategory === 'custom' ? 'Generate Custom Prayer' : `Generate ${categories.find(c => c.key === selectedCategory)?.name || 'Prayer'}`}
+              </button>
+
+              {/* Back Button */}
+              <button
+                onClick={() => setCurrentScreen('prayer-selection')}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.target.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                }}
+              >
+                ← Back to Categories
               </button>
               </div> {/* Close content section */}
             </div>
