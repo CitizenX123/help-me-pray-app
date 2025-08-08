@@ -241,6 +241,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   
   // Prayer App State
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
+  const [currentPrayerInfo, setCurrentPrayerInfo] = useState({ category: '', verseReference: '' });
   
   // Clear prayer when category changes to force icon display
   useEffect(() => {
@@ -2793,6 +2794,17 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         const cleanedPrayer = cleanupPrayerText(generatedPrayer);
         setCurrentPrayer(cleanedPrayer);
         
+        // Set prayer info for title bar
+        let verseReference = '';
+        if (selectedCategory === 'bibleVerses' && generatedPrayer) {
+          // Extract verse reference from Bible verse prayer (format: "verse text" - Reference)
+          const referenceMatch = generatedPrayer.match(/" - ([^"\n]+)/);
+          if (referenceMatch) {
+            verseReference = referenceMatch[1];
+          }
+        }
+        setCurrentPrayerInfo({ category: selectedCategory, verseReference });
+        
         // Save to prayer history if user is logged in (but not guest)
         if (user && user.id !== 'guest' && supabase) {
           try {
@@ -2825,6 +2837,17 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         const randomPrayer = generateDynamicPrayer(selectedCategory, prayerLength);
         const cleanedPrayer = cleanupPrayerText(randomPrayer);
         setCurrentPrayer(cleanedPrayer);
+        
+        // Set prayer info for title bar
+        let verseReference = '';
+        if (selectedCategory === 'bibleVerses' && randomPrayer) {
+          // Extract verse reference from Bible verse prayer (format: "verse text" - Reference)
+          const referenceMatch = randomPrayer.match(/" - ([^"\n]+)/);
+          if (referenceMatch) {
+            verseReference = referenceMatch[1];
+          }
+        }
+        setCurrentPrayerInfo({ category: selectedCategory, verseReference });
         
         // Save to prayer history if user is logged in (but not guest)
         if (user && user.id !== 'guest' && supabase) {
@@ -6398,6 +6421,46 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             }}>
               {currentPrayer}
             </p>
+            
+            {/* Prayer Title Bar */}
+            {currentPrayerInfo.category && (
+              <div style={{
+                marginTop: '20px',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
+                borderRadius: '12px',
+                padding: '12px 20px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px'
+              }}>
+                <div style={{
+                  color: '#ffffff',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
+                }}>
+                  {currentPrayerInfo.category === 'bibleVerses' && currentPrayerInfo.verseReference 
+                    ? currentPrayerInfo.verseReference 
+                    : (() => {
+                        const categoryNames = {
+                          gratitude: 'Gratitude Prayer',
+                          morning: 'Morning Prayer', 
+                          bedtime: 'Bedtime Prayer',
+                          healing: 'Healing Prayer',
+                          family: 'Family & Friends Prayer',
+                          grace: 'Grace Prayer',
+                          bibleVerses: 'Bible Verse Prayer',
+                          custom: 'Custom Prayer'
+                        };
+                        return categoryNames[currentPrayerInfo.category] || `${currentPrayerInfo.category.charAt(0).toUpperCase() + currentPrayerInfo.category.slice(1)} Prayer`;
+                      })()
+                  }
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons - Download Text, Download Image, Audio, Share */}
