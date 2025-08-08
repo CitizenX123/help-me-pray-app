@@ -5775,7 +5775,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     <div style={{ 
                       fontWeight: '600',
                       fontSize: '16px',
-                      color: '#ffffff',
+                      color: categoryColors[category.key] || '#ffffff',
                       textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
                       flex: 1,
                       textAlign: 'left',
