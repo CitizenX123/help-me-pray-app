@@ -5515,15 +5515,32 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         <div style={{ width: '100%', maxWidth: '400px' }}>
           {/* App Title */}
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h1 style={{ 
-              color: 'white', 
-              fontSize: '28px', 
-              fontWeight: '600',
-              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
               marginBottom: '8px'
             }}>
-              Help Me Pray
-            </h1>
+              <img 
+                src="/hands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '40px', 
+                  height: '40px',
+                  filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                color: 'white', 
+                fontSize: '36px', 
+                fontWeight: '600',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                margin: '0'
+              }}>
+                Help Me Pray
+              </h1>
+            </div>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
               fontSize: '16px',
