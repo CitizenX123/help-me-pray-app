@@ -6044,7 +6044,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
           {/* Navigation Arrow - Below content, aligned left */}
           <div style={{
-            marginTop: '20px',
+            marginTop: '8px',
             textAlign: 'left'
           }}>
             <button
@@ -6434,7 +6434,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           <div style={{
             fontSize: '14px',
             color: 'rgba(255, 255, 255, 0.7)',
-            marginTop: '20px',
+            marginTop: '8px',
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
           }}>
             Creating something beautiful for you...
@@ -6444,7 +6444,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           
           {/* Navigation Arrow - Below content, aligned left */}
           <div style={{
-            marginTop: '20px',
+            marginTop: '8px',
             textAlign: 'left'
           }}>
             <button
@@ -6698,7 +6698,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           
           {/* Navigation Arrow - Below content, aligned left */}
           <div style={{
-            marginTop: '20px',
+            marginTop: '8px',
             textAlign: 'left'
           }}>
             <button
