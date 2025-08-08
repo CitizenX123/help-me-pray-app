@@ -5735,18 +5735,20 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     border: '2px solid rgba(255, 255, 255, 0.2)',
                     background: 'transparent',
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.3s ease',
                     overflow: 'hidden',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)',
+                    transform: 'translateY(0)'
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.4), 0 6px 12px rgba(0, 0, 0, 0.2)';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)';
                   }}
                 >
                   {/* Header Section - Bluish Gray like Notes app */}
