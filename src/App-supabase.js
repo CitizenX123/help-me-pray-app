@@ -5626,7 +5626,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           </div>
 
           {/* Category Buttons with Beautiful 3D Icons */}
-          <div style={{ display: 'grid', gap: '12px' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '12px',
+            '@media (min-width: 768px)': {
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'
+            }
+          }}>
             {categories.map((category) => {
               // Define better Lucide React icons for each category
               const categoryIcons = {
