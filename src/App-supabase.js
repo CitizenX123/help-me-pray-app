@@ -5670,7 +5670,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     padding: '20px',
                     borderRadius: '18px',
                     border: '2px solid rgba(255, 255, 255, 0.2)',
-                    background: 'rgba(15, 23, 42, 0.85)',
+                    background: 'rgba(0, 0, 0, 0.8)',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
                     color: 'white',
@@ -5686,7 +5686,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   e.currentTarget.style.transform = 'translateY(-1px)';
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'rgba(15, 23, 42, 0.6)';
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
