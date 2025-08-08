@@ -4897,39 +4897,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       </div>
                     )}
                   </div>
-                  
-                  {/* Simple Navigation Arrow */}
-                  <div style={{ 
-                    textAlign: 'center', 
-                    marginTop: '20px' 
-                  }}>
-                    <button
-                      onClick={() => {
-                        setCurrentPrayer('');
-                        setSelectedCategory('');
-                        setCurrentPrayerType('');
-                        setCurrentBibleVerse('');
-                        setCustomCategory('');
-                        setPersonName('');
-                        setPrayerFor('');
-                        setPrayerRequest('');
-                      }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'white',
-                        fontSize: '32px',
-                        cursor: 'pointer',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        transition: 'opacity 0.2s'
-                      }}
-                      onMouseOver={(e) => e.target.style.opacity = '0.7'}
-                      onMouseOut={(e) => e.target.style.opacity = '1'}
-                    >
-                      ←
-                    </button>
-                  </div>
                 ) : (
                   <div style={{ textAlign: 'center', color: '#6b7280' }}>
                     <div style={{
@@ -5123,6 +5090,38 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </div>
           </div>
         </div>
+
+        {/* Simple Navigation Arrow - shown when prayer is displayed */}
+        {currentPrayer && currentPrayer.trim() && !isGenerating && (
+          <div style={{ 
+            textAlign: 'center', 
+            marginTop: '20px' 
+          }}>
+            <button
+              onClick={() => {
+                setCurrentPrayer('');
+                setSelectedCategory('');
+                setPersonName('');
+                setPrayerFor('myself');
+                setCustomRequest('');
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+          </div>
+        )}
 
         <div style={{ marginTop: '32px', textAlign: 'center', color: '#6b7280', fontSize: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
