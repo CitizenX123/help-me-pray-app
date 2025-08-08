@@ -5675,6 +5675,17 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 bibleVerses: "Prayers inspired by Scripture",
                 custom: "Generate personalized prayers for any situation"
               };
+
+              const categoryColors = {
+                gratitude: "#3b82f6", // Blue - peaceful, thankful
+                morning: "#eab308",   // Yellow - sunshine, new day
+                bedtime: "#7c3aed",   // Deep purple - calm, restful
+                healing: "#22c55e",   // Green - growth, restoration
+                family: "#ec4899",    // Pink/Rose - love, warmth
+                grace: "#f59e0b",     // Gold - blessed, divine
+                bibleVerses: "#f97316", // Orange - wisdom, enlightenment
+                custom: "#06b6d4"     // Cyan - creativity, personalization
+              };
               
               return (
                 <button 
@@ -5722,7 +5733,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     <span style={{ 
                       fontWeight: '600',
                       fontSize: '18px',
-                      color: '#ef4444',
+                      color: categoryColors[category.key] || '#ffffff',
                       textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
                     }}>
                       {category.name}
