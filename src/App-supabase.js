@@ -5722,6 +5722,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     <span style={{ 
                       fontWeight: '600',
                       fontSize: '18px',
+                      color: '#ef4444',
                       textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
                     }}>
                       {category.name}
