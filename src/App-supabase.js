@@ -6029,7 +6029,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   }}>
                     <span style={{ 
                       fontSize: '13px',
-                      color: 'rgba(255, 255, 255, 0.8)',
+                      color: 'white',
                       textAlign: 'center',
                       lineHeight: '1.4',
                       textShadow: '0 1px 3px rgba(0, 0, 0, 0.8)'
