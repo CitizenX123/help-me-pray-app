@@ -4926,7 +4926,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       }}
                       onMouseOver={(e) => e.target.style.opacity = '0.7'}
                       onMouseOut={(e) => e.target.style.opacity = '1'}
-                      title="Back to categories"
                     >
                       ←
                     </button>
@@ -6462,7 +6461,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   e.target.style.color = 'rgba(255, 255, 255, 0.8)';
                 }}
               >
-                ← Back to Categories
+                ←
               </button>
               </div> {/* Close content section */}
             </div>
