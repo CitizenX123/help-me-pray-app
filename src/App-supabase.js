@@ -567,7 +567,21 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       
       // Add elegant category title at the top
-      let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
+      let categoryTitle;
+      
+      // Use the same category names as in prayer view screen
+      const categoryTitles = {
+        gratitude: 'Prayer for Gratitude',
+        morning: 'Prayer to Start Your Day', 
+        bedtime: 'Prayer for a Good Night',
+        healing: 'Prayer for Healing',
+        family: 'Prayer for Family and Friends',
+        grace: 'Prayer for Saying Grace',
+        bibleVerses: 'Bible Verse Prayer',
+        custom: 'Custom Prayer'
+      };
+      
+      categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
       
       // Create personalized titles for custom prayers
       if (selectedCategory === 'custom') {
