@@ -5828,6 +5828,35 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ textAlign: 'center', color: 'white' }}>
+          {/* App Title with Logo */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            marginBottom: '40px'
+          }}>
+            <img 
+              src="/hands.png" 
+              alt="Praying hands" 
+              style={{ 
+                width: '80px', 
+                height: '80px',
+                filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+              }} 
+            />
+            <h1 style={{ 
+              color: 'white', 
+              fontSize: '28px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              margin: '0'
+            }}>
+              Help Me Pray
+            </h1>
+          </div>
+          
           <div style={{ 
             fontSize: '22px', 
             fontWeight: '500',
