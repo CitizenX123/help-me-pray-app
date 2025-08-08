@@ -766,21 +766,48 @@ const HelpMePrayApp = ({ user, setUser }) => {
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
       
-      // Prayer text styling - positioned lower to avoid title overlap
-      ctx.font = 'normal 24px Georgia, serif';
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      
-      // Clean prayer text and word wrap
+      // Clean prayer text first
       const cleanPrayer = currentPrayer
         .replace(/🙏/g, '') // Remove emoji
         .replace(/\.+/g, '.') // Fix multiple periods
         .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
         .trim();
+      
+      // Calculate dynamic font size based on text length and available space
+      const availableHeight = canvas.height - 240; // Reserve space for title (120px) and branding (120px)
+      const textLength = cleanPrayer.length;
+      const maxWidth = canvas.width - 120;
+      
+      let fontSize, lineHeight;
+      
+      // Dynamic font sizing based on prayer length
+      if (textLength < 300) {
+        // Short prayers - larger font
+        fontSize = 28;
+        lineHeight = 34;
+      } else if (textLength < 600) {
+        // Medium prayers - medium font
+        fontSize = 24;
+        lineHeight = 30;
+      } else if (textLength < 1200) {
+        // Long prayers - smaller font
+        fontSize = 20;
+        lineHeight = 26;
+      } else {
+        // Very long prayers - smallest font
+        fontSize = 18;
+        lineHeight = 24;
+      }
+      
+      // Set font and styling
+      ctx.font = `normal ${fontSize}px Georgia, serif`;
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      
+      // Word wrap with current font size
       const words = cleanPrayer.split(' ');
       const lines = [];
       let currentLine = '';
-      const maxWidth = canvas.width - 120;
       
       for (let word of words) {
         const testLine = currentLine + word + ' ';
@@ -794,10 +821,38 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Calculate proper spacing - reserve space for title (120px) and branding (120px)
-      const availableHeight = canvas.height - 240; // Total minus reserved space  
-      const lineHeight = 30; // Reduce line height to match smaller font
-      const totalTextHeight = lines.length * lineHeight;
+      // Double-check if text fits in available height and adjust if needed
+      let totalTextHeight = lines.length * lineHeight;
+      
+      // If text is still too tall, reduce font size further
+      while (totalTextHeight > availableHeight && fontSize > 14) {
+        fontSize -= 2;
+        lineHeight = fontSize + 6;
+        ctx.font = `normal ${fontSize}px Georgia, serif`;
+        
+        // Recalculate word wrap with new font size
+        const newLines = [];
+        let newCurrentLine = '';
+        
+        for (let word of words) {
+          const testLine = newCurrentLine + word + ' ';
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > maxWidth && newCurrentLine !== '') {
+            newLines.push(newCurrentLine.trim());
+            newCurrentLine = word + ' ';
+          } else {
+            newCurrentLine = testLine;
+          }
+        }
+        newLines.push(newCurrentLine.trim());
+        
+        lines.length = 0;
+        lines.push(...newLines);
+        totalTextHeight = lines.length * lineHeight;
+      }
+      
+      // Final calculation for positioning
+      totalTextHeight = lines.length * lineHeight;
       const startY = 120 + (availableHeight - totalTextHeight) / 2;
       
       // Ensure text doesn't go below branding area
