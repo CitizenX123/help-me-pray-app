@@ -6622,7 +6622,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   fontWeight: '600',
                   textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
                 }}>
-                  Customize Your {categories.find(c => c.key === selectedCategory)?.name || 'Custom'} Prayer
+                  {selectedCategory === 'custom' 
+                    ? 'Create Your Custom Prayer'
+                    : `Customize Your ${categories.find(c => c.key === selectedCategory)?.name || 'Custom'} Prayer`
+                  }
                 </div>
               </div>
 
