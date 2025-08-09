@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck } from 'lucide-react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck, Download, Image, Music, Package } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Add beautiful animated background CSS
@@ -8079,9 +8079,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               fontSize: '22px',
               fontWeight: '700',
               margin: '0 0 8px 0',
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
             }}>
-              📱 Share Your Prayer
+              <Share2 size={24} color="white" />
+              Share Your Prayer
             </h2>
             <p style={{
               color: 'rgba(255, 255, 255, 0.8)',
@@ -8108,9 +8113,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               fontSize: '16px',
               fontWeight: '600',
               margin: '0 0 16px 0',
-              textAlign: 'center'
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
             }}>
-              💾 Download Your Prayer
+              <Download size={20} color="white" />
+              Download Your Prayer
             </h3>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
@@ -8144,7 +8154,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                🎵 Audio MP3
+                <Music size={16} color="white" style={{ marginRight: '6px' }} />
+                Audio MP3
               </button>
 
               {/* Download Image */}
@@ -8164,7 +8175,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                🖼️ Image PNG
+                <Image size={16} color="white" style={{ marginRight: '6px' }} />
+                Image PNG
               </button>
             </div>
 
@@ -8216,7 +8228,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
               onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
             >
-              📦 Download Both (Audio + Image)
+              <Package size={16} color="white" style={{ marginRight: '6px' }} />
+              Download Both (Audio + Image)
             </button>
           </div>
 
@@ -8235,9 +8248,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               fontSize: '16px',
               fontWeight: '600',
               margin: '0 0 8px 0',
-              textAlign: 'center'
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
             }}>
-              📱 Share on Social Media
+              <Smartphone size={20} color="white" />
+              Share on Social Media
             </h3>
             <p style={{
               color: 'rgba(255, 255, 255, 0.8)',
