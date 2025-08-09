@@ -8540,51 +8540,47 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   }}>
                     Preview of your prayer image:
                   </p>
-                  <div style={{
-                    width: '280px',
-                    height: '280px',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: '12px',
-                    margin: '0 auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '20px',
-                    boxSizing: 'border-box',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}>
-                    {/* Background pattern */}
-                    <div style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-                    }}></div>
-                    
-                    <div style={{
+                  <button
+                    onClick={() => {
+                      // Generate a quick preview using the same function
+                      downloadPrayerImage();
+                    }}
+                    style={{
+                      background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
                       color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '16px 24px',
                       fontSize: '16px',
-                      lineHeight: '1.4',
-                      textAlign: 'center',
-                      fontStyle: 'italic',
-                      textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                      zIndex: 1,
-                      maxHeight: '240px',
-                      overflow: 'auto'
-                    }}>
-                      {currentPrayer.length > 200 ? currentPrayer.substring(0, 200) + '...' : currentPrayer}
-                    </div>
-                  </div>
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      margin: '0 auto'
+                    }}
+                    onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    <Eye size={20} />
+                    Generate Image Preview
+                  </button>
+                  <p style={{
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontSize: '12px',
+                    margin: '12px 0 0 0',
+                    fontStyle: 'italic'
+                  }}>
+                    This will create the actual prayer image with beautiful backgrounds and typography
+                  </p>
                 </div>
 
                 {/* Action Buttons */}
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <button
                     onClick={() => {
-                      setSelectedImage('preview-generated');
+                      setSelectedImage('generated-image');
                       setShowImagePreview(false);
                     }}
                     style={{
