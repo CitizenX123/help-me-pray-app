@@ -2549,6 +2549,28 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     setCurrentUtterance(null);
   };
 
+  const pauseAudio = () => {
+    if (audioElement) {
+      audioElement.pause();
+      setIsPaused(true);
+    } else if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      setAudioElement(null);
+    }
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setIsPaused(false);
+    setCurrentUtterance(null);
+  };
+
 
 
   // Enhanced system voice with better settings to simulate premium quality
