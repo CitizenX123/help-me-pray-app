@@ -5828,6 +5828,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         return renderPrayerViewScreen();
       case 'prayer-sharing':
         return renderPrayerSharingScreen();
+      case 'audio-sharing':
+        return renderAudioSharingScreen();
+      case 'image-sharing':
+        return renderImageSharingScreen();
       default:
         return renderLoginScreen();
     }
@@ -7246,10 +7250,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Download and share a beautiful image of your prayer
               </p>
               <button
-                onClick={() => {
-                  downloadPrayerImage();
-                  // You could add sharing logic here
-                }}
+                onClick={() => setCurrentScreen('image-sharing')}
                 style={{
                   width: '100%',
                   padding: '14px',
@@ -7265,7 +7266,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                Download & Share Image
+                Image Sharing Options
               </button>
             </div>
 
@@ -7302,10 +7303,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Listen to your prayer and share the audio
               </p>
               <button
-                onClick={() => {
-                  // Use the existing TTS system
-                  speakPrayer(currentPrayer);
-                }}
+                onClick={() => setCurrentScreen('audio-sharing')}
                 style={{
                   width: '100%',
                   padding: '14px',
@@ -7321,7 +7319,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                Play & Share Audio
+                Audio Sharing Options
               </button>
             </div>
           </div>
@@ -7329,6 +7327,629 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           {/* Navigation and User Status - Same level, opposite sides */}
           <div style={{
             marginTop: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-view')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 6: Audio Sharing Screen  
+  const renderAudioSharingScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                fontSize: '32px', 
+                fontWeight: '600', 
+                color: 'white',
+                margin: 0,
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
+              }}>
+                Share Audio Prayer
+              </h1>
+            </div>
+          </div>
+
+          {/* Audio Player Controls */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '24px',
+            marginBottom: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: '600',
+              margin: '0 0 16px 0',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              <Volume2 size={20} color="#8b5cf6" />
+              Audio Controls
+            </h3>
+
+            {/* Play/Pause Button */}
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              {!isPlaying ? (
+                <button
+                  onClick={() => speakPrayer(currentPrayer)}
+                  style={{
+                    background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                    border: 'none',
+                    borderRadius: '50px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    padding: '16px 32px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    margin: '0 auto',
+                    transition: 'transform 0.2s'
+                  }}
+                  onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                  onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <Play size={20} />
+                  Play Prayer
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <button
+                    onClick={pauseAudio}
+                    style={{
+                      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                      border: 'none',
+                      borderRadius: '50px',
+                      color: 'white',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      padding: '12px 24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Pause size={16} />
+                    Pause
+                  </button>
+                  <button
+                    onClick={stopAudio}
+                    style={{
+                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                      border: 'none',
+                      borderRadius: '50px',
+                      color: 'white',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      padding: '12px 24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Square size={16} />
+                    Stop
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sharing Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Download Audio */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center'
+              }}>
+                💾 Download Audio File
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Save the audio prayer as an MP3 file
+              </p>
+              <button
+                onClick={() => {
+                  if (currentAudioBlob) {
+                    const url = URL.createObjectURL(currentAudioBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `prayer-audio-${Date.now()}.mp3`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  } else {
+                    alert('Please play the audio first to generate the download file.');
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Download MP3
+              </button>
+            </div>
+
+            {/* Share to Social Media */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center'
+              }}>
+                📱 Share on Social Media
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Share your prayer audio with friends and family
+              </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <button
+                  onClick={() => {
+                    // WhatsApp sharing
+                    const text = encodeURIComponent(`🎵 Listen to this beautiful prayer I created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                    window.open(`https://wa.me/?text=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  WhatsApp
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Copy to clipboard
+                    const textToShare = `🎵 Beautiful prayer audio created with Help Me Pray app!\n\n${currentPrayer}\n\nDownload: helpmepray.app`;
+                    navigator.clipboard.writeText(textToShare).then(() => {
+                      alert('Prayer text copied! You can paste it along with your audio file.');
+                    });
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Copy Text
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Facebook sharing
+                    const text = encodeURIComponent(`🎵 Beautiful prayer created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helpmepray.app')}&quote=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Facebook
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Twitter sharing
+                    const text = encodeURIComponent(`🎵 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer.substring(0, 150)}...\n\n#Prayer #Faith #HelpMePray`);
+                    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent('https://helpmepray.app')}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #1da1f2, #0d8bd9)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Twitter
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-view')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 7: Image Sharing Screen
+  const renderImageSharingScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                fontSize: '32px', 
+                fontWeight: '600', 
+                color: 'white',
+                margin: 0,
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
+              }}>
+                Share Prayer Image
+              </h1>
+            </div>
+          </div>
+
+          {/* Image Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Download Image */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                <Share2 size={20} color="#10b981" />
+                Download Prayer Image
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Save the beautiful prayer image to your device
+              </p>
+              <button
+                onClick={() => downloadPrayerImage()}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Download Image
+              </button>
+            </div>
+
+            {/* Share to Social Media */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center'
+              }}>
+                📱 Share on Social Media
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Share your prayer image with friends and family
+              </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <button
+                  onClick={() => {
+                    // Generate image and share to WhatsApp
+                    downloadPrayerImage();
+                    setTimeout(() => {
+                      const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                      window.open(`https://wa.me/?text=${text}`, '_blank');
+                    }, 1000);
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  WhatsApp
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Instagram sharing (opens Instagram app or web)
+                    const text = encodeURIComponent(`Beautiful prayer created with Help Me Pray app! 🙏\n\n#Prayer #Faith #HelpMePray #Inspiration`);
+                    window.open(`https://www.instagram.com/`, '_blank');
+                    // Also copy text for user to paste
+                    navigator.clipboard.writeText(`Beautiful prayer created with Help Me Pray app! 🙏\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray #Inspiration`);
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Instagram
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Facebook sharing
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 200)}...`);
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helpmepray.app')}&quote=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Facebook
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Copy prayer text for sharing
+                    const textToShare = `🖼️ Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`;
+                    navigator.clipboard.writeText(textToShare).then(() => {
+                      alert('Prayer text copied! Download the image and share both together.');
+                    });
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Copy Text
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '20px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
