@@ -7064,7 +7064,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Share Prayer Button */}
             <button 
-              onClick={() => setCurrentScreen('prayer-sharing')}
+              onClick={() => setCurrentScreen('unified-sharing')}
               style={{ 
                 padding: '16px',
                 borderRadius: '15px',
@@ -8113,7 +8113,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               💾 Download Your Prayer
             </h3>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
               {/* Download Audio */}
               <button
                 onClick={() => {
@@ -8167,6 +8167,57 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 🖼️ Image PNG
               </button>
             </div>
+
+            {/* Download Both Button */}
+            <button
+              onClick={() => {
+                // Download both audio and image
+                let downloadCount = 0;
+                
+                // Download audio
+                if (currentAudioBlob) {
+                  const audioUrl = URL.createObjectURL(currentAudioBlob);
+                  const audioLink = document.createElement('a');
+                  audioLink.href = audioUrl;
+                  audioLink.download = `prayer-audio-${Date.now()}.mp3`;
+                  document.body.appendChild(audioLink);
+                  audioLink.click();
+                  document.body.removeChild(audioLink);
+                  URL.revokeObjectURL(audioUrl);
+                  downloadCount++;
+                } else {
+                  alert('Please play the audio first to generate the download file.');
+                  return;
+                }
+                
+                // Download image (small delay to avoid browser blocking multiple downloads)
+                setTimeout(() => {
+                  downloadPrayerImage();
+                  downloadCount++;
+                }, 500);
+                
+                // Show success message
+                setTimeout(() => {
+                  alert('Both audio and image files have been downloaded!');
+                }, 1000);
+              }}
+              style={{
+                width: '100%',
+                padding: '16px',
+                borderRadius: '12px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'transform 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+            >
+              📦 Download Both (Audio + Image)
+            </button>
           </div>
 
           {/* Social Media Sharing */}
