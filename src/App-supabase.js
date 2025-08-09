@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck, Download, Image, Music, Package } from 'lucide-react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck, Download, Image, Music, Package, Eye, Headphones, X, Check } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Add beautiful animated background CSS
@@ -242,6 +242,12 @@ const HelpMePrayApp = ({ user, setUser }) => {
   // Prayer App State
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
   const [currentPrayerInfo, setCurrentPrayerInfo] = useState({ category: '', verseReference: '', customTopic: '' });
+  
+  // Sharing Flow State
+  const [showAudioPreview, setShowAudioPreview] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [selectedAudio, setSelectedAudio] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   
   // Clear prayer when category changes to force icon display
   useEffect(() => {
@@ -8119,121 +8125,65 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               justifyContent: 'center',
               gap: '8px'
             }}>
-              <Download size={20} color="white" />
-              Download Your Prayer
+              <Eye size={20} color="white" />
+              Choose What to Share
             </h3>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-              {/* Download Audio */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+              {/* Choose Audio */}
               <button
-                onClick={() => {
-                  if (currentAudioBlob) {
-                    const url = URL.createObjectURL(currentAudioBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `prayer-audio-${Date.now()}.mp3`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                  } else {
-                    alert('Please play the audio first to generate the download file.');
-                  }
-                }}
+                onClick={() => setShowAudioPreview(true)}
                 style={{
                   padding: '14px',
                   borderRadius: '12px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  border: selectedAudio ? '2px solid #10b981' : 'none',
+                  background: selectedAudio ? 'rgba(16, 185, 129, 0.2)' : 'linear-gradient(135deg, #10b981, #059669)',
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  transition: 'transform 0.2s'
+                  transition: 'transform 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
                 }}
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                <Music size={16} color="white" style={{ marginRight: '6px' }} />
-                Audio MP3
+                {selectedAudio ? <Check size={16} /> : <Headphones size={16} />}
+                {selectedAudio ? 'Audio Selected' : 'Choose Audio'}
               </button>
 
-              {/* Download Image */}
+              {/* View Image */}
               <button
-                onClick={downloadPrayerImage}
+                onClick={() => setShowImagePreview(true)}
                 style={{
                   padding: '14px',
                   borderRadius: '12px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                  border: selectedImage ? '2px solid #8b5cf6' : 'none',
+                  background: selectedImage ? 'rgba(139, 92, 246, 0.2)' : 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  transition: 'transform 0.2s'
+                  transition: 'transform 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
                 }}
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                <Image size={16} color="white" style={{ marginRight: '6px' }} />
-                Image PNG
+                {selectedImage ? <Check size={16} /> : <Eye size={16} />}
+                {selectedImage ? 'Image Selected' : 'View Image'}
               </button>
             </div>
-
-            {/* Download Both Button */}
-            <button
-              onClick={() => {
-                // Download both audio and image
-                let downloadCount = 0;
-                
-                // Download audio
-                if (currentAudioBlob) {
-                  const audioUrl = URL.createObjectURL(currentAudioBlob);
-                  const audioLink = document.createElement('a');
-                  audioLink.href = audioUrl;
-                  audioLink.download = `prayer-audio-${Date.now()}.mp3`;
-                  document.body.appendChild(audioLink);
-                  audioLink.click();
-                  document.body.removeChild(audioLink);
-                  URL.revokeObjectURL(audioUrl);
-                  downloadCount++;
-                } else {
-                  alert('Please play the audio first to generate the download file.');
-                  return;
-                }
-                
-                // Download image (small delay to avoid browser blocking multiple downloads)
-                setTimeout(() => {
-                  downloadPrayerImage();
-                  downloadCount++;
-                }, 500);
-                
-                // Show success message
-                setTimeout(() => {
-                  alert('Both audio and image files have been downloaded!');
-                }, 1000);
-              }}
-              style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '12px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'transform 0.2s'
-              }}
-              onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
-              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-            >
-              <Package size={16} color="white" style={{ marginRight: '6px' }} />
-              Download Both (Audio + Image)
-            </button>
           </div>
 
-          {/* Social Media Sharing */}
+          {/* Social Media Sharing - Only show when something is selected */}
+          {(selectedAudio || selectedImage) && (
           <div style={{
             background: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(20px)',
@@ -8350,6 +8300,319 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </button>
             </div>
           </div>
+          )}
+
+          {/* Audio Preview Dialog */}
+          {showAudioPreview && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.9)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '32px',
+                width: '100%',
+                maxWidth: '400px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)'
+              }}>
+                {/* Header */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '24px'
+                }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '600',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Headphones size={20} color="white" />
+                    Choose Audio
+                  </h3>
+                  <button
+                    onClick={() => setShowAudioPreview(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      borderRadius: '4px',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.color = 'white'}
+                    onMouseOut={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.7)'}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Audio Player */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginBottom: '24px',
+                  textAlign: 'center'
+                }}>
+                  {!isPlaying ? (
+                    <button
+                      onClick={() => speakPrayer(currentPrayer)}
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50px',
+                        padding: '16px 24px',
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        margin: '0 auto'
+                      }}
+                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                    >
+                      <Play size={20} />
+                      Play Prayer Audio
+                    </button>
+                  ) : (
+                    <button
+                      onClick={pauseAudio}
+                      style={{
+                        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50px',
+                        padding: '16px 24px',
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        margin: '0 auto'
+                      }}
+                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                    >
+                      <Pause size={20} />
+                      Pause Audio
+                    </button>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      setSelectedAudio(currentAudioBlob);
+                      setShowAudioPreview(false);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #10b981, #059669)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    <Check size={16} />
+                    Select This Audio
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Image Preview Dialog */}
+          {showImagePreview && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.9)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '32px',
+                width: '100%',
+                maxWidth: '400px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)'
+              }}>
+                {/* Header */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '24px'
+                }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '600',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Eye size={20} color="white" />
+                    Choose Image
+                  </h3>
+                  <button
+                    onClick={() => setShowImagePreview(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      borderRadius: '4px',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.color = 'white'}
+                    onMouseOut={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.7)'}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Image Preview */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginBottom: '24px',
+                  textAlign: 'center'
+                }}>
+                  <p style={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontSize: '14px',
+                    margin: '0 0 16px 0'
+                  }}>
+                    Preview of your prayer image:
+                  </p>
+                  <div style={{
+                    width: '280px',
+                    height: '280px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: '12px',
+                    margin: '0 auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px',
+                    boxSizing: 'border-box',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Background pattern */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+                    }}></div>
+                    
+                    <div style={{
+                      color: 'white',
+                      fontSize: '16px',
+                      lineHeight: '1.4',
+                      textAlign: 'center',
+                      fontStyle: 'italic',
+                      textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                      zIndex: 1,
+                      maxHeight: '240px',
+                      overflow: 'auto'
+                    }}>
+                      {currentPrayer.length > 200 ? currentPrayer.substring(0, 200) + '...' : currentPrayer}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      setSelectedImage('preview-generated');
+                      setShowImagePreview(false);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    <Check size={16} />
+                    Select This Image
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Navigation and User Status */}
           <div style={{
