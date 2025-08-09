@@ -776,7 +776,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       
       // Draw the category title with proper spacing from top
-      ctx.fillText(categoryTitle, canvas.width / 2, 90);
+      ctx.fillText(categoryTitle, canvas.width / 2, 120);
       
       // Reset shadow for prayer text
       ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
@@ -871,7 +871,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Final calculation for positioning
       totalTextHeight = lines.length * lineHeight;
-      const startY = 160 + (availableHeight - totalTextHeight) / 2;
+      const startY = 180 + (availableHeight - totalTextHeight) / 2;
       
       // Ensure text doesn't go below branding area
       const maxEndY = canvas.height - 140;
@@ -903,8 +903,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
           });
           
           // Position logo and text at the bottom (properly centered)
-          const brandingY = canvas.height - 40;
-          const logoSize = 120; // Increased from 60px for better quality
+          const brandingY = canvas.height - 60;
+          const logoSize = 80; // Reduced from 120px for better proportions
           const brandingText = 'Help Me Pray App';
           
           // Measure text width for proper centering
@@ -948,7 +948,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
           ctx.font = '18px Arial';
           ctx.fillStyle = 'white';
           ctx.textAlign = 'center';
-          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 40);
+          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 60);
         }
       };
       
