@@ -5382,13 +5382,19 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                 <button
-                  onClick={() => socialSharing.copyToClipboard(currentPrayer)}
+                  onClick={() => {
+                    // Instagram sharing
+                    navigator.clipboard.writeText(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpmeray.app`).then(() => {
+                      alert('Prayer text copied! Now opening Instagram - paste this with your prayer.');
+                      window.open('https://www.instagram.com/', '_blank');
+                    });
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
                     padding: '10px 12px',
-                    backgroundColor: '#6b7280',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -5397,8 +5403,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     transition: 'background-color 0.2s'
                   }}
                 >
-                  <Copy size={16} />
-                  Copy
+                  <Instagram size={16} />
+                  Instagram
                 </button>
                 
                 <button
@@ -5419,26 +5425,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 >
                   <MessageCircle size={16} />
                   WhatsApp
-                </button>
-                
-                <button
-                  onClick={() => socialSharing.shareToTwitter(currentPrayer)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 12px',
-                    backgroundColor: '#1da1f2',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                >
-                  <Twitter size={16} />
-                  Twitter
                 </button>
                 
                 <button
