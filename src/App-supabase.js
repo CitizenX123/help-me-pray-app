@@ -545,17 +545,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
     setIsGeneratingImage(false);
   }, [currentPrayer, generatedImageUrl, isGeneratingImage, selectedCategory]);
 
-  // Generate image preview when prayer changes
+  // Reset image when leaving sharing screen
   useEffect(() => {
-    if (currentPrayer && currentScreen === 'unified-sharing') {
-      setGeneratedImageUrl(null); // Reset previous image
-      const timeoutId = setTimeout(() => {
-        generateImagePreview();
-      }, 100); // Small delay to prevent rapid re-renders
-      
-      return () => clearTimeout(timeoutId);
+    if (currentScreen !== 'unified-sharing') {
+      setGeneratedImageUrl(null);
+      setIsGeneratingImage(false);
     }
-  }, [currentPrayer, currentScreen, generateImagePreview]);
+  }, [currentScreen]);
 
   const downloadPrayerImage = async () => {
     if (!currentPrayer) {
@@ -8292,21 +8288,44 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 }}>
                   Generating image...
                 </div>
-              ) : generatedImageUrl ? (
-                <img 
-                  src={generatedImageUrl}
-                  alt="Prayer Image"
-                  style={{
-                    width: '280px',
-                    height: '350px',
-                    borderRadius: '12px',
-                    objectFit: 'cover',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-                  }}
-                />
+              ) : generatedImageUrl && generatedImageUrl !== 'fallback' ? (
+                <div>
+                  <img 
+                    src={generatedImageUrl}
+                    alt="Prayer"
+                    style={{
+                      width: '280px',
+                      height: '350px',
+                      borderRadius: '12px',
+                      objectFit: 'cover',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      setGeneratedImageUrl(null);
+                      generateImagePreview();
+                    }}
+                    style={{
+                      marginTop: '8px',
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      color: 'white',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Regenerate
+                  </button>
+                </div>
               ) : (
                 <button
-                  onClick={generateImagePreview}
+                  onClick={() => {
+                    setGeneratedImageUrl(null);
+                    generateImagePreview();
+                  }}
                   style={{
                     width: '280px',
                     height: '350px',
@@ -8320,11 +8339,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px'
+                    gap: '8px',
+                    transition: 'all 0.2s'
                   }}
+                  onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
                 >
                   <Eye size={24} />
-                  Generate Image Preview
+                  Click to Generate Image Preview
                 </button>
               )}
             </div>
