@@ -8121,7 +8121,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     const url = URL.createObjectURL(currentAudioBlob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = \`prayer-audio-\${Date.now()}.mp3\`;
+                    a.download = `prayer-audio-${Date.now()}.mp3`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -8201,8 +8201,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               <button
                 onClick={() => {
                   // WhatsApp sharing
-                  const text = encodeURIComponent(\`🙏 Beautiful prayer created with Help Me Pray app!\\n\\n\${currentPrayer.substring(0, 100)}...\\n\\nDownload: helmpmeray.app\`);
-                  window.open(\`https://wa.me/?text=\${text}\`, '_blank');
+                  const text = encodeURIComponent(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpmeray.app`);
+                  window.open(`https://wa.me/?text=${text}`, '_blank');
                 }}
                 style={{
                   padding: '12px',
@@ -8221,7 +8221,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               <button
                 onClick={() => {
                   // Instagram sharing
-                  navigator.clipboard.writeText(\`🙏 Beautiful prayer created with Help Me Pray app!\\n\\n\${currentPrayer}\\n\\n#Prayer #Faith #HelpMePray\\n\\nDownload: helmpmeray.app\`).then(() => {
+                  navigator.clipboard.writeText(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpmeray.app`).then(() => {
                     alert('Prayer text copied! Now opening Instagram - paste this with your downloaded content.');
                     window.open('https://www.instagram.com/', '_blank');
                   });
@@ -8243,8 +8243,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               <button
                 onClick={() => {
                   // Facebook sharing
-                  const text = encodeURIComponent(\`🙏 Beautiful prayer created with Help Me Pray app! \${currentPrayer.substring(0, 100)}...\`);
-                  window.open(\`https://www.facebook.com/sharer/sharer.php?u=\${encodeURIComponent('https://helmpmeray.app')}&quote=\${text}\`, '_blank');
+                  const text = encodeURIComponent(`🙏 Beautiful prayer created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmpmeray.app')}&quote=${text}`, '_blank');
                 }}
                 style={{
                   padding: '12px',
@@ -8263,8 +8263,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               <button
                 onClick={() => {
                   // Messages sharing (SMS)
-                  const text = encodeURIComponent(\`🙏 Beautiful prayer created with Help Me Pray app!\\n\\n\${currentPrayer.substring(0, 100)}...\\n\\nDownload: helmpmeray.app\`);
-                  window.open(\`sms:?body=\${text}\`, '_blank');
+                  const text = encodeURIComponent(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpmeray.app`);
+                  window.open(`sms:?body=${text}`, '_blank');
                 }}
                 style={{
                   padding: '12px',
