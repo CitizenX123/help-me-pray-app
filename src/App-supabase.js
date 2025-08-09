@@ -7622,11 +7622,11 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Share your prayer audio with friends and family
               </p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                 <button
                   onClick={() => {
                     // WhatsApp sharing
-                    const text = encodeURIComponent(`🎵 Listen to this beautiful prayer I created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                    const text = encodeURIComponent(`🎵 Listen to this beautiful prayer I created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpmeray.app`);
                     window.open(`https://wa.me/?text=${text}`, '_blank');
                   }}
                   style={{
@@ -7645,24 +7645,24 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 
                 <button
                   onClick={() => {
-                    // Copy to clipboard
-                    const textToShare = `🎵 Beautiful prayer audio created with Help Me Pray app!\n\n${currentPrayer}\n\nDownload: helpmepray.app`;
-                    navigator.clipboard.writeText(textToShare).then(() => {
-                      alert('Prayer text copied! You can paste it along with your audio file.');
+                    // Instagram sharing (opens Instagram with encouragement to share)
+                    navigator.clipboard.writeText(`🎵 Beautiful prayer audio created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`).then(() => {
+                      alert('Prayer text copied! Now opening Instagram - share this with your downloaded audio.');
+                      window.open('https://www.instagram.com/', '_blank');
                     });
                   }}
                   style={{
                     padding: '12px',
                     borderRadius: '10px',
                     border: 'none',
-                    background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
                     color: 'white',
                     fontSize: '14px',
                     fontWeight: '600',
                     cursor: 'pointer'
                   }}
                 >
-                  Copy Text
+                  Instagram
                 </button>
                 
                 <button
@@ -7703,6 +7703,26 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   }}
                 >
                   Twitter
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Messages sharing (SMS)
+                    const text = encodeURIComponent(`🎵 Listen to this beautiful prayer I created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                    window.open(`sms:?body=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #34c759, #30d158)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Messages
                 </button>
               </div>
             </div>
@@ -7878,7 +7898,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Share your prayer image with friends and family
               </p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                 <button
                   onClick={() => {
                     // Generate image and share to WhatsApp
@@ -7946,24 +7966,66 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 
                 <button
                   onClick={() => {
-                    // Copy prayer text for sharing
-                    const textToShare = `🖼️ Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`;
-                    navigator.clipboard.writeText(textToShare).then(() => {
-                      alert('Prayer text copied! Download the image and share both together.');
-                    });
+                    // WhatsApp sharing
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`);
+                    window.open(`https://wa.me/?text=${text}`, '_blank');
                   }}
                   style={{
                     padding: '12px',
                     borderRadius: '10px',
                     border: 'none',
-                    background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                    background: 'linear-gradient(135deg, #25d366, #128c7e)',
                     color: 'white',
                     fontSize: '14px',
                     fontWeight: '600',
                     cursor: 'pointer'
                   }}
                 >
-                  Copy Text
+                  WhatsApp
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Instagram sharing (opens Instagram with encouragement to share)
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer created with Help Me Pray app!\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`);
+                    // Instagram doesn't have direct URL sharing, so we'll copy text and open Instagram
+                    navigator.clipboard.writeText(`🖼️ Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`).then(() => {
+                      alert('Prayer text copied! Now opening Instagram - paste this with your downloaded image.');
+                      window.open('https://www.instagram.com/', '_blank');
+                    });
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Instagram
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Messages sharing (SMS)
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                    window.open(`sms:?body=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #34c759, #30d158)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Messages
                 </button>
               </div>
             </div>
