@@ -250,6 +250,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [showImageSharingDialog, setShowImageSharingDialog] = useState(false);
+  const [showAudioSharingDialog, setShowAudioSharingDialog] = useState(false);
+  const [showBothSharingDialog, setShowBothSharingDialog] = useState(false);
   
   // Clear prayer when category changes to force icon display
   useEffect(() => {
@@ -412,17 +415,16 @@ const HelpMePrayApp = ({ user, setUser }) => {
   };
 
   // Download prayer as image function
-  // Generate image preview for sharing screen using the existing downloadPrayerImage logic
+  // Generate image preview using the REAL photo-realistic image generation logic
   const generateImagePreview = useCallback(async () => {
     if (!currentPrayer || generatedImageUrl || isGeneratingImage) return;
     
     setIsGeneratingImage(true);
     try {
-      // Create a modified version of downloadPrayerImage that returns the image URL instead of downloading
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Set canvas size (smaller for preview)
+      // Set canvas size (smaller for preview, but same aspect ratio)
       canvas.width = 400;
       canvas.height = 500;
       
@@ -430,48 +432,122 @@ const HelpMePrayApp = ({ user, setUser }) => {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       
-      // Use simple gradient background for preview (faster than loading external images)
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      
-      // Category-specific gradients
-      switch(selectedCategory) {
-        case 'morning':
-          gradient.addColorStop(0, '#FFD700');
-          gradient.addColorStop(1, '#FFA500');
-          break;
-        case 'bedtime':
-          gradient.addColorStop(0, '#6366f1');
-          gradient.addColorStop(1, '#312e81');
-          break;
-        case 'healing':
-          gradient.addColorStop(0, '#22c55e');
-          gradient.addColorStop(1, '#16a34a');
-          break;
-        case 'gratitude':
-          gradient.addColorStop(0, '#f59e0b');
-          gradient.addColorStop(1, '#d97706');
-          break;
-        case 'family':
+      // Create photo-realistic backgrounds using actual photographs (same as downloadPrayerImage)
+      const createPhotoRealisticBackground = async () => {
+        // Generate random seed for uniqueness each time
+        const randomSeed = Math.random();
+
+        // Function to load and draw image on canvas - Safari compatible
+        const loadAndDrawImage = (imageUrl) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            
+            const timeoutId = setTimeout(() => {
+              reject(new Error('Image load timeout'));
+            }, 10000); // Shorter timeout for preview
+            
+            img.onload = () => {
+              clearTimeout(timeoutId);
+              // Draw image to fill canvas while maintaining aspect ratio
+              const canvasRatio = canvas.width / canvas.height;
+              const imageRatio = img.width / img.height;
+              
+              let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+              
+              if (canvasRatio > imageRatio) {
+                drawWidth = canvas.width;
+                drawHeight = canvas.width / imageRatio;
+                offsetY = (canvas.height - drawHeight) / 2;
+              } else {
+                drawHeight = canvas.height;
+                drawWidth = canvas.height * imageRatio;
+                offsetX = (canvas.width - drawWidth) / 2;
+              }
+              
+              ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+              
+              // Add STRONGER dark overlay for better text contrast
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              
+              resolve();
+            };
+            img.onerror = () => {
+              clearTimeout(timeoutId);
+              // Fallback to gradient if image fails to load
+              const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+              gradient.addColorStop(0, '#87CEEB');
+              gradient.addColorStop(1, '#4682B4');
+              ctx.fillStyle = gradient;
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              resolve();
+            };
+            
+            img.crossOrigin = 'anonymous';
+            img.src = imageUrl;
+          });
+        };
+
+        // Curated photo collections for each category (same as original)
+        const photoCollections = {
+          morning: [
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=400&h=500&fit=crop&crop=center'
+          ],
+          bedtime: [
+            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=400&h=500&fit=crop&crop=center'
+          ],
+          family: [
+            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1515263487990-61b07816b132?w=400&h=500&fit=crop&crop=center'
+          ],
+          healing: [
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=400&h=500&fit=crop&crop=center'
+          ],
+          gratitude: [
+            'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1574919995582-ca2b037ed3cc?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center'
+          ],
+          bibleVerses: [
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=500&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center'
+          ]
+        };
+
+        // Select random photo from the category collection (ALWAYS DIFFERENT)
+        const categoryPhotos = photoCollections[selectedCategory] || photoCollections['morning'];
+        const selectedPhoto = categoryPhotos[Math.floor(randomSeed * categoryPhotos.length)];
+        
+        try {
+          await loadAndDrawImage(selectedPhoto);
+        } catch (error) {
+          console.warn('Failed to load photo, using fallback gradient:', error);
+          const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
           gradient.addColorStop(0, '#87CEEB');
           gradient.addColorStop(1, '#4682B4');
-          break;
-        case 'bibleVerses':
-          gradient.addColorStop(0, '#D2691E');
-          gradient.addColorStop(1, '#8B4513');
-          break;
-        default:
-          gradient.addColorStop(0, '#667eea');
-          gradient.addColorStop(1, '#764ba2');
-      }
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+      };
+
+      // Create the background
+      await createPhotoRealisticBackground();
       
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Add subtle dark overlay for better text readability
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Category title
+      // Category titles (same as original)
       const categoryTitles = {
         gratitude: 'A Prayer for Gratitude',
         morning: 'A Prayer to Start Your Day', 
@@ -485,17 +561,18 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       const categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
       
-      // Title styling
+      // ENHANCED title styling with high contrast and strong drop shadow
       ctx.textAlign = 'center';
-      ctx.font = 'bold 32px Georgia, serif';
+      ctx.font = 'bold 28px Georgia, serif';
       ctx.fillStyle = 'white';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
       
-      // Draw title
-      ctx.fillText(categoryTitle, canvas.width / 2, 60);
+      // STRONG drop shadow for high contrast
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      
+      ctx.fillText(categoryTitle, canvas.width / 2, 50);
       
       // Clean prayer text
       const cleanPrayer = currentPrayer
@@ -504,11 +581,15 @@ const HelpMePrayApp = ({ user, setUser }) => {
         .replace(/\.\s*\./g, '.')
         .trim();
       
-      // Prayer text with proper word wrapping
-      const maxWidth = canvas.width - 40;
-      ctx.font = '16px Georgia, serif';
+      // Prayer text with ENHANCED contrast
+      ctx.font = '14px Georgia, serif';
       ctx.fillStyle = 'white';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
       
+      const maxWidth = canvas.width - 40;
       const words = cleanPrayer.split(' ');
       const lines = [];
       let currentLine = '';
@@ -525,10 +606,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Draw prayer text (limit lines for preview)
-      const maxLines = Math.min(lines.length, 18);
-      const lineHeight = 22;
-      const startY = 100;
+      // Draw prayer text with enhanced contrast
+      const maxLines = Math.min(lines.length, 28);
+      const lineHeight = 16;
+      const startY = 80;
       
       for (let i = 0; i < maxLines; i++) {
         ctx.fillText(lines[i], canvas.width / 2, startY + (i * lineHeight));
@@ -539,7 +620,6 @@ const HelpMePrayApp = ({ user, setUser }) => {
       setGeneratedImageUrl(imageUrl);
     } catch (error) {
       console.error('Error generating image preview:', error);
-      // Set a fallback in case of error
       setGeneratedImageUrl('fallback');
     }
     setIsGeneratingImage(false);
@@ -8458,13 +8538,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             {/* Share Type Buttons */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
               <button
-                onClick={() => {
-                  // Download image first, then show sharing options
-                  downloadPrayerImage();
-                  setTimeout(() => {
-                    alert('Image downloaded! You can now share it on social media.');
-                  }, 1000);
-                }}
+                onClick={() => setShowImageSharingDialog(true)}
                 style={{
                   padding: '10px 8px',
                   borderRadius: '10px',
@@ -8485,22 +8559,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </button>
 
               <button
-                onClick={() => {
-                  if (currentAudioBlob) {
-                    // Download audio
-                    const url = URL.createObjectURL(currentAudioBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `prayer-audio-${Date.now()}.mp3`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    alert('Audio downloaded! You can now share it.');
-                  } else {
-                    alert('Please play the audio first to generate the download file.');
-                  }
-                }}
+                onClick={() => setShowAudioSharingDialog(true)}
                 style={{
                   padding: '10px 8px',
                   borderRadius: '10px',
@@ -8521,25 +8580,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </button>
 
               <button
-                onClick={() => {
-                  // Download both
-                  downloadPrayerImage();
-                  if (currentAudioBlob) {
-                    setTimeout(() => {
-                      const url = URL.createObjectURL(currentAudioBlob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = `prayer-audio-${Date.now()}.mp3`;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                      URL.revokeObjectURL(url);
-                    }, 500);
-                    setTimeout(() => {
-                      alert('Both image and audio downloaded! You can now share them.');
-                    }, 1000);
-                  }
-                }}
+                onClick={() => setShowBothSharingDialog(true)}
                 style={{
                   padding: '10px 8px',
                   borderRadius: '10px',
@@ -8560,87 +8601,601 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </button>
             </div>
 
-            {/* Social Media Platforms */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-              <button
-                onClick={() => {
-                  const text = encodeURIComponent(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpmeray.app`);
-                  window.open(`https://wa.me/?text=${text}`, '_blank');
-                }}
-                style={{
-                  padding: '12px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #25d366, #128c7e)',
-                  color: 'white',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                WhatsApp
-              </button>
-
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpmeray.app`).then(() => {
-                    alert('Prayer text copied! Now opening Instagram - paste this with your downloaded content.');
-                    window.open('https://www.instagram.com/', '_blank');
-                  });
-                }}
-                style={{
-                  padding: '12px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #e4405f, #c13584)',
-                  color: 'white',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                Instagram
-              </button>
-
-              <button
-                onClick={() => {
-                  const text = encodeURIComponent(`🙏 Beautiful prayer created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmpmeray.app')}&quote=${text}`, '_blank');
-                }}
-                style={{
-                  padding: '12px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #1877f2, #166fe5)',
-                  color: 'white',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                Facebook
-              </button>
-
-              <button
-                onClick={() => {
-                  const text = encodeURIComponent(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpmeray.app`);
-                  window.open(`sms:?body=${text}`, '_blank');
-                }}
-                style={{
-                  padding: '12px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #34c759, #30d158)',
-                  color: 'white',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                Messages
-              </button>
-            </div>
           </div>
+
+          {/* Image Sharing Dialog */}
+          {showImageSharingDialog && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(30, 30, 30, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.5)',
+                maxWidth: '400px',
+                width: '100%'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Image size={20} color="#8b5cf6" />
+                    Share Prayer Image
+                  </h3>
+                  <button
+                    onClick={() => setShowImageSharingDialog(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                      window.open(`https://wa.me/?text=${text}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`).then(() => {
+                        alert('Prayer text copied! Image downloaded. Now opening Instagram - paste and attach your image.');
+                        window.open('https://www.instagram.com/', '_blank');
+                      });
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Instagram size={16} />
+                    Instagram
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helpmepray.app')}&quote=${text}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Facebook size={16} />
+                    Facebook
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                      window.open(`sms:?body=${text}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Smartphone size={16} />
+                    Messages
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '16px',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const emailSubject = encodeURIComponent('Beautiful Prayer Image');
+                      const emailBody = encodeURIComponent(`🙏 I wanted to share this beautiful prayer image I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nYou can download the app at helmnpray.app to create your own personalized prayers.`);
+                      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      width: '100%'
+                    }}
+                  >
+                    📧 Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Audio Sharing Dialog */}
+          {showAudioSharingDialog && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(30, 30, 30, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.5)',
+                maxWidth: '400px',
+                width: '100%'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Headphones size={20} color="#10b981" />
+                    Share Prayer Audio
+                  </h3>
+                  <button
+                    onClick={() => setShowAudioSharingDialog(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      socialSharing.shareAudioToWhatsApp();
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`🎵 Beautiful prayer audio created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helimepray.app`).then(() => {
+                        socialSharing.downloadAudio();
+                        alert('Prayer text copied and audio downloaded! Now opening Instagram - paste text and attach your audio file.');
+                        window.open('https://www.instagram.com/', '_blank');
+                      });
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Instagram size={16} />
+                    Instagram
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      socialSharing.downloadAudio();
+                      const text = encodeURIComponent(`🎵 Beautiful prayer audio created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helkmepray.app')}&quote=${text}`, '_blank');
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Facebook size={16} />
+                    Facebook
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      socialSharing.shareAudioToMessages();
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Smartphone size={16} />
+                    Messages
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '16px',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => {
+                      socialSharing.downloadAudio();
+                      const emailSubject = encodeURIComponent('Beautiful Prayer Audio');
+                      const emailBody = encodeURIComponent(`🎵 I wanted to share this beautiful prayer audio I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nThe audio file has been downloaded. Please attach it to this email.\n\nYou can download the app at helmeray.app to create your own personalized prayer audio.`);
+                      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      width: '100%'
+                    }}
+                  >
+                    📧 Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Both Sharing Dialog */}
+          {showBothSharingDialog && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(30, 30, 30, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.5)',
+                maxWidth: '400px',
+                width: '100%'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Package size={20} color="#f59e0b" />
+                    Share Both Image & Audio
+                  </h3>
+                  <button
+                    onClick={() => setShowBothSharingDialog(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.shareAudioToWhatsApp();
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.downloadAudio();
+                      navigator.clipboard.writeText(`🙏🎵 Beautiful prayer image and audio created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpray.app`).then(() => {
+                        alert('Prayer text copied! Both image and audio downloaded. Now opening Instagram - paste text and attach both files.');
+                        window.open('https://www.instagram.com/', '_blank');
+                      });
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Instagram size={16} />
+                    Instagram
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.downloadAudio();
+                      const text = encodeURIComponent(`🙏🎵 Beautiful prayer image and audio created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmpray.app')}&quote=${text}`, '_blank');
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Facebook size={16} />
+                    Facebook
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.shareAudioToMessages();
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Smartphone size={16} />
+                    Messages
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '16px',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.downloadAudio();
+                      const emailSubject = encodeURIComponent('Beautiful Prayer Image & Audio');
+                      const emailBody = encodeURIComponent(`🙏🎵 I wanted to share this beautiful prayer image and audio I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nBoth the image and audio files have been downloaded. Please attach them to this email.\n\nYou can download the app at helmepray.app to create your own personalized prayers.`);
+                      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      width: '100%'
+                    }}
+                  >
+                    📧 Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Navigation and User Status */}
           <div style={{
