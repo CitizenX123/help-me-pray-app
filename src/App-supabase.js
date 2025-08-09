@@ -412,34 +412,64 @@ const HelpMePrayApp = ({ user, setUser }) => {
   };
 
   // Download prayer as image function
-  // Generate image preview for sharing screen
+  // Generate image preview for sharing screen using the existing downloadPrayerImage logic
   const generateImagePreview = useCallback(async () => {
     if (!currentPrayer || generatedImageUrl || isGeneratingImage) return;
     
     setIsGeneratingImage(true);
     try {
+      // Create a modified version of downloadPrayerImage that returns the image URL instead of downloading
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Set canvas size
+      // Set canvas size (smaller for preview)
       canvas.width = 400;
       canvas.height = 500;
       
-      // Simple gradient background for preview
+      // Enable high-quality image rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      
+      // Use simple gradient background for preview (faster than loading external images)
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, '#667eea');
-      gradient.addColorStop(1, '#764ba2');
+      
+      // Category-specific gradients
+      switch(selectedCategory) {
+        case 'morning':
+          gradient.addColorStop(0, '#FFD700');
+          gradient.addColorStop(1, '#FFA500');
+          break;
+        case 'bedtime':
+          gradient.addColorStop(0, '#6366f1');
+          gradient.addColorStop(1, '#312e81');
+          break;
+        case 'healing':
+          gradient.addColorStop(0, '#22c55e');
+          gradient.addColorStop(1, '#16a34a');
+          break;
+        case 'gratitude':
+          gradient.addColorStop(0, '#f59e0b');
+          gradient.addColorStop(1, '#d97706');
+          break;
+        case 'family':
+          gradient.addColorStop(0, '#87CEEB');
+          gradient.addColorStop(1, '#4682B4');
+          break;
+        case 'bibleVerses':
+          gradient.addColorStop(0, '#D2691E');
+          gradient.addColorStop(1, '#8B4513');
+          break;
+        default:
+          gradient.addColorStop(0, '#667eea');
+          gradient.addColorStop(1, '#764ba2');
+      }
+      
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Add prayer text
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 24px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
+      // Add subtle dark overlay for better text readability
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       // Category title
       const categoryTitles = {
@@ -452,19 +482,41 @@ const HelpMePrayApp = ({ user, setUser }) => {
         bibleVerses: 'A Bible Verse Prayer',
         custom: 'A Custom Prayer'
       };
-      const title = categoryTitles[selectedCategory] || 'Prayer';
-      ctx.fillText(title, canvas.width / 2, 60);
       
-      // Prayer text with word wrapping
-      const words = currentPrayer.substring(0, 300).split(' ');
+      const categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
+      
+      // Title styling
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 32px Georgia, serif';
+      ctx.fillStyle = 'white';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      // Draw title
+      ctx.fillText(categoryTitle, canvas.width / 2, 60);
+      
+      // Clean prayer text
+      const cleanPrayer = currentPrayer
+        .replace(/🙏/g, '')
+        .replace(/\.+/g, '.')
+        .replace(/\.\s*\./g, '.')
+        .trim();
+      
+      // Prayer text with proper word wrapping
+      const maxWidth = canvas.width - 40;
+      ctx.font = '16px Georgia, serif';
+      ctx.fillStyle = 'white';
+      
+      const words = cleanPrayer.split(' ');
       const lines = [];
       let currentLine = '';
-      ctx.font = '16px Georgia, serif';
       
       for (let word of words) {
         const testLine = currentLine + word + ' ';
         const metrics = ctx.measureText(testLine);
-        if (metrics.width > canvas.width - 60 && currentLine !== '') {
+        if (metrics.width > maxWidth && currentLine !== '') {
           lines.push(currentLine.trim());
           currentLine = word + ' ';
         } else {
@@ -473,9 +525,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Draw text lines
-      for (let i = 0; i < Math.min(lines.length, 15); i++) {
-        ctx.fillText(lines[i], canvas.width / 2, 120 + (i * 22));
+      // Draw prayer text (limit lines for preview)
+      const maxLines = Math.min(lines.length, 18);
+      const lineHeight = 22;
+      const startY = 100;
+      
+      for (let i = 0; i < maxLines; i++) {
+        ctx.fillText(lines[i], canvas.width / 2, startY + (i * lineHeight));
       }
       
       // Convert to URL
@@ -483,6 +539,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
       setGeneratedImageUrl(imageUrl);
     } catch (error) {
       console.error('Error generating image preview:', error);
+      // Set a fallback in case of error
+      setGeneratedImageUrl('fallback');
     }
     setIsGeneratingImage(false);
   }, [currentPrayer, generatedImageUrl, isGeneratingImage, selectedCategory]);
@@ -491,7 +549,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
   useEffect(() => {
     if (currentPrayer && currentScreen === 'unified-sharing') {
       setGeneratedImageUrl(null); // Reset previous image
-      generateImagePreview();
+      const timeoutId = setTimeout(() => {
+        generateImagePreview();
+      }, 100); // Small delay to prevent rapid re-renders
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [currentPrayer, currentScreen, generateImagePreview]);
 
