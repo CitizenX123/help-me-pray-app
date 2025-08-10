@@ -731,7 +731,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       setGeneratedImageUrl('fallback');
     }
     setIsGeneratingImage(false);
-  }, [currentPrayer, selectedCategory, generatedImageUrl, isGeneratingImage]);
+  }, [currentPrayer, selectedCategory, generatedImageUrl, isGeneratingImage, prayerFor, personName, selectedOccasion]);
 
   // Auto-generate image when entering unified sharing screen
   useEffect(() => {
