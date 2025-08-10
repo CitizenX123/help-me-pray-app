@@ -414,322 +414,164 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   };
 
-  // Download prayer as image function
-  // Generate image preview using the REAL photo-realistic image generation logic
+  // FIXED: Simple photo-realistic image generator without webpack bundling issues
   const generateImagePreview = useCallback(async (forceRegenerate = false) => {
     if (!currentPrayer || (generatedImageUrl && !forceRegenerate) || isGeneratingImage) return;
     
     setIsGeneratingImage(true);
+    
     try {
+      // Simple approach that avoids any complex imports or references
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
-      // Set canvas size (smaller for preview, but same aspect ratio)
       canvas.width = 400;
       canvas.height = 500;
       
-      // Enable high-quality image rendering
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
+      // Photo-realistic backgrounds
+      const photos = [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center'
+      ];
       
-      // Create photo-realistic backgrounds using actual photographs (exact same logic as downloadPrayerImage)
-      const createPhotoRealisticBackground = async () => {
-        // Generate random seed for uniqueness each time - FIXED: Use same pattern as downloadPrayerImage
-        const randomSeed = Math.random();
-        const timeStamp = Date.now();
-
-        // Function to load and draw image on canvas - Safari compatible (exact same as downloadPrayerImage)
-        const loadAndDrawImage = (imageUrl) => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            
-            // Safari-specific: Add timeout and better error handling (same timeout as downloadPrayerImage)
-            const timeoutId = setTimeout(() => {
-              reject(new Error('Image load timeout'));
-            }, 15000);
-            
-            img.onload = () => {
-              clearTimeout(timeoutId);
-              // Draw image to fill canvas while maintaining aspect ratio
-              const canvasRatio = canvas.width / canvas.height;
-              const imageRatio = img.width / img.height;
-              
-              let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
-              
-              if (canvasRatio > imageRatio) {
-                // Canvas is wider than image
-                drawWidth = canvas.width;
-                drawHeight = canvas.width / imageRatio;
-                offsetY = (canvas.height - drawHeight) / 2;
-              } else {
-                // Canvas is taller than image
-                drawHeight = canvas.height;
-                drawWidth = canvas.height * imageRatio;
-                offsetX = (canvas.width - drawWidth) / 2;
-              }
-              
-              ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-              
-              // Add subtle dark overlay for better text readability (exact same as downloadPrayerImage)
-              ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              
-              resolve();
-            };
-            img.onerror = (error) => {
-              clearTimeout(timeoutId);
-              // Fallback to gradient if image fails to load (exact same as downloadPrayerImage)
-              const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-              gradient.addColorStop(0, '#87CEEB');
-              gradient.addColorStop(1, '#4682B4');
-              ctx.fillStyle = gradient;
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              resolve();
-            };
-            
-            // Safari-specific: Set crossOrigin after setting up handlers (exact same as downloadPrayerImage)
-            img.crossOrigin = 'anonymous';
-            img.src = imageUrl;
-          });
-        };
-
-        // Curated photo collections for each category - exact same as downloadPrayerImage (scaled for preview)
-        const photoCollections = {
-          morning: [
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=400&h=500&fit=crop&crop=center'
-          ],
-          bedtime: [
-            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=400&h=500&fit=crop&crop=center'
-          ],
-          family: [
-            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1515263487990-61b07816b132?w=400&h=500&fit=crop&crop=center'
-          ],
-          healing: [
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=400&h=500&fit=crop&crop=center'
-          ],
-          gratitude: [
-            'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1574919995582-ca2b037ed3cc?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center'
-          ],
-          bibleVerses: [
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=500&fit=crop&crop=center',
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center'
-          ]
-        };
-
-        // Select random photo from the category collection (exact same logic as downloadPrayerImage)
-        const categoryPhotos = photoCollections[selectedCategory] || photoCollections['morning'];
-        const selectedPhoto = categoryPhotos[Math.floor(randomSeed * categoryPhotos.length)];
+      const photoUrl = photos[Math.floor(Math.random() * photos.length)];
+      
+      // Load photo background
+      const bgImage = new window.Image();
+      let photoLoaded = false;
+      
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 8000); // Max wait
         
-        console.log('Loading background photo for category:', selectedCategory);
-        try {
-          await loadAndDrawImage(selectedPhoto);
-          console.log('Background photo loaded successfully!');
-        } catch (error) {
-          console.warn('Background photo failed to load, using gradient fallback:', error);
-          // Fallback gradient (exact same as downloadPrayerImage)
-          const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-          gradient.addColorStop(0, '#87CEEB');
-          gradient.addColorStop(1, '#4682B4');
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-      };
-
-      // Create the background (with proper error handling like downloadPrayerImage)
-      try {
-        await Promise.race([
-          createPhotoRealisticBackground(),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Background generation timeout')), 20000)
-          )
-        ]);
-      } catch (error) {
-        console.warn('Preview: Background generation failed, using simple gradient:', error);
-        // Simple fallback gradient for Safari compatibility (same as downloadPrayerImage)
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
-        ctx.fillStyle = gradient;
+        bgImage.onload = () => {
+          photoLoaded = true;
+          resolve();
+        };
+        
+        bgImage.onerror = () => resolve();
+        bgImage.crossOrigin = 'anonymous';
+        bgImage.src = photoUrl;
+      });
+      
+      // Draw background
+      if (photoLoaded) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        // Gradient fallback
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, '#667eea');
+        grad.addColorStop(1, '#764ba2');
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
       
-      // Category titles (same as downloadPrayerImage)
-      const categoryTitles = {
+      // Add title
+      ctx.font = 'bold 28px Georgia, serif';
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      const titles = {
+        morning: 'A Prayer to Start Your Day',
         gratitude: 'A Prayer for Gratitude',
-        morning: 'A Prayer to Start Your Day', 
         bedtime: 'A Prayer for a Good Night',
         healing: 'A Prayer for Healing',
-        family: 'A Prayer for Family and Friends',
-        grace: 'A Prayer for Saying Grace',
-        bibleVerses: 'A Bible Verse Prayer',
-        custom: 'A Custom Prayer'
+        family: 'A Prayer for Family and Friends'
       };
       
-      const categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
+      ctx.fillText(titles[selectedCategory] || 'Prayer', canvas.width / 2, 50);
       
-      // Title styling (scaled down from downloadPrayerImage but same approach)
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 28px Georgia, serif'; // Scaled from 64px
-      ctx.fillStyle = 'white';
+      // Add prayer text
+      const prayer = currentPrayer.replace(/🙏/g, '').replace(/\.+/g, '.').trim();
+      ctx.font = '16px Georgia, serif';
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
       
-      // Strong drop shadow for high contrast (same as downloadPrayerImage but scaled)
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 4; // Scaled from 8
-      ctx.shadowOffsetX = 2; // Scaled from 4
-      ctx.shadowOffsetY = 2; // Scaled from 4
-      
-      ctx.fillText(categoryTitle, canvas.width / 2, 50);
-      
-      // Clean prayer text (exact same logic as downloadPrayerImage)
-      const cleanPrayer = currentPrayer
-        .replace(/🙏/g, '')
-        .replace(/\.+/g, '.')
-        .replace(/\.\s*\./g, '.')
-        .trim();
-      
-      // Dynamic font sizing based on prayer length (scaled down from downloadPrayerImage)
-      const prayerLength = cleanPrayer.length;
-      let fontSize, lineHeight;
-      
-      if (prayerLength <= 300) {
-        fontSize = 16; // Scaled from 24
-        lineHeight = 20; // Scaled from 28
-      } else if (prayerLength <= 600) {
-        fontSize = 14; // Scaled from 20
-        lineHeight = 18; // Scaled from 24
-      } else {
-        fontSize = 12; // Scaled from 16
-        lineHeight = 16; // Scaled from 20
-      }
-      
-      ctx.font = `${fontSize}px Georgia, serif`;
-      ctx.fillStyle = 'white';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 2; // Scaled from 4
-      ctx.shadowOffsetX = 1; // Scaled from 2
-      ctx.shadowOffsetY = 1; // Scaled from 2
-      
-      const maxWidth = canvas.width - 40;
-      const words = cleanPrayer.split(' ');
+      const words = prayer.split(' ');
       const lines = [];
-      let currentLine = '';
+      let line = '';
+      const maxW = canvas.width - 40;
       
       for (let word of words) {
-        const testLine = currentLine + word + ' ';
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && currentLine !== '') {
-          lines.push(currentLine.trim());
-          currentLine = word + ' ';
+        const test = line + word + ' ';
+        if (ctx.measureText(test).width > maxW && line !== '') {
+          lines.push(line.trim());
+          line = word + ' ';
         } else {
-          currentLine = testLine;
+          line = test;
         }
       }
-      lines.push(currentLine.trim());
+      lines.push(line.trim());
       
-      // Draw prayer text (scaled positioning from downloadPrayerImage)
-      const availableHeight = canvas.height - 120; // Reserve space for title and logo
-      const maxLines = Math.min(lines.length, Math.floor(availableHeight / lineHeight));
-      const startY = 80;
-      
-      for (let i = 0; i < maxLines; i++) {
-        ctx.fillText(lines[i], canvas.width / 2, startY + (i * lineHeight));
+      for (let i = 0; i < Math.min(lines.length, 15); i++) {
+        ctx.fillText(lines[i], canvas.width / 2, 80 + (i * 20));
       }
       
-      // Add branding with logo (FIXED: exact same logic as downloadPrayerImage but scaled)
-      const addBrandingWithLogo = async () => {
-        try {
-          // Load the actual praying hands logo (FIXED: use same approach as downloadPrayerImage)
-          console.log('Loading praying hands logo...');
-          const logoImg = new Image();
-          logoImg.src = '/prayhands.png';
-          
-          await new Promise((resolve, reject) => {
-            logoImg.onload = () => {
-              console.log('Logo loaded successfully!');
-              resolve();
-            };
-            logoImg.onerror = (error) => {
-              console.error('Logo failed to load:', error);
-              reject(error);
-            };
-          });
-          
-          // Position logo and text at the bottom (scaled down from downloadPrayerImage)
-          const brandingY = canvas.height - 30; // Scaled from 60
-          const logoSize = 40; // Scaled from 80
-          const brandingText = 'Help Me Pray App';
-          
-          // Measure text width for proper centering (exact same logic as downloadPrayerImage)
-          ctx.font = '12px Arial'; // Scaled from 18px
-          const textWidth = ctx.measureText(brandingText).width;
-          const spacing = 4; // Scaled from 8
-          const totalWidth = logoSize + spacing + textWidth;
-          
-          // Center the entire branding group
-          const startX = (canvas.width - totalWidth) / 2;
-          
-          // Draw logo with white filter (EXACT SAME technique as downloadPrayerImage)
-          const tempCanvas = document.createElement('canvas');
-          const tempCtx = tempCanvas.getContext('2d');
-          tempCanvas.width = logoSize;
-          tempCanvas.height = logoSize;
-          
-          // Enable high-quality rendering on temp canvas
-          tempCtx.imageSmoothingEnabled = true;
-          tempCtx.imageSmoothingQuality = 'high';
-          
-          // Draw logo on temp canvas
-          tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
-          
-          // Apply white filter (exact same as downloadPrayerImage)
-          tempCtx.globalCompositeOperation = 'source-atop';
-          tempCtx.fillStyle = 'white';
-          tempCtx.fillRect(0, 0, logoSize, logoSize);
-          
-          // Draw the white-filtered logo on main canvas
-          ctx.drawImage(tempCanvas, startX, brandingY - logoSize / 2, logoSize, logoSize);
-          
-          // Draw text next to logo (exact same positioning logic as downloadPrayerImage)
-          ctx.fillStyle = 'white';
-          ctx.textAlign = 'left';
-          ctx.fillText(brandingText, startX + logoSize + spacing, brandingY + 2); // Scaled from +5
-          console.log('Logo and branding text added successfully!');
-          
-        } catch (error) {
-          // Fallback to text-only branding if logo fails to load (exact same as downloadPrayerImage)
-          console.warn('Logo failed to load, using text-only fallback:', error);
-          ctx.font = '12px Arial'; // Scaled from 18px
-          ctx.fillStyle = 'white';
-          ctx.textAlign = 'center';
-          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 30); // Scaled from 60
-        }
-      };
+      // Load praying hands logo
+      const logo = new window.Image();
+      let logoLoaded = false;
       
-      await addBrandingWithLogo();
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5000);
+        
+        logo.onload = () => {
+          logoLoaded = true;
+          resolve();
+        };
+        
+        logo.onerror = () => resolve();
+        logo.src = '/prayhands.png';
+      });
       
-      const imageUrl = canvas.toDataURL();
-      setGeneratedImageUrl(imageUrl);
-    } catch (error) {
-      console.error('Error generating image preview:', error);
-      setGeneratedImageUrl('fallback');
+      // Add branding
+      const brandY = canvas.height - 30;
+      if (logoLoaded) {
+        // Logo + text branding
+        const logoSz = 40;
+        const brand = 'Help Me Pray App';
+        ctx.font = '12px Arial';
+        const txtW = ctx.measureText(brand).width;
+        const totW = logoSz + 4 + txtW;
+        const startX = (canvas.width - totW) / 2;
+        
+        // White-filter the logo
+        const temp = document.createElement('canvas');
+        const tempCtx = temp.getContext('2d');
+        temp.width = logoSz;
+        temp.height = logoSz;
+        tempCtx.drawImage(logo, 0, 0, logoSz, logoSz);
+        tempCtx.globalCompositeOperation = 'source-atop';
+        tempCtx.fillStyle = 'white';
+        tempCtx.fillRect(0, 0, logoSz, logoSz);
+        
+        ctx.drawImage(temp, startX, brandY - logoSz / 2, logoSz, logoSz);
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        ctx.fillText(brand, startX + logoSz + 4, brandY + 2);
+      } else {
+        // Text-only fallback
+        ctx.font = '12px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('Help Me Pray App', canvas.width / 2, brandY);
+      }
+      
+      // Generate image
+      setGeneratedImageUrl(canvas.toDataURL('image/png', 0.9));
+      
+    } catch (err) {
+      console.error('Image generation error:', err);
+      setGeneratedImageUrl(null);
     }
+    
     setIsGeneratingImage(false);
   }, [currentPrayer, selectedCategory]);
 
@@ -745,7 +587,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
     if (currentScreen === 'unified-sharing' && currentPrayer) {
       console.log('AUTO-GENERATING PRAYER IMAGE FOR SHARING SCREEN...');
       setGeneratedImageUrl(null); // Clear any existing image
-      generateImagePreview(true); // Force generation
+      
+      // Use setTimeout to avoid potential React cycle issues
+      setTimeout(() => {
+        generateImagePreview(true); // Force generation
+      }, 100);
     }
   }, [currentScreen, currentPrayer]);
 
