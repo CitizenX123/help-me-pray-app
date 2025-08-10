@@ -731,15 +731,23 @@ const HelpMePrayApp = ({ user, setUser }) => {
       setGeneratedImageUrl('fallback');
     }
     setIsGeneratingImage(false);
-  }, [currentPrayer, selectedCategory, generatedImageUrl, isGeneratingImage, prayerFor, personName, selectedOccasion]);
+  }, [currentPrayer, selectedCategory]);
 
   // Auto-generate image when entering unified sharing screen
   useEffect(() => {
-    if (currentScreen === 'unified-sharing' && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
-      console.log('Auto-generating prayer image for sharing screen...');
-      generateImagePreview();
+    console.log('Sharing screen effect triggered:', {
+      currentScreen,
+      hasPrayer: !!currentPrayer,
+      hasImageUrl: !!generatedImageUrl,
+      isGenerating: isGeneratingImage
+    });
+    
+    if (currentScreen === 'unified-sharing' && currentPrayer) {
+      console.log('AUTO-GENERATING PRAYER IMAGE FOR SHARING SCREEN...');
+      setGeneratedImageUrl(null); // Clear any existing image
+      generateImagePreview(true); // Force generation
     }
-  }, [currentScreen, currentPrayer, generatedImageUrl, isGeneratingImage, generateImagePreview]);
+  }, [currentScreen, currentPrayer]);
 
   // Reset image when leaving sharing screen
   useEffect(() => {
