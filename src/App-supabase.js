@@ -476,7 +476,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
               
               resolve();
             };
-            img.onerror = () => {
+            img.onerror = (error) => {
               clearTimeout(timeoutId);
               // Fallback to gradient if image fails to load (exact same as downloadPrayerImage)
               const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -537,13 +537,12 @@ const HelpMePrayApp = ({ user, setUser }) => {
         const categoryPhotos = photoCollections[selectedCategory] || photoCollections['morning'];
         const selectedPhoto = categoryPhotos[Math.floor(randomSeed * categoryPhotos.length)];
         
-        console.log('Preview: Loading photo:', selectedPhoto);
+        console.log('Loading background photo for category:', selectedCategory);
         try {
           await loadAndDrawImage(selectedPhoto);
-          console.log('Preview: Photo loaded successfully!');
+          console.log('Background photo loaded successfully!');
         } catch (error) {
-          console.warn('Preview: Failed to load photo, using fallback gradient:', error);
-          console.warn('Preview: Selected photo URL:', selectedPhoto);
+          console.warn('Background photo failed to load, using gradient fallback:', error);
           // Fallback gradient (exact same as downloadPrayerImage)
           const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
           gradient.addColorStop(0, '#87CEEB');
@@ -657,16 +656,20 @@ const HelpMePrayApp = ({ user, setUser }) => {
       const addBrandingWithLogo = async () => {
         try {
           // Load the actual praying hands logo (FIXED: use same approach as downloadPrayerImage)
-          console.log('Preview: Loading praying hands logo from /prayhands.png');
+          console.log('Loading praying hands logo...');
           const logoImg = new Image();
           logoImg.src = '/prayhands.png';
           
           await new Promise((resolve, reject) => {
-            logoImg.onload = resolve;
-            logoImg.onerror = reject;
+            logoImg.onload = () => {
+              console.log('Logo loaded successfully!');
+              resolve();
+            };
+            logoImg.onerror = (error) => {
+              console.error('Logo failed to load:', error);
+              reject(error);
+            };
           });
-          
-          console.log('Preview: Logo loaded successfully!');
           
           // Position logo and text at the bottom (scaled down from downloadPrayerImage)
           const brandingY = canvas.height - 30; // Scaled from 60
@@ -707,10 +710,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
           ctx.fillStyle = 'white';
           ctx.textAlign = 'left';
           ctx.fillText(brandingText, startX + logoSize + spacing, brandingY + 2); // Scaled from +5
+          console.log('Logo and branding text added successfully!');
           
         } catch (error) {
           // Fallback to text-only branding if logo fails to load (exact same as downloadPrayerImage)
-          console.warn('Preview: Logo failed to load, using text-only fallback:', error);
+          console.warn('Logo failed to load, using text-only fallback:', error);
           ctx.font = '12px Arial'; // Scaled from 18px
           ctx.fillStyle = 'white';
           ctx.textAlign = 'center';
@@ -728,6 +732,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
     setIsGeneratingImage(false);
   }, [currentPrayer, selectedCategory, generatedImageUrl, isGeneratingImage]);
+
+  // Auto-generate image when entering unified sharing screen
+  useEffect(() => {
+    if (currentScreen === 'unified-sharing' && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
+      console.log('Auto-generating prayer image for sharing screen...');
+      generateImagePreview();
+    }
+  }, [currentScreen, currentPrayer, generatedImageUrl, isGeneratingImage, generateImagePreview]);
 
   // Reset image when leaving sharing screen
   useEffect(() => {
