@@ -591,7 +591,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       isGenerating: isGeneratingImage
     });
     
-    if ((currentScreen === 'unified-sharing' || currentScreen === 'image-sharing-page') && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
+    if (currentScreen === 'unified-sharing' && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
       console.log('AUTO-GENERATING PRAYER IMAGE FOR SHARING SCREEN...');
       
       // Use setTimeout to avoid potential React cycle issues
@@ -603,7 +603,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Reset image when leaving sharing screen
   useEffect(() => {
-    if (currentScreen !== 'unified-sharing' && currentScreen !== 'image-sharing-page') {
+    if (currentScreen !== 'unified-sharing') {
       setGeneratedImageUrl(null);
       setIsGeneratingImage(false);
     }
@@ -6515,8 +6515,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         return renderImageSharingScreen();
       case 'unified-sharing':
         return renderUnifiedSharingScreen();
-      case 'image-sharing-page':
-        return renderImageSharingPage();
       default:
         return renderLoginScreen();
     }
@@ -7759,7 +7757,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Share Prayer Button */}
             <button 
-              onClick={() => setCurrentScreen('image-sharing-page')}
+              onClick={() => setCurrentScreen('unified-sharing')}
               style={{ 
                 padding: '16px',
                 borderRadius: '15px',
@@ -7935,7 +7933,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Download and share a beautiful image of your prayer
               </p>
               <button
-                onClick={() => setCurrentScreen('image-sharing-page')}
+                onClick={() => setCurrentScreen('unified-sharing')}
                 style={{
                   width: '100%',
                   padding: '14px',
@@ -7988,7 +7986,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Listen to your prayer and share the audio
               </p>
               <button
-                onClick={() => setCurrentScreen('image-sharing-page')}
+                onClick={() => setCurrentScreen('unified-sharing')}
                 style={{
                   width: '100%',
                   padding: '14px',
