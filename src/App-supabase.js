@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck, Download, Image, Music, Package, Eye, Headphones, X, Check } from 'lucide-react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck, Download, Image, Music, Package, Eye, Headphones, X, Check, Mail } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Add beautiful animated background CSS
@@ -427,6 +427,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
       canvas.width = 400;
       canvas.height = 500;
       
+      // Enable high-quality rendering from the start
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      
       // Photo-realistic backgrounds
       const photos = [
         'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
@@ -469,15 +473,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
       
-      // Add title
-      ctx.font = 'bold 28px Georgia, serif';
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      
+      // Add title with proper text wrapping and bounds checking
       const titles = {
         morning: 'A Prayer to Start Your Day',
         gratitude: 'A Prayer for Gratitude',
@@ -486,7 +482,79 @@ const HelpMePrayApp = ({ user, setUser }) => {
         family: 'A Prayer for Family and Friends'
       };
       
-      ctx.fillText(titles[selectedCategory] || 'Prayer', canvas.width / 2, 50);
+      const titleText = titles[selectedCategory] || 'Prayer';
+      const maxTitleWidth = canvas.width - 40; // 20px padding on each side
+      
+      // Start with large font and reduce if needed
+      let titleFontSize = 28;
+      ctx.font = `bold ${titleFontSize}px Georgia, serif`;
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      // Check if title fits, if not, wrap it or reduce font size
+      let titleLines = [];
+      let currentTitleWidth = ctx.measureText(titleText).width;
+      
+      if (currentTitleWidth <= maxTitleWidth) {
+        // Title fits on one line
+        titleLines = [titleText];
+      } else {
+        // Try to wrap title into multiple lines
+        const titleWords = titleText.split(' ');
+        let currentLine = '';
+        
+        for (let word of titleWords) {
+          const testLine = currentLine + word + ' ';
+          const testWidth = ctx.measureText(testLine).width;
+          
+          if (testWidth > maxTitleWidth && currentLine !== '') {
+            titleLines.push(currentLine.trim());
+            currentLine = word + ' ';
+          } else {
+            currentLine = testLine;
+          }
+        }
+        if (currentLine.trim()) {
+          titleLines.push(currentLine.trim());
+        }
+        
+        // If still too many lines or individual words too long, reduce font size
+        if (titleLines.length > 2 || titleLines.some(line => ctx.measureText(line).width > maxTitleWidth)) {
+          titleFontSize = 24;
+          ctx.font = `bold ${titleFontSize}px Georgia, serif`;
+          
+          // Re-calculate with smaller font
+          titleLines = [];
+          currentLine = '';
+          
+          for (let word of titleWords) {
+            const testLine = currentLine + word + ' ';
+            const testWidth = ctx.measureText(testLine).width;
+            
+            if (testWidth > maxTitleWidth && currentLine !== '') {
+              titleLines.push(currentLine.trim());
+              currentLine = word + ' ';
+            } else {
+              currentLine = testLine;
+            }
+          }
+          if (currentLine.trim()) {
+            titleLines.push(currentLine.trim());
+          }
+        }
+      }
+      
+      // Draw title lines
+      const titleStartY = 35;
+      const titleLineHeight = titleFontSize + 5;
+      
+      titleLines.forEach((line, index) => {
+        ctx.fillText(line, canvas.width / 2, titleStartY + (index * titleLineHeight));
+      });
       
       // Add prayer text
       const prayer = currentPrayer.replace(/🙏/g, '').replace(/\.+/g, '.').trim();
@@ -512,7 +580,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       lines.push(line.trim());
       
       // Center prayer text between title and logo
-      const titleBottom = 70; // Space after title
+      const titleBottom = titleStartY + (titleLines.length * titleLineHeight) + 20; // Dynamic space after title
       const logoTop = canvas.height - 70; // Space before logo area
       const availableHeight = logoTop - titleBottom;
       const totalTextHeight = Math.min(lines.length, 15) * 20;
@@ -538,36 +606,62 @@ const HelpMePrayApp = ({ user, setUser }) => {
         logo.src = '/prayhands.png';
       });
       
-      // Add branding
+      // Add branding with high-quality logo
       const brandY = canvas.height - 30;
       if (logoLoaded) {
-        // Logo + text branding
-        const logoSz = 40;
+        // Logo + text branding with improved quality
+        const logoSz = 60; // Increased from 40 for better quality
         const brand = 'Help Me Pray App';
-        ctx.font = '12px Arial';
+        ctx.font = 'bold 14px Arial'; // Slightly larger and bold for better readability
         const txtW = ctx.measureText(brand).width;
-        const totW = logoSz + 4 + txtW;
+        const totW = logoSz + 8 + txtW; // Increased spacing
         const startX = (canvas.width - totW) / 2;
         
-        // White-filter the logo
+        // High-quality white-filtered logo with proper scaling
         const temp = document.createElement('canvas');
         const tempCtx = temp.getContext('2d');
-        temp.width = logoSz;
-        temp.height = logoSz;
-        tempCtx.drawImage(logo, 0, 0, logoSz, logoSz);
+        
+        // Use higher resolution for the temporary canvas to maintain quality
+        const scale = 2; // 2x scale for crisp rendering
+        temp.width = logoSz * scale;
+        temp.height = logoSz * scale;
+        
+        // Enable high-quality rendering on temp canvas
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        
+        // Draw logo at higher resolution
+        tempCtx.drawImage(logo, 0, 0, temp.width, temp.height);
+        
+        // Apply white filter at high resolution
         tempCtx.globalCompositeOperation = 'source-atop';
         tempCtx.fillStyle = 'white';
-        tempCtx.fillRect(0, 0, logoSz, logoSz);
+        tempCtx.fillRect(0, 0, temp.width, temp.height);
         
+        // Enable high-quality rendering on main canvas
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Draw the high-resolution logo scaled down to target size
         ctx.drawImage(temp, startX, brandY - logoSz / 2, logoSz, logoSz);
+        
+        // Draw text with better positioning
         ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
-        ctx.fillText(brand, startX + logoSz + 4, brandY + 2);
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+        ctx.fillText(brand, startX + logoSz + 8, brandY + 5);
       } else {
-        // Text-only fallback
-        ctx.font = '12px Arial';
+        // Text-only fallback with better styling
+        ctx.font = 'bold 14px Arial';
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
         ctx.fillText('Help Me Pray App', canvas.width / 2, brandY);
       }
       
@@ -6289,7 +6383,9 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   display: 'inline-block',
                   animation: 'spin 1s linear infinite',
                   marginBottom: '20px'
-                }}>⚪</div>
+                }}>
+                  <RefreshCw size={20} color="white" />
+                </div>
                 <br />
                 Generating your beautiful prayer image...
               </div>
@@ -9176,9 +9272,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     <div style={{
                       display: 'inline-block',
                       animation: 'spin 1s linear infinite',
-                      marginBottom: '20px',
-                      fontSize: '40px'
-                    }}>⚪</div>
+                      marginBottom: '20px'
+                    }}>
+                      <RefreshCw size={40} color="white" />
+                    </div>
                     Generating your beautiful prayer image...
                   </div>
                 ) : generatedImageUrl ? (
