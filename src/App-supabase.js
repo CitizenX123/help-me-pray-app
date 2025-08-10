@@ -466,8 +466,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
               
               ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
               
-              // Add STRONGER dark overlay for better text contrast
-              ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+              // Add subtle dark overlay for better text readability (same as downloadPrayerImage)
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
               ctx.fillRect(0, 0, canvas.width, canvas.height);
               
               resolve();
@@ -532,10 +532,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
         const categoryPhotos = photoCollections[selectedCategory] || photoCollections['morning'];
         const selectedPhoto = categoryPhotos[Math.floor(randomSeed % categoryPhotos.length)];
         
+        console.log('Loading photo:', selectedPhoto);
         try {
           await loadAndDrawImage(selectedPhoto);
+          console.log('Photo loaded successfully!');
         } catch (error) {
           console.warn('Failed to load photo, using fallback gradient:', error);
+          console.warn('Selected photo URL:', selectedPhoto);
           const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
           gradient.addColorStop(0, '#87CEEB');
           gradient.addColorStop(1, '#4682B4');
@@ -581,11 +584,28 @@ const HelpMePrayApp = ({ user, setUser }) => {
         .replace(/\.\s*\./g, '.')
         .trim();
       
-      // Prayer text with ENHANCED contrast
-      ctx.font = '14px Georgia, serif';
+      // Dynamic font sizing based on prayer length (small/medium/large)
+      const prayerLength = cleanPrayer.length;
+      let fontSize, lineHeight;
+      
+      if (prayerLength <= 300) {
+        // Small prayers - larger font for readability
+        fontSize = 18;
+        lineHeight = 24;
+      } else if (prayerLength <= 600) {
+        // Medium prayers - moderate font
+        fontSize = 16; 
+        lineHeight = 22;
+      } else {
+        // Large prayers - smaller font to fit more text
+        fontSize = 14;
+        lineHeight = 18;
+      }
+      
+      ctx.font = `${fontSize}px Georgia, serif`;
       ctx.fillStyle = 'white';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 6;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 4;
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
       
@@ -606,9 +626,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Draw prayer text with enhanced contrast
-      const maxLines = Math.min(lines.length, 28);
-      const lineHeight = 16;
+      // Draw prayer text with dynamic sizing
+      const availableHeight = canvas.height - 160; // Reserve space for title and logo
+      const maxLines = Math.min(lines.length, Math.floor(availableHeight / lineHeight));
       const startY = 80;
       
       for (let i = 0; i < maxLines; i++) {
@@ -619,12 +639,19 @@ const HelpMePrayApp = ({ user, setUser }) => {
       const addBrandingWithLogo = async () => {
         try {
           // Load the actual praying hands logo
+          console.log('Loading praying hands logo from /prayhands.png');
           const logoImg = new Image();
           logoImg.src = '/prayhands.png';
           
           await new Promise((resolve, reject) => {
-            logoImg.onload = resolve;
-            logoImg.onerror = reject;
+            logoImg.onload = () => {
+              console.log('Logo loaded successfully!');
+              resolve();
+            };
+            logoImg.onerror = (error) => {
+              console.error('Failed to load logo:', error);
+              reject(error);
+            };
           });
           
           // Position logo and text at the bottom (scaled down)
@@ -667,6 +694,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
           
         } catch (error) {
           // Fallback to text-only branding if logo fails to load
+          console.warn('Logo failed to load, using text-only fallback:', error);
           ctx.font = '14px Arial';
           ctx.fillStyle = 'white';
           ctx.textAlign = 'center';
