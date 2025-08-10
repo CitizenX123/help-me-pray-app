@@ -2955,26 +2955,52 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     },
     
     shareToWhatsApp: async (text) => {
-      // For WhatsApp, download the image first so user can share it manually
-      if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
-        if (window.confirm('Download prayer image to share via WhatsApp?')) {
-          // Download the image first
-          const link = document.createElement('a');
-          link.download = `prayer-for-whatsapp-${selectedCategory}-${Date.now()}.png`;
-          link.href = generatedImageUrl;
-          link.click();
+      try {
+        // Try direct sharing first if image is available
+        if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+          const response = await fetch(generatedImageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
           
-          // Small delay then open WhatsApp
-          setTimeout(() => {
-            const whatsappText = `Beautiful prayer image downloaded! Share it along with this message: ${formatPrayerForSharing(text, false)}`;
-            const url = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
-            window.open(url, '_blank');
-          }, 1000);
-          return;
+          // Try Web Share API first
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Prayer for WhatsApp',
+                text: formatPrayerForSharing(text, false),
+                files: [file]
+              });
+              return;
+            } catch (shareError) {
+              console.log('Direct WhatsApp sharing failed, using URL method:', shareError);
+            }
+          }
+          
+          // Fallback: Copy image to clipboard and open WhatsApp
+          if (navigator.clipboard && navigator.clipboard.write) {
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+              ]);
+              
+              // Open WhatsApp with text message
+              const whatsappText = `${formatPrayerForSharing(text, false)}\n\n🖼️ Prayer image copied to clipboard - paste it in WhatsApp!`;
+              const url = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+              window.open(url, '_blank');
+              
+              setShareSuccess('Prayer image copied to clipboard! Paste it in WhatsApp.');
+              setTimeout(() => setShareSuccess(''), 5000);
+              return;
+            } catch (clipboardError) {
+              console.log('Clipboard copy failed:', clipboardError);
+            }
+          }
         }
+      } catch (error) {
+        console.log('Advanced sharing failed, using simple WhatsApp URL:', error);
       }
       
-      // Fallback to WhatsApp text-only sharing
+      // Simple WhatsApp text sharing
       const url = `https://wa.me/?text=${encodeURIComponent(formatPrayerForSharing(text))}`;
       window.open(url, '_blank');
     },
@@ -2992,26 +3018,52 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     },
     
     shareToMessages: async (text) => {
-      // For Messages, download the image first so user can share it manually
-      if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
-        if (window.confirm('Download prayer image to share via Messages?')) {
-          // Download the image first
-          const link = document.createElement('a');
-          link.download = `prayer-for-messages-${selectedCategory}-${Date.now()}.png`;
-          link.href = generatedImageUrl;
-          link.click();
+      try {
+        // Try direct sharing first if image is available
+        if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+          const response = await fetch(generatedImageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
           
-          // Small delay then open Messages
-          setTimeout(() => {
-            const messagesText = `Beautiful prayer image downloaded! Share it along with this message: ${formatPrayerForSharing(text, false)}`;
-            const url = `sms:&body=${encodeURIComponent(messagesText)}`;
-            window.location.href = url;
-          }, 1000);
-          return;
+          // Try Web Share API first
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Prayer for Messages',
+                text: formatPrayerForSharing(text, false),
+                files: [file]
+              });
+              return;
+            } catch (shareError) {
+              console.log('Direct Messages sharing failed, trying clipboard:', shareError);
+            }
+          }
+          
+          // Fallback: Copy image to clipboard and open Messages
+          if (navigator.clipboard && navigator.clipboard.write) {
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+              ]);
+              
+              // Open Messages with text
+              const messagesText = `${formatPrayerForSharing(text, false)}\n\n🖼️ Prayer image copied to clipboard - paste it in Messages!`;
+              const url = `sms:&body=${encodeURIComponent(messagesText)}`;
+              window.location.href = url;
+              
+              setShareSuccess('Prayer image copied to clipboard! Paste it in Messages.');
+              setTimeout(() => setShareSuccess(''), 5000);
+              return;
+            } catch (clipboardError) {
+              console.log('Clipboard copy failed:', clipboardError);
+            }
+          }
         }
+      } catch (error) {
+        console.log('Advanced sharing failed, using simple SMS:', error);
       }
       
-      // Fallback to text-only sharing
+      // Simple text Messages sharing
       const messagesText = formatPrayerForSharing(text);
       const url = `sms:&body=${encodeURIComponent(messagesText)}`;
       window.location.href = url;
@@ -3059,7 +3111,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       });
     },
     
-    // Universal image sharing function
+    // Universal image sharing function - DIRECT sharing without downloads
     shareImage: async () => {
       if (!generatedImageUrl || !generatedImageUrl.startsWith('data:image')) {
         alert('No image available to share. Please wait for the image to generate first.');
@@ -3067,33 +3119,69 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       }
 
       try {
-        // Try Web Share API first (works on modern mobile browsers)
-        if (navigator.share && navigator.canShare) {
-          const response = await fetch(generatedImageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], `prayer-${selectedCategory}-${Date.now()}.png`, { type: 'image/png' });
-          
-          // Check if we can share files
-          if (navigator.canShare({ files: [file] })) {
+        // Convert data URL to blob for sharing
+        const response = await fetch(generatedImageUrl);
+        const blob = await response.blob();
+        const file = new File([blob], `prayer-${selectedCategory}-${Date.now()}.png`, { type: 'image/png' });
+        
+        // Try Web Share API first (works on most modern mobile browsers)
+        if (navigator.share) {
+          try {
             await navigator.share({
               title: 'Beautiful Prayer Image',
-              text: 'Sharing a beautiful prayer image',
+              text: formatPrayerForSharing(currentPrayer, false),
               files: [file]
             });
             return;
+          } catch (shareError) {
+            console.log('Web Share API failed, trying alternative methods:', shareError);
+            
+            // Fallback: Try without files (text only sharing that opens share menu)
+            await navigator.share({
+              title: 'Beautiful Prayer Image',
+              text: `${formatPrayerForSharing(currentPrayer, false)}\n\n🖼️ Beautiful prayer image created with Help Me Pray!`,
+              url: window.location.href
+            });
+            
+            // Then automatically download the image for manual attachment
+            const link = document.createElement('a');
+            link.download = `prayer-image-${selectedCategory}-${Date.now()}.png`;
+            link.href = generatedImageUrl;
+            link.click();
+            
+            setShareSuccess('Prayer shared! Image also downloaded for you to attach if needed.');
+            setTimeout(() => setShareSuccess(''), 5000);
+            return;
           }
         }
+        
+        // For desktop browsers: Use clipboard API to copy image
+        if (navigator.clipboard && navigator.clipboard.write) {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                'image/png': blob
+              })
+            ]);
+            setShareSuccess('Prayer image copied to clipboard! You can now paste it anywhere.');
+            setTimeout(() => setShareSuccess(''), 5000);
+            return;
+          } catch (clipboardError) {
+            console.log('Clipboard API failed:', clipboardError);
+          }
+        }
+        
       } catch (error) {
-        console.log('Native sharing failed, using download method:', error);
+        console.log('All direct sharing methods failed:', error);
       }
 
-      // Fallback: Download the image so user can share manually
+      // Final fallback: Download for manual sharing
       const link = document.createElement('a');
       link.download = `prayer-image-${selectedCategory}-${Date.now()}.png`;
       link.href = generatedImageUrl;
       link.click();
       
-      setShareSuccess('Image downloaded! You can now share it from your Photos app.');
+      setShareSuccess('Image downloaded! You can now share it from your device.');
       setTimeout(() => setShareSuccess(''), 5000);
     },
 
