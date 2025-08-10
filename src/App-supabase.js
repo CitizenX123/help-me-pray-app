@@ -1,7 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Sun, Moon, Users, Sparkles, RefreshCw, User, Send, Utensils, Share2, Copy, MessageCircle, Facebook, Twitter, Smartphone, Instagram, Volume2, Play, Pause, Square, Settings, Crown, Book, Heart, UserCheck, Download, Image, Music, Package, Eye, Headphones, X, Check } from 'lucide-react';
 import { supabase } from './supabaseClient';
-// Force cache bust v2.3
+
+// Add beautiful animated background CSS
+const backgroundStyles = document.createElement('style');
+backgroundStyles.textContent = `
+  @keyframes curvedFlow {
+    0%, 100% { 
+      background-position: 0% 50%, 100% 50%, 50% 0%; 
+    }
+    33% { 
+      background-position: 100% 0%, 0% 100%, 100% 50%; 
+    }
+    66% { 
+      background-position: 100% 100%, 0% 0%, 50% 100%; 
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+  }
+`;
+document.head.appendChild(backgroundStyles);
+// Force cache bust v2.6 - ACTUAL BACKGROUND IMAGE DEPLOYED - GITHUB SYNC TEST
 // import { SubscriptionProvider } from './SubscriptionContext';
 // import UnifiedUpgradeModal from './UnifiedUpgradeModal';
 // import PremiumUpgradeModal from './PremiumUpgradeModal';
@@ -22,7 +45,7 @@ const translations = {
     healing: "Healing",
     family: "Family & Friends",
     grace: "Grace",
-    bibleVerses: "Bible",
+    bibleVerses: "Bible Verse",
     custom: "Create Custom Prayer",
     // Prayer descriptions
     gratitudeDesc: "Prayers for thanksgiving and expressing appreciation",
@@ -39,7 +62,7 @@ const translations = {
     signIn: "Sign In",
     signUp: "Sign Up",
     continueWithGoogle: "Continue with Google",
-    continueAsGuest: "🙏 Continue as Guest",
+    continueAsGuest: "Continue as Guest",
     fullName: "Full Name",
     emailAddress: "Email Address",
     password: "Password",
@@ -123,7 +146,7 @@ const translations = {
     healing: "Sanación",
     family: "Familia y Amigos",
     grace: "Bendición",
-    bibleVerses: "Biblia",
+    bibleVerses: "Versículo Bíblico",
     custom: "Crear Oración Personalizada",
     // Prayer descriptions
     gratitudeDesc: "Oraciones de agradecimiento y expresión de aprecio",
@@ -213,13 +236,42 @@ const translations = {
 };
 
 const HelpMePrayApp = ({ user, setUser }) => {
-  // const { isPremium, upgradeToPremiun } = useSubscription();
+  // Mobile Screen Navigation State
+  const [currentScreen, setCurrentScreen] = useState(user ? 'prayer-selection' : 'login');
+  
+  // Prayer App State
   const [selectedCategory, setSelectedCategory] = useState('gratitude');
+  const [currentPrayerInfo, setCurrentPrayerInfo] = useState({ category: '', verseReference: '', customTopic: '' });
+  
+  // Sharing Flow State
+  const [showAudioPreview, setShowAudioPreview] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [selectedAudio, setSelectedAudio] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [showImageSharingDialog, setShowImageSharingDialog] = useState(false);
+  const [showAudioSharingDialog, setShowAudioSharingDialog] = useState(false);
+  const [showBothSharingDialog, setShowBothSharingDialog] = useState(false);
   
   // Clear prayer when category changes to force icon display
   useEffect(() => {
     setCurrentPrayer('');
   }, [selectedCategory]);
+
+  // Screen Navigation Functions for Mobile
+  const goToScreen = (screenName) => {
+    setCurrentScreen(screenName);
+  };
+
+  // Update screen when user state changes
+  useEffect(() => {
+    if (!user) {
+      setCurrentScreen('login');
+    } else if (currentScreen === 'login') {
+      setCurrentScreen('prayer-selection');
+    }
+  }, [user, currentScreen]);
   const [currentPrayer, setCurrentPrayer] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -232,6 +284,29 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [personName, setPersonName] = useState('');
   const [prayerLength, setPrayerLength] = useState('medium');
   const [selectedOccasion, setSelectedOccasion] = useState('');
+
+  // Category icons and colors - defined at component level for global access
+  const categoryIcons = {
+    gratitude: <Heart size={28} style={{ color: '#60a5fa', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    morning: <Sun size={28} style={{ color: '#eab308', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    bedtime: <Moon size={28} style={{ color: '#a855f7', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    healing: <Sparkles size={28} style={{ color: '#22c55e', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    family: <Users size={28} style={{ color: '#ec4899', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    grace: <Utensils size={28} style={{ color: '#f59e0b', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    bibleVerses: <Book size={28} style={{ color: '#f97316', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />,
+    custom: <img src="/prayhands.png" alt="Praying hands" style={{ width: '36px', height: '36px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5)) brightness(0) saturate(100%) invert(41%) sepia(72%) saturate(1815%) hue-rotate(165deg) brightness(95%) contrast(98%)' }} />
+  };
+
+  const categoryColors = {
+    gratitude: "#60a5fa", // Brighter Blue - peaceful, thankful
+    morning: "#eab308",   // Yellow - sunshine, new day
+    bedtime: "#a855f7",   // Brighter Purple - calm, restful
+    healing: "#22c55e",   // Green - growth, restoration
+    family: "#ec4899",    // Pink/Rose - love, warmth
+    grace: "#f59e0b",     // Gold - blessed, divine
+    bibleVerses: "#f97316", // Orange - wisdom, enlightenment
+    custom: "#06b6d4"     // Cyan - creativity, personalization
+  };
 
   // Login/Signup form state
   const [email, setEmail] = useState('');
@@ -279,69 +354,9 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [speechRate, setSpeechRate] = useState(1);
   const [showVoiceSettings, setShowVoiceSettings] = useState(true);
   const [currentUtterance, setCurrentUtterance] = useState(null);
-  const [useHumanVoice, setUseHumanVoice] = useState(true);
-  const [humanVoiceType, setHumanVoiceType] = useState('nurturing');
-  const [googleVoiceType, setGoogleVoiceType] = useState('warm');
+  // Simplified voice system - removed Google and ElevenLabs due to cost
   const [ttsProvider, setTtsProvider] = useState('browser'); // Default to browser, premium users can upgrade
-  // Google Cloud TTS voices to match ElevenLabs selection
-  const googleCloudVoices = {
-    warm: {
-      name: 'Grace - Warm',
-      description: 'Gentle, soothing American voice',
-      voiceName: 'en-US-Neural2-F',
-      languageCode: 'en-US',
-      gender: 'FEMALE'
-    },
-    confident: {
-      name: 'David - Confident', 
-      description: 'Strong, reassuring male voice',
-      voiceName: 'en-US-Neural2-D',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    },
-    gentle: {
-      name: 'Emma - Gentle',
-      description: 'Soft, caring female voice',
-      voiceName: 'en-US-Neural2-H',
-      languageCode: 'en-US', 
-      gender: 'FEMALE'
-    },
-    steady: {
-      name: 'Michael - Steady',
-      description: 'Calm, dependable voice',
-      voiceName: 'en-US-Neural2-I',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    },
-    serena: {
-      name: 'Serena - Peaceful',
-      description: 'Tranquil, meditative voice',
-      voiceName: 'en-US-Neural2-G',
-      languageCode: 'en-US',
-      gender: 'FEMALE'
-    },
-    brian: {
-      name: 'Brian - Thoughtful',
-      description: 'Reflective, wise voice',
-      voiceName: 'en-US-Neural2-J',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    },
-    aria: {
-      name: 'Aria - Uplifting',
-      description: 'Inspiring, hopeful voice',
-      voiceName: 'en-US-Neural2-C',
-      languageCode: 'en-US',
-      gender: 'FEMALE'
-    },
-    compassionate: {
-      name: 'Samuel - Compassionate',
-      description: 'Understanding, empathetic voice',
-      voiceName: 'en-US-Neural2-A',
-      languageCode: 'en-US',
-      gender: 'MALE'
-    }
-  };
+  const [useHumanVoice, setUseHumanVoice] = useState(false); // System vs Human-like toggle
   const [currentAudioBlob, setCurrentAudioBlob] = useState(null);
   const [audioElement, setAudioElement] = useState(null);
 
@@ -351,9 +366,12 @@ const HelpMePrayApp = ({ user, setUser }) => {
   
   // Set premium status for Google logged-in users
   useEffect(() => {
+    console.log('Setting premium status - user:', user);
     if (user && user.id !== 'guest') {
+      console.log('Google user detected, setting premium to true');
       setIsPremium(true); // Google logged-in users get premium features
     } else {
+      console.log('Guest user or no user, setting premium to false');
       setIsPremium(false);
     }
   }, [user]);
@@ -396,7 +414,202 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   };
 
-  // Download prayer as image function
+  // FIXED: Simple photo-realistic image generator without webpack bundling issues
+  const generateImagePreview = useCallback(async (forceRegenerate = false) => {
+    if (!currentPrayer || (generatedImageUrl && !forceRegenerate) || isGeneratingImage) return;
+    
+    setIsGeneratingImage(true);
+    
+    try {
+      // Simple approach that avoids any complex imports or references
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 400;
+      canvas.height = 500;
+      
+      // Photo-realistic backgrounds
+      const photos = [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=500&fit=crop&crop=center',
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center'
+      ];
+      
+      const photoUrl = photos[Math.floor(Math.random() * photos.length)];
+      
+      // Load photo background
+      const bgImage = new window.Image();
+      let photoLoaded = false;
+      
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 8000); // Max wait
+        
+        bgImage.onload = () => {
+          photoLoaded = true;
+          resolve();
+        };
+        
+        bgImage.onerror = () => resolve();
+        bgImage.crossOrigin = 'anonymous';
+        bgImage.src = photoUrl;
+      });
+      
+      // Draw background
+      if (photoLoaded) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        // Gradient fallback
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, '#667eea');
+        grad.addColorStop(1, '#764ba2');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      
+      // Add title
+      ctx.font = 'bold 28px Georgia, serif';
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      const titles = {
+        morning: 'A Prayer to Start Your Day',
+        gratitude: 'A Prayer for Gratitude',
+        bedtime: 'A Prayer for a Good Night',
+        healing: 'A Prayer for Healing',
+        family: 'A Prayer for Family and Friends'
+      };
+      
+      ctx.fillText(titles[selectedCategory] || 'Prayer', canvas.width / 2, 50);
+      
+      // Add prayer text
+      const prayer = currentPrayer.replace(/🙏/g, '').replace(/\.+/g, '.').trim();
+      ctx.font = '16px Georgia, serif';
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+      
+      const words = prayer.split(' ');
+      const lines = [];
+      let line = '';
+      const maxW = canvas.width - 40;
+      
+      for (let word of words) {
+        const test = line + word + ' ';
+        if (ctx.measureText(test).width > maxW && line !== '') {
+          lines.push(line.trim());
+          line = word + ' ';
+        } else {
+          line = test;
+        }
+      }
+      lines.push(line.trim());
+      
+      // Center prayer text between title and logo
+      const titleBottom = 70; // Space after title
+      const logoTop = canvas.height - 70; // Space before logo area
+      const availableHeight = logoTop - titleBottom;
+      const totalTextHeight = Math.min(lines.length, 15) * 20;
+      const startY = titleBottom + (availableHeight - totalTextHeight) / 2;
+      
+      for (let i = 0; i < Math.min(lines.length, 15); i++) {
+        ctx.fillText(lines[i], canvas.width / 2, startY + (i * 20));
+      }
+      
+      // Load praying hands logo
+      const logo = new window.Image();
+      let logoLoaded = false;
+      
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5000);
+        
+        logo.onload = () => {
+          logoLoaded = true;
+          resolve();
+        };
+        
+        logo.onerror = () => resolve();
+        logo.src = '/prayhands.png';
+      });
+      
+      // Add branding
+      const brandY = canvas.height - 30;
+      if (logoLoaded) {
+        // Logo + text branding
+        const logoSz = 40;
+        const brand = 'Help Me Pray App';
+        ctx.font = '12px Arial';
+        const txtW = ctx.measureText(brand).width;
+        const totW = logoSz + 4 + txtW;
+        const startX = (canvas.width - totW) / 2;
+        
+        // White-filter the logo
+        const temp = document.createElement('canvas');
+        const tempCtx = temp.getContext('2d');
+        temp.width = logoSz;
+        temp.height = logoSz;
+        tempCtx.drawImage(logo, 0, 0, logoSz, logoSz);
+        tempCtx.globalCompositeOperation = 'source-atop';
+        tempCtx.fillStyle = 'white';
+        tempCtx.fillRect(0, 0, logoSz, logoSz);
+        
+        ctx.drawImage(temp, startX, brandY - logoSz / 2, logoSz, logoSz);
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        ctx.fillText(brand, startX + logoSz + 4, brandY + 2);
+      } else {
+        // Text-only fallback
+        ctx.font = '12px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('Help Me Pray App', canvas.width / 2, brandY);
+      }
+      
+      // Generate image
+      setGeneratedImageUrl(canvas.toDataURL('image/png', 0.9));
+      
+    } catch (err) {
+      console.error('Image generation error:', err);
+      setGeneratedImageUrl(null);
+    }
+    
+    setIsGeneratingImage(false);
+  }, [currentPrayer, selectedCategory]);
+
+  // Auto-generate image when entering unified sharing screen
+  useEffect(() => {
+    console.log('Sharing screen effect triggered:', {
+      currentScreen,
+      hasPrayer: !!currentPrayer,
+      hasImageUrl: !!generatedImageUrl,
+      isGenerating: isGeneratingImage
+    });
+    
+    if (currentScreen === 'unified-sharing' && currentPrayer) {
+      console.log('AUTO-GENERATING PRAYER IMAGE FOR SHARING SCREEN...');
+      setGeneratedImageUrl(null); // Clear any existing image
+      
+      // Use setTimeout to avoid potential React cycle issues
+      setTimeout(() => {
+        generateImagePreview(true); // Force generation
+      }, 100);
+    }
+  }, [currentScreen, currentPrayer]);
+
+  // Reset image when leaving sharing screen
+  useEffect(() => {
+    if (currentScreen !== 'unified-sharing') {
+      setGeneratedImageUrl(null);
+      setIsGeneratingImage(false);
+    }
+  }, [currentScreen]);
+
   const downloadPrayerImage = async () => {
     if (!currentPrayer) {
       alert('Please generate a prayer first!');
@@ -417,292 +630,283 @@ const HelpMePrayApp = ({ user, setUser }) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Set canvas size
+      // Set canvas size with higher resolution
       canvas.width = 800;
       canvas.height = 1000;
       
-      // Create photo-realistic backgrounds with proper natural color palettes
-      const createPhotoRealisticBackground = () => {
+      // Enable high-quality image rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      
+      // Create photo-realistic backgrounds using actual photographs
+      const createPhotoRealisticBackground = async () => {
         // Generate random seed for uniqueness each time
         const randomSeed = Math.random();
         const timeStamp = Date.now();
 
-        switch(selectedCategory) {
-          case 'morning':
-            // Photo-realistic sunrise - use real sunrise color palettes
-            const morningVariations = [
-              // Golden sunrise
-              ['#FFE5B4', '#FFCD94', '#FF9A56', '#E8613C', '#B8371A'],
-              // Pink dawn  
-              ['#FFEEF2', '#FFD6E8', '#FFADD6', '#FF69B4', '#C1205C'],
-              // Orange dawn
-              ['#FFF8DC', '#FFEAA7', '#FDCB6E', '#E17055', '#D63031'],
-              // Coral morning
-              ['#FFEBEE', '#FFCDD2', '#EF9A9A', '#E57373', '#EF5350']
-            ];
+        // Function to load and draw image on canvas - Safari compatible
+        const loadAndDrawImage = (imageUrl) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
             
-            const morningColors = morningVariations[Math.floor(randomSeed * morningVariations.length)];
-            const morningGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            morningColors.forEach((color, index) => {
-              morningGradient.addColorStop(index / (morningColors.length - 1), color);
-            });
-            ctx.fillStyle = morningGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Safari-specific: Add timeout and better error handling
+            const timeoutId = setTimeout(() => {
+              reject(new Error('Image load timeout'));
+            }, 15000);
             
-            // Add subtle texture overlay for realism
-            ctx.fillStyle = `rgba(255, 255, 255, ${0.05 + randomSeed * 0.05})`;
-            for (let i = 0; i < 100 + randomSeed * 200; i++) {
-              const x = Math.random() * canvas.width;
-              const y = Math.random() * canvas.height;
-              const size = Math.random() * 3;
-              ctx.fillRect(x, y, size, size);
-            }
-            break;
+            img.onload = () => {
+              clearTimeout(timeoutId);
+              // Draw image to fill canvas while maintaining aspect ratio
+              const canvasRatio = canvas.width / canvas.height;
+              const imageRatio = img.width / img.height;
+              
+              let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+              
+              if (canvasRatio > imageRatio) {
+                // Canvas is wider than image
+                drawWidth = canvas.width;
+                drawHeight = canvas.width / imageRatio;
+                offsetY = (canvas.height - drawHeight) / 2;
+              } else {
+                // Canvas is taller than image
+                drawHeight = canvas.height;
+                drawWidth = canvas.height * imageRatio;
+                offsetX = (canvas.width - drawWidth) / 2;
+              }
+              
+              ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+              
+              // Add subtle dark overlay for better text readability
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              
+              resolve();
+            };
+            img.onerror = () => {
+              clearTimeout(timeoutId);
+              // Fallback to gradient if image fails to load
+              const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+              gradient.addColorStop(0, '#87CEEB');
+              gradient.addColorStop(1, '#4682B4');
+              ctx.fillStyle = gradient;
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              resolve();
+            };
             
-          case 'bedtime':
-            // Photo-realistic night sky
-            const nightVariations = [
-              // Deep blue night
-              ['#000428', '#004e92', '#1e3c72', '#2a5298'],
-              // Purple twilight
-              ['#2F1B69', '#0D1B2A', '#1a1a2e', '#16213e'],
-              // Midnight blue
-              ['#191970', '#0F0F23', '#1e1e3f', '#2d2d5f'],
-              // Starry night
-              ['#0c0c1e', '#1a1a2e', '#16213e', '#0f3460']
-            ];
-            
-            const nightColors = nightVariations[Math.floor(randomSeed * nightVariations.length)];
-            const nightGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            nightColors.forEach((color, index) => {
-              nightGradient.addColorStop(index / (nightColors.length - 1), color);
-            });
-            ctx.fillStyle = nightGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Add stars with natural distribution
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            for (let i = 0; i < 150 + randomSeed * 100; i++) {
-              const x = Math.random() * canvas.width;
-              const y = Math.random() * canvas.height * 0.7;
-              const size = Math.random() * 2 + 0.5;
-              ctx.fillRect(x, y, size, size);
-            }
-            break;
-            
-          case 'family':
-            // Photo-realistic lake scenes
-            const lakeVariations = [
-              // Golden hour lake
-              ['#FFE4B5', '#F0E68C', '#87CEEB', '#4682B4', '#2E8B57'],
-              // Serene blue lake
-              ['#E0F6FF', '#87CEEB', '#4682B4', '#2E8B57', '#006400'],
-              // Misty lake morning
-              ['#F5F5F5', '#D3D3D3', '#A9A9A9', '#696969', '#2F4F4F'],
-              // Sunset lake
-              ['#FFA07A', '#FF7F50', '#FF6347', '#DC143C', '#8B0000']
-            ];
-            
-            const lakeColors = lakeVariations[Math.floor(randomSeed * lakeVariations.length)];
-            const lakeGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            lakeColors.forEach((color, index) => {
-              lakeGradient.addColorStop(index / (lakeColors.length - 1), color);
-            });
-            ctx.fillStyle = lakeGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            break;
-            
-          case 'healing':
-            // Photo-realistic forest
-            const forestVariations = [
-              // Morning forest
-              ['#E6F3FF', '#B8E6B8', '#90EE90', '#228B22', '#006400'],
-              // Misty forest
-              ['#F0F8FF', '#E0E0E0', '#90EE90', '#2E8B57', '#1C4C2E'],
-              // Autumn forest
-              ['#FFF8DC', '#F0E68C', '#CD853F', '#8B4513', '#654321'],
-              // Deep forest
-              ['#DFEBC4', '#B8D4A1', '#97B881', '#6B8E23', '#556B2F']
-            ];
-            
-            const forestColors = forestVariations[Math.floor(randomSeed * forestVariations.length)];
-            const forestGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            forestColors.forEach((color, index) => {
-              forestGradient.addColorStop(index / (forestColors.length - 1), color);
-            });
-            ctx.fillStyle = forestGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            break;
-            
-          case 'gratitude':
-            // Photo-realistic golden fields
-            const gratitudeVariations = [
-              // Warm golden field
-              ['#FFD700', '#FFA500', '#FF8C00', '#DAA520', '#B8860B'],
-              // Sunset amber field
-              ['#FFEBCD', '#DEB887', '#D2691E', '#A0522D', '#8B4513'],
-              // Harvest gold field
-              ['#FFFACD', '#F0E68C', '#BDB76B', '#8B7D6B', '#696969'],
-              // Wheat field
-              ['#F5DEB3', '#DEB887', '#D2B48C', '#BC9A6A', '#8B7D6B']
-            ];
-            
-            const gratitudeColors = gratitudeVariations[Math.floor(randomSeed * gratitudeVariations.length)];
-            const gratitudeGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gratitudeColors.forEach((color, index) => {
-              gratitudeGradient.addColorStop(index / (gratitudeColors.length - 1), color);
-            });
-            ctx.fillStyle = gratitudeGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            break;
-            
-          case 'bibleVerses':
-            // Photo-realistic ancient landscape
-            const bibleVariations = [
-              // Desert sunset
-              ['#F4A460', '#CD853F', '#D2691E', '#8B4513', '#654321'],
-              // Ancient stone
-              ['#F5DEB3', '#DEB887', '#BC9A6A', '#8B7355', '#696969'],
-              // Holy land
-              ['#FFEFD5', '#FFE4B5', '#DEB887', '#D2B48C', '#BC9A6A'],
-              // Mountain desert
-              ['#FDF5E6', '#F5DEB3', '#D2B48C', '#A0522D', '#8B4513']
-            ];
-            
-            const bibleColors = bibleVariations[Math.floor(randomSeed * bibleVariations.length)];
-            const bibleGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            bibleColors.forEach((color, index) => {
-              bibleGradient.addColorStop(index / (bibleColors.length - 1), color);
-            });
-            ctx.fillStyle = bibleGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            break;
-            
-          default:
-            // Default ocean scene
-            const oceanVariations = [
-              // Tropical ocean
-              ['#87CEEB', '#20B2AA', '#008B8B', '#006400', '#2F4F4F'],
-              // Deep ocean
-              ['#4682B4', '#1E90FF', '#0000CD', '#000080', '#191970'],
-              // Sunset ocean
-              ['#FFE4B5', '#20B2AA', '#008B8B', '#2F4F4F', '#000000'],
-              // Stormy ocean
-              ['#708090', '#2F4F4F', '#1C1C1C', '#000000', '#000000']
-            ];
-            
-            const oceanColors = oceanVariations[Math.floor(randomSeed * oceanVariations.length)];
-            const oceanGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            oceanColors.forEach((color, index) => {
-              oceanGradient.addColorStop(index / (oceanColors.length - 1), color);
-            });
-            ctx.fillStyle = oceanGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+            // Safari-specific: Set crossOrigin after setting up handlers
+            img.crossOrigin = 'anonymous';
+            img.src = imageUrl;
+          });
+        };
+
+        // Curated photo collections for each category - specific photorealistic images
+        const photoCollections = {
+          morning: [
+            // SUNRISE scenes only - mountain, beach, field sunrises
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Mountain sunrise
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Beach sunrise over ocean
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center', // Field sunrise
+            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&h=1000&fit=crop&crop=center'  // Lake sunrise reflection
+          ],
+          bedtime: [
+            // STARRY NIGHT, MOON scenes - peaceful nighttime only
+            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=1000&fit=crop&crop=center', // Milky Way starry sky
+            'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=800&h=1000&fit=crop&crop=center', // Starry night sky
+            'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=800&h=1000&fit=crop&crop=center', // Moon and stars
+            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center'  // Night landscape with stars
+          ],
+          family: [
+            // FAMILY gathering spaces - parks, gardens, peaceful outdoor areas
+            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=1000&fit=crop&crop=center', // Peaceful garden path
+            'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=800&h=1000&fit=crop&crop=center', // Family picnic area
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Peaceful meadow
+            'https://images.unsplash.com/photo-1515263487990-61b07816b132?w=800&h=1000&fit=crop&crop=center'  // Cozy outdoor family space
+          ],
+          healing: [
+            // PEACEFUL FOREST paths, gentle nature healing scenes
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Forest healing path
+            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Sunlight through healing trees
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Peaceful healing forest
+            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center'  // Serene nature healing
+          ],
+          gratitude: [
+            // GOLDEN WHEAT fields, harvest abundance, golden hour scenes
+            'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=1000&fit=crop&crop=center', // Golden wheat field abundance
+            'https://images.unsplash.com/photo-1574919995582-ca2b037ed3cc?w=800&h=1000&fit=crop&crop=center', // Harvest gratitude field
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center', // Golden hour gratitude field
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Abundant nature landscape
+          ],
+          bibleVerses: [
+            // ANCIENT biblical landscapes, desert, Middle Eastern terrain, holy land
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Desert biblical mountain
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Ancient biblical path
+            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Holy land style terrain
+            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Middle Eastern biblical landscape
+          ]
+        };
+
+        // Select random photo from the category collection
+        const categoryPhotos = photoCollections[selectedCategory] || photoCollections['morning'];
+        const selectedPhoto = categoryPhotos[Math.floor(randomSeed * categoryPhotos.length)];
         
-        // Add photo-realistic texture to all backgrounds
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.02 + randomSeed * 0.03})`;
-        for (let i = 0; i < 500 + randomSeed * 1000; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          const size = Math.random() * 2;
-          const opacity = Math.random() * 0.3;
-          ctx.globalAlpha = opacity;
-          ctx.fillRect(x, y, size, size);
+        try {
+          await loadAndDrawImage(selectedPhoto);
+        } catch (error) {
+          console.warn('Failed to load photo, using fallback gradient:', error);
+          // Fallback gradient
+          const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          gradient.addColorStop(0, '#87CEEB');
+          gradient.addColorStop(1, '#4682B4');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        ctx.globalAlpha = 1;
+
+        // Photo background is already loaded above
       };
-      
-      createPhotoRealisticBackground();
-      
-      // Add subtle depth overlay for better text contrast
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Setup text with drop shadow
-      ctx.font = '28px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = 'white';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      
-      // Word wrap the text
-      const words = currentPrayer.split(' ');
-      const lines = [];
-      let currentLine = '';
-      const maxWidth = canvas.width - 120;
-      
-      for (let word of words) {
-        const testLine = currentLine + word + ' ';
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && currentLine !== '') {
-          lines.push(currentLine.trim());
-          currentLine = word + ' ';
-        } else {
-          currentLine = testLine;
-        }
+
+      // Create the background (wait for photo to load) - Safari compatible with timeout
+      try {
+        await Promise.race([
+          createPhotoRealisticBackground(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Background generation timeout')), 20000)
+          )
+        ]);
+      } catch (error) {
+        console.warn('Background generation failed, using simple gradient:', error);
+        // Simple fallback gradient for Safari compatibility
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
-      lines.push(currentLine.trim());
-      
-      // Calculate proper positioning to avoid overlap
-      const lineHeight = 38;
-      const titleHeight = 90; // Space reserved for title
-      const brandingHeight = 80; // Space reserved for branding
-      const availableHeight = canvas.height - titleHeight - brandingHeight;
-      const textBlockHeight = lines.length * lineHeight;
-      const startY = titleHeight + (availableHeight - textBlockHeight) / 2;
-      
-      // Draw each line of prayer text
-      lines.forEach((line, index) => {
-        ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
-      });
       
       // Add elegant category title at the top
-      let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
+      let categoryTitle;
       
-      // For Bible verses, extract inspirational phrase from the verse
-      if (selectedCategory === 'bibleVerses') {
-        // Extract inspirational phrases from common Bible verses
+      // Use the same category names as in prayer view screen
+      const categoryTitles = {
+        gratitude: 'A Prayer for Gratitude',
+        morning: 'A Prayer to Start Your Day', 
+        bedtime: 'A Prayer for a Good Night',
+        healing: 'A Prayer for Healing',
+        family: 'A Prayer for Family and Friends',
+        grace: 'A Prayer for Saying Grace',
+        bibleVerses: 'A Bible Verse Prayer',
+        custom: 'A Custom Prayer'
+      };
+      
+      categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
+      
+      // Create personalized titles for custom prayers
+      if (selectedCategory === 'custom') {
+        if (prayerFor === 'myself') {
+          if (selectedOccasion && selectedOccasion !== 'none') {
+            // Map occasion values to readable titles
+            const occasionTitles = {
+              'birthday': 'Birthday',
+              'anniversary': 'Anniversary', 
+              'graduation': 'Graduation',
+              'wedding': 'Wedding',
+              'newJob': 'New Job',
+              'illness': 'Healing',
+              'loss': 'Comfort',
+              'travel': 'Safe Travel',
+              'exams': 'Exams',
+              'pregnancy': 'Pregnancy',
+              'retirement': 'Retirement',
+              'moving': 'New Home',
+              'addiction': 'Recovery'
+            };
+            categoryTitle = `A Prayer For ${occasionTitles[selectedOccasion] || selectedOccasion}`;
+          } else {
+            categoryTitle = 'A Personal Prayer';
+          }
+        } else if (prayerFor === 'someone' && personName.trim()) {
+          // Extract first name only for the title
+          const firstName = personName.trim().split(' ')[0];
+          if (selectedOccasion && selectedOccasion !== 'none') {
+            const occasionTitles = {
+              'birthday': 'Birthday',
+              'anniversary': 'Anniversary',
+              'graduation': 'Graduation', 
+              'wedding': 'Wedding',
+              'newJob': 'New Job',
+              'illness': 'Healing',
+              'loss': 'Comfort',
+              'travel': 'Safe Travel',
+              'exams': 'Exams',
+              'pregnancy': 'Pregnancy',
+              'retirement': 'Retirement',
+              'moving': 'New Home',
+              'addiction': 'Recovery'
+            };
+            categoryTitle = `A Prayer For ${firstName}'s ${occasionTitles[selectedOccasion] || selectedOccasion}`;
+          } else {
+            categoryTitle = `A Prayer For ${firstName}`;
+          }
+        } else {
+          // Fallback for someone else without a name
+          if (selectedOccasion && selectedOccasion !== 'none') {
+            const occasionTitles = {
+              'birthday': 'Birthday',
+              'anniversary': 'Anniversary',
+              'graduation': 'Graduation',
+              'wedding': 'Wedding', 
+              'newJob': 'New Job',
+              'illness': 'Healing',
+              'loss': 'Comfort',
+              'travel': 'Safe Travel',
+              'exams': 'Exams',
+              'pregnancy': 'Pregnancy',
+              'retirement': 'Retirement',
+              'moving': 'New Home',
+              'addiction': 'Recovery'
+            };
+            categoryTitle = `A Prayer For ${occasionTitles[selectedOccasion] || selectedOccasion}`;
+          } else {
+            categoryTitle = 'A Prayer For Someone Special';
+          }
+        }
+      }
+      
+      // Extract creative titles for Bible verses
+      else if (selectedCategory === 'bibleVerses') {
         const versePatterns = [
           {match: /plans to prosper you/i, title: "Plans to Prosper You"},
           {match: /plans.*hope.*future/i, title: "Hope and a Future"},
-          {match: /all things.*together.*good/i, title: "All Things for Good"},
-          {match: /fearfully.*wonderfully made/i, title: "Fearfully & Wonderfully Made"},
+          {match: /fear not|do not fear/i, title: "Fear Not"},
+          {match: /trust in the lord/i, title: "Trust in the Lord"},
+          {match: /peace.*understanding/i, title: "Peace Beyond Understanding"},
           {match: /love.*never fails/i, title: "Love Never Fails"},
-          {match: /peace.*understanding/i, title: "Peace That Surpasses"},
-          {match: /strength.*weary/i, title: "Strength for the Weary"},
-          {match: /light.*darkness/i, title: "Light in the Darkness"},
-          {match: /refuge.*fortress/i, title: "My Refuge & Fortress"},
+          {match: /refuge.*strength/i, title: "Refuge and Strength"},
+          {match: /light.*darkness/i, title: "Light in Darkness"},
+          {match: /joy.*morning/i, title: "Joy Comes in the Morning"},
           {match: /good shepherd/i, title: "The Good Shepherd"},
+          {match: /valley.*shadow/i, title: "Through the Valley"},
+          {match: /rest.*weary/i, title: "Rest for the Weary"},
+          {match: /grace.*sufficient/i, title: "Sufficient Grace"},
+          {match: /new mercies/i, title: "New Mercies"},
+          {match: /eagles.*wings/i, title: "Wings Like Eagles"},
+          {match: /mountains.*faith/i, title: "Faith Moves Mountains"},
           {match: /living water/i, title: "Living Water"},
           {match: /bread of life/i, title: "Bread of Life"},
-          {match: /way.*truth.*life/i, title: "The Way, Truth & Life"}
+          {match: /narrow.*gate/i, title: "The Narrow Gate"},
+          {match: /pearl.*great price/i, title: "Pearl of Great Price"},
         ];
         
-        // Find matching pattern in the prayer text
         for (let pattern of versePatterns) {
           if (pattern.match.test(currentPrayer)) {
             categoryTitle = pattern.title;
             break;
           }
         }
-        
-        // If no specific pattern matches, use a generic inspirational title
-        if (categoryTitle === prayerCategories[selectedCategory]?.name || categoryTitle === 'Prayer') {
-          const genericTitles = [
-            "God's Promise", "Divine Truth", "Sacred Word", "Eternal Hope",
-            "Blessed Assurance", "Living Promise", "Holy Scripture", "Divine Love"
-          ];
-          const randomSeed = Math.random();
-          categoryTitle = genericTitles[Math.floor(randomSeed * genericTitles.length)];
-        }
       }
       
-      // Category-specific title styling
+      // Category-specific title styling - ENHANCED for better visibility
       ctx.textAlign = 'center';
-      ctx.font = 'normal 48px Georgia, serif';
+      ctx.font = 'bold 64px Georgia, serif';  // Increased from 48px to 64px and made bold
       
       // Add elegant styling based on category
       switch(selectedCategory) {
@@ -712,20 +916,20 @@ const HelpMePrayApp = ({ user, setUser }) => {
           morningTitleGradient.addColorStop(0, '#FFD700');
           morningTitleGradient.addColorStop(1, '#FFA500');
           ctx.fillStyle = morningTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 8;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
+          ctx.shadowBlur = 8;                      // Increased blur
+          ctx.shadowOffsetX = 4;                   // Increased offset
+          ctx.shadowOffsetY = 4;
           break;
           
         case 'bedtime':
           // Soft moonlight silver
           const bedtimeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bedtimeTitleGradient.addColorStop(0, '#F5F5DC');
-          bedtimeTitleGradient.addColorStop(1, '#D3D3D3');
+          bedtimeTitleGradient.addColorStop(0, '#E6E6FA');
+          bedtimeTitleGradient.addColorStop(1, '#C0C0C0');
           ctx.fillStyle = bedtimeTitleGradient;
-          ctx.shadowColor = 'rgba(25, 25, 112, 0.8)';
-          ctx.shadowBlur = 12;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 5;
           ctx.shadowOffsetX = 2;
           ctx.shadowOffsetY = 2;
           break;
@@ -734,10 +938,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
           // Natural forest green
           const healingTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
           healingTitleGradient.addColorStop(0, '#98FB98');
-          healingTitleGradient.addColorStop(1, '#90EE90');
+          healingTitleGradient.addColorStop(1, '#228B22');
           ctx.fillStyle = healingTitleGradient;
-          ctx.shadowColor = 'rgba(0, 100, 0, 0.6)';
-          ctx.shadowBlur = 6;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 5;
           ctx.shadowOffsetX = 2;
           ctx.shadowOffsetY = 2;
           break;
@@ -745,23 +949,23 @@ const HelpMePrayApp = ({ user, setUser }) => {
         case 'gratitude':
           // Warm golden wheat
           const gratitudeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          gratitudeTitleGradient.addColorStop(0, '#FFD700');
+          gratitudeTitleGradient.addColorStop(0, '#F0E68C');
           gratitudeTitleGradient.addColorStop(1, '#DAA520');
           ctx.fillStyle = gratitudeTitleGradient;
-          ctx.shadowColor = 'rgba(139, 69, 19, 0.7)';
-          ctx.shadowBlur = 8;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
+          ctx.shadowBlur = 8;                      // Increased blur
+          ctx.shadowOffsetX = 4;                   // Increased offset
+          ctx.shadowOffsetY = 4;
           break;
           
         case 'family':
           // Peaceful blue waters
           const familyTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          familyTitleGradient.addColorStop(0, '#E0F6FF');
-          familyTitleGradient.addColorStop(1, '#87CEEB');
+          familyTitleGradient.addColorStop(0, '#87CEEB');
+          familyTitleGradient.addColorStop(1, '#4682B4');
           ctx.fillStyle = familyTitleGradient;
-          ctx.shadowColor = 'rgba(70, 130, 180, 0.8)';
-          ctx.shadowBlur = 6;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 5;
           ctx.shadowOffsetX = 2;
           ctx.shadowOffsetY = 2;
           break;
@@ -770,537 +974,74 @@ const HelpMePrayApp = ({ user, setUser }) => {
           // Ancient parchment
           const bibleTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
           bibleTitleGradient.addColorStop(0, '#F5DEB3');
-          bibleTitleGradient.addColorStop(1, '#DEB887');
+          bibleTitleGradient.addColorStop(1, '#D2691E');
           ctx.fillStyle = bibleTitleGradient;
-          ctx.shadowColor = 'rgba(139, 69, 19, 0.8)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
+          ctx.shadowBlur = 8;                      // Increased blur
+          ctx.shadowOffsetX = 4;                   // Increased offset
+          ctx.shadowOffsetY = 4;
           break;
           
         default:
-          // Clean white with subtle shadow
           ctx.fillStyle = 'white';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-          ctx.shadowBlur = 6;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+          ctx.shadowBlur = 4;
           ctx.shadowOffsetX = 2;
           ctx.shadowOffsetY = 2;
+          break;
       }
       
-      ctx.fillText(categoryTitle, canvas.width / 2, 90);
+      // Draw the category title with proper spacing from top
+      ctx.fillText(categoryTitle, canvas.width / 2, 120);
       
-      // Add branding with logo
-      ctx.font = '18px Georgia, serif';
-      ctx.fillStyle = 'white';
-      ctx.fillText('Help Me Pray', canvas.width / 2, canvas.height - 60);
-      
-      // Reset shadow for clean download
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      
-      // Download the image
-      const link = document.createElement('a');
-      link.download = `prayer-${Date.now()}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-      
-    } catch (error) {
-      console.error('Error generating prayer image:', error);
-      alert('Error generating image. Please try again.');
-    }
-  };
-  
-  // Text cleanup function for prayer formatting
-  const cleanupPrayerText = (text) => {
-    if (!text) return '';
-    
-    let cleaned = text
-      // Fix multiple spaces
-      .replace(/\s+/g, ' ')
-      // Fix spacing around punctuation
-      .replace(/\s*([,.!?;:])\s*/g, '$1 ')
-      // Remove extra spaces at beginning and end
-      .trim();
-      
-    return cleaned;
-  };
-  
-  const handleGoogleAuth = async () => {
-    try {
-      setAuthLoading(true);
-      setAuthError('');
-
-      if (!supabase) {
-        setAuthError('Authentication not available in offline mode');
-        setAuthLoading(false);
-        return;
-      }
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-
-      if (error) {
-        setAuthError(error.message);
-      }
-    } catch (error) {
-      setAuthError('Failed to authenticate with Google');
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    setAuthError('');
-
-    if (!supabase) {
-      setAuthError('Authentication not available in offline mode');
-      setAuthLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (error) {
-      setAuthError(error.message);
-    } else {
-      setEmail('');
-      setPassword('');
-    }
-    setAuthLoading(false);
-  };
-
-  // Text cleanup function for prayer formatting
-  const cleanupPrayerText = (text) => {
-    if (!text) return '';
-    
-    let cleaned = text
-            const lakeVariation = Math.floor(randomSeed * 3);
-            
-            // Dynamic sky with realistic perspective
-            const lakeGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.6);
-            if (lakeVariation === 0) {
-              // Golden hour
-              lakeGradient.addColorStop(0, '#FFE4B5');
-              lakeGradient.addColorStop(0.3, '#F0E68C');
-              lakeGradient.addColorStop(0.6, '#87CEEB');
-              lakeGradient.addColorStop(1, '#4682B4');
-            } else if (lakeVariation === 1) {
-              // Serene blue
-              lakeGradient.addColorStop(0, '#E0F6FF');
-              lakeGradient.addColorStop(0.3, '#87CEEB');
-              lakeGradient.addColorStop(0.6, '#4682B4');
-              lakeGradient.addColorStop(1, '#2E8B57');
-            } else {
-              // Misty morning
-              lakeGradient.addColorStop(0, '#F5F5F5');
-              lakeGradient.addColorStop(0.3, '#D3D3D3');
-              lakeGradient.addColorStop(0.6, '#A9A9A9');
-              lakeGradient.addColorStop(1, '#696969');
-            }
-            ctx.fillStyle = lakeGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Realistic mountain backdrop with atmospheric perspective
-            const mountainLayers = 4;
-            for (let layer = 0; layer < mountainLayers; layer++) {
-              const distance = layer / mountainLayers;
-              const opacity = 0.8 - (distance * 0.4);
-              const hue = lakeVariation === 0 ? 60 : lakeVariation === 1 ? 200 : 0;
-              const sat = 20 - (distance * 15);
-              const light = 60 + (distance * 20);
-              
-              ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${opacity})`;
-              
-              ctx.beginPath();
-              ctx.moveTo(0, canvas.height * (0.3 + layer * 0.05));
-              for (let i = 1; i <= 8; i++) {
-                const x = (i * canvas.width) / 8;
-                const baseY = canvas.height * (0.25 + layer * 0.05);
-                const peakHeight = (randomSeed + Math.sin(i + layer)) * 100;
-                const y = baseY + peakHeight;
-                ctx.lineTo(x, y);
-              }
-              ctx.lineTo(canvas.width, canvas.height * 0.7);
-              ctx.lineTo(0, canvas.height * 0.7);
-              ctx.fill();
-            }
-            
-            // Realistic water with reflections and ripples
-            const waterY = canvas.height * (0.65 + randomSeed * 0.1);
-            const waterGradient = ctx.createLinearGradient(0, waterY, 0, canvas.height);
-            waterGradient.addColorStop(0, 'rgba(70, 130, 180, 0.8)');
-            waterGradient.addColorStop(0.3, 'rgba(30, 144, 255, 0.6)');
-            waterGradient.addColorStop(1, 'rgba(0, 100, 200, 0.9)');
-            ctx.fillStyle = waterGradient;
-            ctx.fillRect(0, waterY, canvas.width, canvas.height - waterY);
-            
-            // Water ripples and reflections
-            const rippleCount = 8 + Math.floor(randomSeed * 6);
-            for (let i = 0; i < rippleCount; i++) {
-              const rippleX = Math.random() * canvas.width;
-              const rippleY = waterY + (Math.random() * (canvas.height - waterY));
-              const rippleRadius = 20 + (Math.random() * 60);
-              const rippleAlpha = 0.1 + (Math.random() * 0.2);
-              
-              ctx.strokeStyle = `rgba(255, 255, 255, ${rippleAlpha})`;
-              ctx.lineWidth = 1 + Math.random();
-              ctx.beginPath();
-              ctx.arc(rippleX, rippleY, rippleRadius, 0, Math.PI * 2);
-              ctx.stroke();
-            }
-            
-            // Shoreline details with random vegetation
-            const shorelinePoints = [];
-            for (let i = 0; i <= 15; i++) {
-              shorelinePoints.push({
-                x: (i * canvas.width) / 15,
-                y: waterY + Math.sin(i + randomSeed * 10) * 15
-              });
-            }
-            
-            ctx.fillStyle = 'rgba(34, 139, 34, 0.7)';
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height);
-            shorelinePoints.forEach(point => {
-              ctx.lineTo(point.x, point.y);
-            });
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.fill();
-            
-            // Random trees and vegetation along shoreline
-            const treeCount = 5 + Math.floor(randomSeed * 8);
-            for (let i = 0; i < treeCount; i++) {
-              const treeX = (i / treeCount) * canvas.width + (randomSeed * 50);
-              const treeY = waterY - 20 + (Math.random() * 40);
-              const treeHeight = 40 + (randomSeed * 30);
-              const treeWidth = 15 + (randomSeed * 10);
-              
-              // Tree trunk
-              ctx.fillStyle = 'rgba(101, 67, 33, 0.8)';
-              ctx.fillRect(treeX - 3, treeY, 6, treeHeight * 0.7);
-              
-              // Tree foliage
-              const foliageGradient = ctx.createRadialGradient(treeX, treeY - treeHeight * 0.3, 0, treeX, treeY - treeHeight * 0.3, treeWidth);
-              foliageGradient.addColorStop(0, 'rgba(34, 139, 34, 0.9)');
-              foliageGradient.addColorStop(1, 'rgba(0, 100, 0, 0.6)');
-              ctx.fillStyle = foliageGradient;
-              ctx.beginPath();
-              ctx.arc(treeX, treeY - treeHeight * 0.3, treeWidth, 0, Math.PI * 2);
-              ctx.fill();
-            }
-            break;
-            
-          case 'healing':
-            // Photo-realistic forest with natural lighting
-            const healingVariation = Math.floor(randomSeed * 3);
-            
-            // Forest atmosphere with depth
-            const forestGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.8);
-            if (healingVariation === 0) {
-              // Morning forest
-              forestGradient.addColorStop(0, '#E6F3FF');
-              forestGradient.addColorStop(0.3, '#B8E6B8');
-              forestGradient.addColorStop(0.7, '#228B22');
-              forestGradient.addColorStop(1, '#006400');
-            } else if (healingVariation === 1) {
-              // Misty forest
-              forestGradient.addColorStop(0, '#F0F8FF');
-              forestGradient.addColorStop(0.4, '#E0E0E0');
-              forestGradient.addColorStop(0.8, '#90EE90');
-              forestGradient.addColorStop(1, '#2E8B57');
-            } else {
-              // Autumn forest
-              forestGradient.addColorStop(0, '#FFF8DC');
-              forestGradient.addColorStop(0.3, '#F0E68C');
-              forestGradient.addColorStop(0.7, '#CD853F');
-              forestGradient.addColorStop(1, '#8B4513');
-            }
-            ctx.fillStyle = forestGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Realistic sun rays through canopy
-            const rayCount = 8 + Math.floor(randomSeed * 6);
-            for (let i = 0; i < rayCount; i++) {
-              const rayX = (i / rayCount) * canvas.width + (randomSeed * 100);
-              const rayWidth = 20 + (randomSeed * 40);
-              const rayAlpha = 0.1 + (randomSeed * 0.2);
-              
-              const rayGradient = ctx.createLinearGradient(rayX - rayWidth/2, 0, rayX + rayWidth/2, 0);
-              rayGradient.addColorStop(0, 'rgba(255, 255, 224, 0)');
-              rayGradient.addColorStop(0.5, `rgba(255, 255, 224, ${rayAlpha})`);
-              rayGradient.addColorStop(1, 'rgba(255, 255, 224, 0)');
-              ctx.fillStyle = rayGradient;
-              ctx.fillRect(rayX - rayWidth/2, 0, rayWidth, canvas.height * 0.8);
-            }
-            
-            // Layered trees with realistic depth
-            const treeDepths = [0.2, 0.4, 0.6, 0.8];
-            treeDepths.forEach((depth, layerIndex) => {
-              const treeCount = 6 + Math.floor(randomSeed * 8);
-              const opacity = 1 - (depth * 0.3);
-              const scale = 1 - (depth * 0.4);
-              
-              for (let i = 0; i < treeCount; i++) {
-                const treeX = (i / treeCount) * canvas.width * 1.2 - canvas.width * 0.1;
-                const baseY = canvas.height * (0.4 + depth * 0.4);
-                const treeHeight = (80 + randomSeed * 120) * scale;
-                const trunkWidth = (8 + randomSeed * 6) * scale;
-                
-                // Tree trunk with texture
-                const trunkGradient = ctx.createLinearGradient(treeX - trunkWidth/2, baseY, treeX + trunkWidth/2, baseY);
-                trunkGradient.addColorStop(0, `rgba(101, 67, 33, ${opacity * 0.6})`);
-                trunkGradient.addColorStop(0.5, `rgba(139, 102, 41, ${opacity})`);
-                trunkGradient.addColorStop(1, `rgba(101, 67, 33, ${opacity * 0.8})`);
-                ctx.fillStyle = trunkGradient;
-                ctx.fillRect(treeX - trunkWidth/2, baseY, trunkWidth, treeHeight * 0.6);
-                
-                // Tree canopy with natural variation
-                const canopyLayers = 3;
-                for (let layer = 0; layer < canopyLayers; layer++) {
-                  const canopyY = baseY - treeHeight * (0.2 + layer * 0.2);
-                  const canopyRadius = (40 + randomSeed * 30) * scale * (1 - layer * 0.2);
-                  
-                  const canopyGradient = ctx.createRadialGradient(treeX, canopyY, 0, treeX, canopyY, canopyRadius);
-                  const greenIntensity = healingVariation === 2 ? 150 : 220;
-                  canopyGradient.addColorStop(0, `rgba(34, ${greenIntensity}, 34, ${opacity})`);
-                  canopyGradient.addColorStop(0.7, `rgba(0, ${greenIntensity - 50}, 0, ${opacity * 0.8})`);
-                  canopyGradient.addColorStop(1, `rgba(0, ${greenIntensity - 100}, 0, ${opacity * 0.3})`);
-                  ctx.fillStyle = canopyGradient;
-                  ctx.beginPath();
-                  ctx.arc(treeX, canopyY, canopyRadius, 0, Math.PI * 2);
-                  ctx.fill();
-                }
-              }
-            });
-            
-            // Forest floor details
-            const floorGradient = ctx.createLinearGradient(0, canvas.height * 0.8, 0, canvas.height);
-            floorGradient.addColorStop(0, 'rgba(34, 139, 34, 0.3)');
-            floorGradient.addColorStop(1, 'rgba(0, 100, 0, 0.7)');
-            ctx.fillStyle = floorGradient;
-            ctx.fillRect(0, canvas.height * 0.8, canvas.width, canvas.height * 0.2);
-            break;
-            
-          case 'gratitude':
-            // Photo-realistic golden hour field
-            const gratitudeVariation = Math.floor(randomSeed * 3);
-            
-            const gratitudeGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            if (gratitudeVariation === 0) {
-              // Warm golden
-              gratitudeGradient.addColorStop(0, '#FFD700');
-              gratitudeGradient.addColorStop(0.3, '#FFA500');
-              gratitudeGradient.addColorStop(0.7, '#FF8C00');
-              gratitudeGradient.addColorStop(1, '#DAA520');
-            } else if (gratitudeVariation === 1) {
-              // Sunset amber
-              gratitudeGradient.addColorStop(0, '#FFEBCD');
-              gratitudeGradient.addColorStop(0.4, '#DEB887');
-              gratitudeGradient.addColorStop(0.8, '#D2691E');
-              gratitudeGradient.addColorStop(1, '#A0522D');
-            } else {
-              // Harvest gold
-              gratitudeGradient.addColorStop(0, '#FFFACD');
-              gratitudeGradient.addColorStop(0.3, '#F0E68C');
-              gratitudeGradient.addColorStop(0.7, '#BDB76B');
-              gratitudeGradient.addColorStop(1, '#8B7D6B');
-            }
-            ctx.fillStyle = gratitudeGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Realistic wheat field with wind movement
-            const fieldY = canvas.height * (0.6 + randomSeed * 0.1);
-            const wheatGradient = ctx.createLinearGradient(0, fieldY, 0, canvas.height);
-            wheatGradient.addColorStop(0, 'rgba(218, 165, 32, 0.8)');
-            wheatGradient.addColorStop(0.5, 'rgba(184, 134, 11, 0.9)');
-            wheatGradient.addColorStop(1, 'rgba(160, 115, 10, 1)');
-            ctx.fillStyle = wheatGradient;
-            
-            // Rolling wheat field terrain
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height);
-            for (let x = 0; x <= canvas.width; x += 10) {
-              const waveHeight = Math.sin(x * 0.01 + randomSeed * 10) * 20;
-              const y = fieldY + waveHeight;
-              ctx.lineTo(x, y);
-            }
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.fill();
-            
-            // Individual wheat stalks with natural movement
-            const stalkCount = 100 + Math.floor(randomSeed * 80);
-            for (let i = 0; i < stalkCount; i++) {
-              const stalkX = Math.random() * canvas.width;
-              const stalkBaseY = fieldY + Math.sin(stalkX * 0.01) * 20;
-              const stalkHeight = 30 + (Math.random() * 40);
-              const stalkSway = Math.sin(stalkX * 0.05 + timeStamp * 0.002) * 5;
-              
-              ctx.strokeStyle = `rgba(139, 69, 19, ${0.6 + Math.random() * 0.4})`;
-              ctx.lineWidth = 1 + Math.random();
-              ctx.beginPath();
-              ctx.moveTo(stalkX, stalkBaseY);
-              ctx.lineTo(stalkX + stalkSway, stalkBaseY - stalkHeight);
-              ctx.stroke();
-              
-              // Wheat head
-              ctx.fillStyle = `rgba(218, 165, 32, ${0.7 + Math.random() * 0.3})`;
-              ctx.beginPath();
-              ctx.ellipse(stalkX + stalkSway, stalkBaseY - stalkHeight, 2, 6, 0, 0, Math.PI * 2);
-              ctx.fill();
-            }
-            break;
-            
-          case 'bibleVerses':
-            // Photo-realistic ancient landscape
-            const bibleVariation = Math.floor(randomSeed * 3);
-            
-            const bibleGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            if (bibleVariation === 0) {
-              // Desert sunset
-              bibleGradient.addColorStop(0, '#F4A460');
-              bibleGradient.addColorStop(0.4, '#CD853F');
-              bibleGradient.addColorStop(0.8, '#D2691E');
-              bibleGradient.addColorStop(1, '#8B4513');
-            } else if (bibleVariation === 1) {
-              // Ancient stone
-              bibleGradient.addColorStop(0, '#F5DEB3');
-              bibleGradient.addColorStop(0.5, '#DEB887');
-              bibleGradient.addColorStop(1, '#BC9A6A');
-            } else {
-              // Holy land
-              bibleGradient.addColorStop(0, '#FFEFD5');
-              bibleGradient.addColorStop(0.4, '#FFE4B5');
-              bibleGradient.addColorStop(0.8, '#DEB887');
-              bibleGradient.addColorStop(1, '#D2B48C');
-            }
-            ctx.fillStyle = bibleGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Realistic ancient hills with erosion patterns
-            const hillLayers = 5;
-            for (let layer = 0; layer < hillLayers; layer++) {
-              const distance = layer / hillLayers;
-              const opacity = 0.9 - (distance * 0.3);
-              const hillHeight = 0.3 + (layer * 0.08);
-              
-              ctx.fillStyle = `rgba(139, 69, 19, ${opacity})`;
-              ctx.beginPath();
-              ctx.moveTo(0, canvas.height);
-              
-              for (let x = 0; x <= canvas.width; x += 20) {
-                const erosion = Math.sin(x * 0.03 + layer) * 15;
-                const baseY = canvas.height * hillHeight;
-                const y = baseY + erosion + (Math.sin(x * 0.01 + randomSeed * 10) * 30);
-                ctx.lineTo(x, y);
-              }
-              ctx.lineTo(canvas.width, canvas.height);
-              ctx.fill();
-            }
-            
-            // Ancient olive trees with realistic detail
-            const oliveCount = 4 + Math.floor(randomSeed * 6);
-            for (let i = 0; i < oliveCount; i++) {
-              const treeX = (i / oliveCount) * canvas.width + (randomSeed * 100);
-              const treeY = canvas.height * (0.4 + randomSeed * 0.2);
-              const treeAge = randomSeed; // Affects tree character
-              
-              // Gnarled trunk
-              const trunkHeight = 40 + (treeAge * 30);
-              const trunkWidth = 6 + (treeAge * 4);
-              
-              ctx.strokeStyle = `rgba(101, 67, 33, 0.9)`;
-              ctx.lineWidth = trunkWidth;
-              ctx.beginPath();
-              ctx.moveTo(treeX, treeY);
-              
-              // Twisted trunk segments
-              for (let segment = 1; segment <= 4; segment++) {
-                const segmentY = treeY - (segment * trunkHeight / 4);
-                const twist = Math.sin(segment + treeAge * 10) * 10;
-                ctx.lineTo(treeX + twist, segmentY);
-              }
-              ctx.stroke();
-              
-              // Olive foliage - silvery green
-              const foliageClusters = 3 + Math.floor(treeAge * 4);
-              for (let cluster = 0; cluster < foliageClusters; cluster++) {
-                const clusterX = treeX + (Math.sin(cluster + treeAge) * 25);
-                const clusterY = treeY - trunkHeight * 0.7 + (Math.cos(cluster) * 15);
-                const clusterSize = 12 + (Math.random() * 15);
-                
-                const foliageGradient = ctx.createRadialGradient(clusterX, clusterY, 0, clusterX, clusterY, clusterSize);
-                foliageGradient.addColorStop(0, 'rgba(107, 142, 35, 0.8)');
-                foliageGradient.addColorStop(0.7, 'rgba(85, 107, 47, 0.6)');
-                foliageGradient.addColorStop(1, 'rgba(85, 107, 47, 0.3)');
-                ctx.fillStyle = foliageGradient;
-                ctx.beginPath();
-                ctx.arc(clusterX, clusterY, clusterSize, 0, Math.PI * 2);
-                ctx.fill();
-              }
-            }
-            break;
-            
-          default:
-            // Default ocean scene with photo-realistic rendering
-            const oceanGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            oceanGradient.addColorStop(0, '#87CEEB');
-            oceanGradient.addColorStop(0.7, '#20B2AA');
-            oceanGradient.addColorStop(1, '#008B8B');
-            ctx.fillStyle = oceanGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Photo-realistic waves with foam and depth
-            const waveCount = 12 + Math.floor(randomSeed * 8);
-            for (let i = 0; i < waveCount; i++) {
-              const waveY = canvas.height * (0.6 + i * 0.03);
-              const waveAmplitude = 15 + (randomSeed * 10);
-              const waveFrequency = 0.01 + (randomSeed * 0.005);
-              
-              ctx.strokeStyle = `rgba(255, 255, 255, ${0.6 - i * 0.04})`;
-              ctx.lineWidth = 2 + (randomSeed * 2);
-              ctx.beginPath();
-              
-              for (let x = 0; x <= canvas.width; x += 5) {
-                const y = waveY + Math.sin(x * waveFrequency + timeStamp * 0.001 + i) * waveAmplitude;
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-              }
-              ctx.stroke();
-            }
-        }
-      };
-      
-      createPhotoRealisticBackground();
-      
-      // Add semi-transparent overlay for better text contrast
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Setup text with drop shadow
-      ctx.font = '28px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = 'white';
+      // Reset shadow for prayer text
       ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
       ctx.shadowBlur = 4;
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
       
-      // Word wrap the text
-      const words = currentPrayer.split(' ');
+      // Clean prayer text first
+      const cleanPrayer = currentPrayer
+        .replace(/🙏/g, '') // Remove emoji
+        .replace(/\.+/g, '.') // Fix multiple periods
+        .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
+        .trim();
+      
+      // Calculate dynamic font size based on text length and available space
+      const availableHeight = canvas.height - 280; // Reserve space for title (140px) and branding (140px)
+      const textLength = cleanPrayer.length;
+      const maxWidth = canvas.width - 120;
+      
+      let fontSize, lineHeight;
+      
+      // Dynamic font sizing based on prayer length
+      if (textLength < 300) {
+        // Short prayers - larger font
+        fontSize = 28;
+        lineHeight = 34;
+      } else if (textLength < 600) {
+        // Medium prayers - medium font
+        fontSize = 24;
+        lineHeight = 30;
+      } else if (textLength < 1200) {
+        // Long prayers - smaller font
+        fontSize = 20;
+        lineHeight = 26;
+      } else {
+        // Very long prayers - smallest font
+        fontSize = 18;
+        lineHeight = 24;
+      }
+      
+      // Set font and styling
+      ctx.font = `normal ${fontSize}px Georgia, serif`;
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      
+      // Word wrap with current font size
+      const words = cleanPrayer.split(' ');
       const lines = [];
       let currentLine = '';
-      const maxWidth = canvas.width - 120;
       
       for (let word of words) {
         const testLine = currentLine + word + ' ';
@@ -1314,123 +1055,124 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       lines.push(currentLine.trim());
       
-      // Draw each line
-      const lineHeight = 38;
-      const startY = (canvas.height - (lines.length * lineHeight)) / 2;
+      // Double-check if text fits in available height and adjust if needed
+      let totalTextHeight = lines.length * lineHeight;
+      
+      // If text is still too tall, reduce font size further
+      while (totalTextHeight > availableHeight && fontSize > 14) {
+        fontSize -= 2;
+        lineHeight = fontSize + 6;
+        ctx.font = `normal ${fontSize}px Georgia, serif`;
+        
+        // Recalculate word wrap with new font size
+        const newLines = [];
+        let newCurrentLine = '';
+        
+        for (let word of words) {
+          const testLine = newCurrentLine + word + ' ';
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > maxWidth && newCurrentLine !== '') {
+            newLines.push(newCurrentLine.trim());
+            newCurrentLine = word + ' ';
+          } else {
+            newCurrentLine = testLine;
+          }
+        }
+        newLines.push(newCurrentLine.trim());
+        
+        lines.length = 0;
+        lines.push(...newLines);
+        totalTextHeight = lines.length * lineHeight;
+      }
+      
+      // Final calculation for positioning
+      totalTextHeight = lines.length * lineHeight;
+      const startY = 180 + (availableHeight - totalTextHeight) / 2;
+      
+      // Ensure text doesn't go below branding area
+      const maxEndY = canvas.height - 140;
+      const actualEndY = startY + totalTextHeight;
+      
+      // If text is too long, adjust starting position
+      const adjustedStartY = actualEndY > maxEndY ? startY - (actualEndY - maxEndY) : startY;
       
       lines.forEach((line, index) => {
-        ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
+        // Clean the line to remove any unwanted emojis or characters
+        const cleanLine = line
+          .replace(/🙏/g, '') // Remove emoji
+          .replace(/\.+/g, '.') // Fix multiple periods
+          .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
+          .trim();
+        ctx.fillText(cleanLine, canvas.width / 2, adjustedStartY + (index * lineHeight));
       });
       
-      // Add elegant category title at the top
-      let categoryTitle = prayerCategories[selectedCategory]?.name || 'Prayer';
-      if (selectedCategory === 'bibleVerses') {
-        categoryTitle = 'Bible Verse Prayer';
-      }
-      
-      // Category-specific title styling
-      ctx.textAlign = 'center';
-      ctx.font = 'normal 48px Georgia, serif';
-      
-      // Add elegant styling based on category
-      switch(selectedCategory) {
-        case 'morning':
-          // Golden sunrise colors
-          const morningTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          morningTitleGradient.addColorStop(0, '#FFD700');
-          morningTitleGradient.addColorStop(1, '#FFA500');
-          ctx.fillStyle = morningTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 8;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          break;
+      // Add branding with actual logo
+      const addBrandingWithLogo = async () => {
+        try {
+          // Load the actual praying hands logo
+          const logoImg = new Image();
+          logoImg.src = '/prayhands.png';
           
-        case 'bedtime':
-          // Soft moonlight silver
-          const bedtimeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bedtimeTitleGradient.addColorStop(0, '#F5F5DC');
-          bedtimeTitleGradient.addColorStop(1, '#D3D3D3');
-          ctx.fillStyle = bedtimeTitleGradient;
-          ctx.shadowColor = 'rgba(25, 25, 112, 0.8)';
-          ctx.shadowBlur = 12;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
+          await new Promise((resolve, reject) => {
+            logoImg.onload = resolve;
+            logoImg.onerror = reject;
+          });
           
-        case 'healing':
-          // Natural forest green
-          const healingTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          healingTitleGradient.addColorStop(0, '#98FB98');
-          healingTitleGradient.addColorStop(1, '#90EE90');
-          ctx.fillStyle = healingTitleGradient;
-          ctx.shadowColor = 'rgba(0, 100, 0, 0.6)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
+          // Position logo and text at the bottom (properly centered)
+          const brandingY = canvas.height - 60;
+          const logoSize = 80; // Reduced from 120px for better proportions
+          const brandingText = 'Help Me Pray App';
           
-        case 'gratitude':
-          // Warm golden wheat
-          const gratitudeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          gratitudeTitleGradient.addColorStop(0, '#FFD700');
-          gratitudeTitleGradient.addColorStop(1, '#DAA520');
-          ctx.fillStyle = gratitudeTitleGradient;
-          ctx.shadowColor = 'rgba(139, 69, 19, 0.7)';
-          ctx.shadowBlur = 8;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          break;
+          // Measure text width for proper centering
+          ctx.font = '18px Arial';
+          const textWidth = ctx.measureText(brandingText).width;
+          const spacing = 8; // Space between logo and text
+          const totalWidth = logoSize + spacing + textWidth;
           
-        case 'family':
-          // Peaceful blue waters
-          const familyTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          familyTitleGradient.addColorStop(0, '#E0F6FF');
-          familyTitleGradient.addColorStop(1, '#87CEEB');
-          ctx.fillStyle = familyTitleGradient;
-          ctx.shadowColor = 'rgba(70, 130, 180, 0.8)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
+          // Center the entire branding group
+          const startX = (canvas.width - totalWidth) / 2;
           
-        case 'bibleVerses':
-          // Ancient parchment
-          const bibleTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bibleTitleGradient.addColorStop(0, '#F5DEB3');
-          bibleTitleGradient.addColorStop(1, '#DEB887');
-          ctx.fillStyle = bibleTitleGradient;
-          ctx.shadowColor = 'rgba(139, 69, 19, 0.8)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          break;
+          // Draw logo with white filter
+          // Create a temporary canvas to apply white filter to the logo
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCanvas.width = logoSize;
+          tempCanvas.height = logoSize;
           
-        default:
-          // Clean white with subtle shadow
+          // Enable high-quality rendering on temp canvas
+          tempCtx.imageSmoothingEnabled = true;
+          tempCtx.imageSmoothingQuality = 'high';
+          
+          // Draw logo on temp canvas
+          tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
+          
+          // Apply white filter
+          tempCtx.globalCompositeOperation = 'source-atop';
+          tempCtx.fillStyle = 'white';
+          tempCtx.fillRect(0, 0, logoSize, logoSize);
+          
+          // Draw the white-filtered logo on main canvas
+          ctx.drawImage(tempCanvas, startX, brandingY - logoSize / 2, logoSize, logoSize);
+          
+          // Draw text next to logo
           ctx.fillStyle = 'white';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-      }
+          ctx.textAlign = 'left';
+          ctx.fillText(brandingText, startX + logoSize + spacing, brandingY + 5);
+          
+        } catch (error) {
+          // Fallback to text-only branding if logo fails to load
+          ctx.font = '18px Arial';
+          ctx.fillStyle = 'white';
+          ctx.textAlign = 'center';
+          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 60);
+        }
+      };
       
-      ctx.fillText(categoryTitle, canvas.width / 2, 90);
+      await addBrandingWithLogo();
       
-      // Add branding with logo
-      ctx.font = '18px Georgia, serif';
-      ctx.fillStyle = 'white';
-      ctx.fillText('Help Me Pray', canvas.width / 2, canvas.height - 60);
-      
-      // Reset shadow for clean download
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      
-      // Download the image
+      // Download the image with descriptive filename
       const link = document.createElement('a');
-      link.download = `prayer-${Date.now()}.png`;
+      link.download = `${categoryTitle.replace(/\s+/g, '_')}_Prayer.png`;
       link.href = canvas.toDataURL();
       link.click();
       
@@ -1471,6 +1213,10 @@ const HelpMePrayApp = ({ user, setUser }) => {
       .replace(/([^.!?])$/, '$1.')
       // Clean up any double periods
       .replace(/\.+/g, '.')
+      // Clean up periods with spaces between them
+      .replace(/\.\s*\.\s*/g, '.')
+      // Remove trailing periods before Amen
+      .replace(/\.\s*Amen\.$/g, ' Amen.')
       // Trim whitespace
       .trim();
     
@@ -1574,11 +1320,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   }, [user]);
 
-  // Only restrict non-premium users from premium features
+  // No premium voice restrictions needed - ElevenLabs removed for cost reasons
+  // Google and browser voices available to all users
   useEffect(() => {
-    if (!isPremium && (ttsProvider === 'elevenlabs' || ttsProvider === 'google')) {
-      setTtsProvider('browser');
-    }
+    console.log('useEffect triggered - isPremium:', isPremium, 'ttsProvider:', ttsProvider);
+    // All voice options now available to everyone (ElevenLabs removed due to cost)
   }, [isPremium, ttsProvider]);
 
   // Initialize text-to-speech voices
@@ -1777,6 +1523,34 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Let us never take your blessings for granted.",
         "Guide us to share your love with others."
       ]
+    },
+    bibleVerses: {
+      openings: [
+        "Heavenly Father,",
+        "Lord,",
+        "God,",
+        "Our Father,",
+        "Dear Lord,",
+        "Almighty God,"
+      ],
+      subjects: [
+        "your word is a lamp unto my feet and a light unto my path",
+        "help me to hide your word in my heart that I might not sin against you",
+        "let your scriptures guide my thoughts and actions today",
+        "may your promises bring comfort to my troubled heart",
+        "thank you for the wisdom and truth found in your holy word",
+        "help me to meditate on your teachings day and night",
+        "let your word transform my mind and renew my spirit",
+        "may the truth of your scriptures set me free from fear and doubt"
+      ],
+      closings: [
+        "May your word dwell richly within me.",
+        "Help me to live according to your scriptural truths.",
+        "Let your promises anchor my hope in uncertain times.",
+        "Guide me by the light of your holy word.",
+        "May your scriptures bring peace to my soul.",
+        "Help me to share your word with others through my life."
+      ]
     }
   };
 
@@ -1862,58 +1636,6 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Prepara mi corazón para las posibilidades del mañana."
       ]
     },
-    strength: {
-      openings: [
-        "Dios Todopoderoso,",
-        "Señor,",
-        "Padre Celestial,",
-        "Querido Dios,",
-        "Padre Nuestro,",
-        "Dios,"
-      ],
-      subjects: [
-        "en este momento de necesidad, busco tu fuerza y sabiduría",
-        "cuando me siento débil, recuerdo que tu poder se perfecciona en mi debilidad",
-        "ayúdame a encontrar valor en medio de la incertidumbre",
-        "dame la resistencia para perseverar a través de los desafíos",
-        "fortalece mi fe cuando las dudas nublan mi mente",
-        "ayúdame a confiar en tu plan incluso cuando no puedo ver el camino"
-      ],
-      closings: [
-        "Que tu fuerza sea mi refugio y mi roca.",
-        "En ti encuentro el valor para enfrentar cualquier tormenta.",
-        "Ayúdame a caminar en fe, no en temor.",
-        "Que tu paz calme mi espíritu ansioso.",
-        "Dame la gracia para confiar en tu tiempo perfecto.",
-        "Fortalece mi corazón para los días venideros."
-      ]
-    },
-    peace: {
-      openings: [
-        "Príncipe de Paz,",
-        "Señor,",
-        "Padre Celestial,",
-        "Dios,",
-        "Querido Señor,",
-        "Padre Nuestro,"
-      ],
-      subjects: [
-        "en medio del caos de la vida, busco tu paz que sobrepasa todo entendimiento",
-        "calma las tormentas en mi corazón y mente",
-        "ayúdame a encontrar serenidad en tu presencia",
-        "que tu paz fluya a través de mí hacia otros",
-        "en momentos de ansiedad, recuérdame de tu control soberano",
-        "ayúdame a descansar en la seguridad de tu amor"
-      ],
-      closings: [
-        "Que tu paz guarde mi corazón y pensamientos.",
-        "En ti encuentro el descanso que mi alma anhela.",
-        "Ayúdame a ser un portador de tu paz a otros.",
-        "Que la tranquilidad de tu espíritu llene mi ser.",
-        "Dame la serenidad para aceptar lo que no puedo cambiar.",
-        "Que tu paz perfecta reine en mi vida."
-      ]
-    },
     family: {
       openings: [
         "Padre Amoroso,",
@@ -1939,11 +1661,96 @@ const HelpMePrayApp = ({ user, setUser }) => {
         "Protege y guía a nuestra familia con tu mano amorosa.",
         "Que nuestro amor familiar refleje tu amor por nosotros."
       ]
+    },
+    grace: {
+      openings: [
+        "Señor,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Padre Celestial,",
+        "Querido Señor,",
+        "Dios Todopoderoso,"
+      ],
+      subjects: [
+        "te agradecemos por esta comida y las manos que la prepararon",
+        "bendice este alimento para nuestros cuerpos y nuestra comunión para tu gloria",
+        "estamos agradecidos por tu provisión y la abundancia ante nosotros",
+        "gracias por reunirnos alrededor de esta mesa",
+        "bendice a los que no tienen suficiente y ayúdanos a compartir",
+        "reconocemos que todo buen don viene de ti",
+        "gracias por los agricultores, trabajadores, y todos los que hicieron posible esta comida",
+        "nos reunimos en gratitud por tu provisión diaria",
+        "bendice este alimento que has provisto para nuestros cuerpos"
+      ],
+      closings: [
+        "Que esta comida nutra nuestros cuerpos y nos fortalezca para servirte.",
+        "Úsanos para ser una bendición para otros como tú nos has bendecido.",
+        "Ayúdanos a recordar siempre a los necesitados.",
+        "Que nuestra gratitud se desborde en actos de bondad.",
+        "Bendice este tiempo de comunión y conversación.",
+        "Gracias por tu cuidado y provisión constantes.",
+        "No nos permitas dar por sentadas tus bendiciones.",
+        "Guíanos para compartir tu amor con otros."
+      ]
+    },
+    healing: {
+      openings: [
+        "Señor,",
+        "Divino Sanador,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Padre Celestial,",
+        "Gran Médico,"
+      ],
+      subjects: [
+        "concede sanidad a todos los que sufren en cuerpo, mente o espíritu",
+        "ayúdame a sanar de heridas pasadas y encuentra el valor para perdonar",
+        "restaura lo que está roto dentro de mí y a mi alrededor",
+        "trae consuelo a los afligidos y fuerza a sus cuidadores",
+        "sana las heridas que el tiempo solo no puede curar",
+        "transforma el dolor en sabiduría y el sufrimiento en compasión"
+      ],
+      closings: [
+        "Dame paciencia con el proceso de sanación y esperanza para días mejores.",
+        "Que pueda encontrar fuerza en la debilidad y paz en medio de las tormentas.",
+        "Ayúdame a confiar en tu tiempo perfecto para la restauración.",
+        "Deja que la sanación fluya a través de cada parte de mi ser.",
+        "Concédeme la serenidad para aceptar lo que no puedo cambiar.",
+        "Que tu poder sanador obre milagros en mi vida y en la de otros."
+      ]
+    },
+    bibleVerses: {
+      openings: [
+        "Padre Celestial,",
+        "Señor,",
+        "Dios,",
+        "Padre Nuestro,",
+        "Querido Señor,",
+        "Dios Todopoderoso,"
+      ],
+      subjects: [
+        "tu palabra es lámpara a mis pies y lumbrera a mi camino",
+        "ayúdame a guardar tu palabra en mi corazón para no pecar contra ti",
+        "que tus escrituras guíen mis pensamientos y acciones hoy",
+        "que tus promesas traigan consuelo a mi corazón turbado",
+        "gracias por la sabiduría y verdad encontradas en tu santa palabra",
+        "ayúdame a meditar en tus enseñanzas día y noche",
+        "que tu palabra transforme mi mente y renueve mi espíritu",
+        "que la verdad de tus escrituras me libere del temor y la duda"
+      ],
+      closings: [
+        "Que tu palabra more abundantemente en mí.",
+        "Ayúdame a vivir según tus verdades bíblicas.",
+        "Que tus promesas anclen mi esperanza en tiempos inciertos.",
+        "Guíame por la luz de tu santa palabra.",
+        "Que tus escrituras traigan paz a mi alma.",
+        "Ayúdame a compartir tu palabra con otros a través de mi vida."
+      ]
     }
   };
 
   // Function to ensure prayer uniqueness
-  const generateUniquePrayer = (generatorFunction, maxAttempts = 50) => {
+  const generateUniquePrayer = (generatorFunction, maxAttempts = 10) => {
     let attempts = 0;
     let prayer = '';
     
@@ -1951,15 +1758,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
       prayer = generatorFunction();
       attempts++;
       
-      // If we've tried many times and still getting duplicates, 
-      // clear some old prayers and try again
-      if (attempts > maxAttempts) {
-        const usedArray = Array.from(usedPrayers);
-        // Keep only the most recent 100 prayers to allow some recycling of very old prayers
-        if (usedArray.length > 100) {
-          const recentPrayers = new Set(usedArray.slice(-50));
-          setUsedPrayers(recentPrayers);
-        }
+      // Simple uniqueness - if we hit max attempts, just use current prayer
+      if (attempts >= maxAttempts) {
         break;
       }
     } while (usedPrayers.has(prayer) && attempts < maxAttempts);
@@ -1972,6 +1772,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Internal prayer generator (called by uniqueness checker)
   const generatePrayerInternal = (category, length = 'medium') => {
+    try {
     // Special handling for Bible Verses category
     if (category === 'bibleVerses') {
       const bibleVerses = [
@@ -2054,37 +1855,11 @@ May this verse continue to speak to your heart throughout the day, bringing you 
     if (!templates) return null;
     
     if (length === 'brief') {
-      // Brief: One paragraph with multiple sentences - beautiful but concise
-      const connectors = language === 'es' ? 
-        ['Y también', 'Además', 'Asimismo', 'Por favor'] :
-        ['And also', 'Please also', 'Additionally', 'Furthermore'];
-      
+      // Brief: ~100 words (Brief & Beautiful)
       const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
-      const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      
-      // Ensure different subjects
-      while (randomSubject2 === randomSubject1) {
-        randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
-      
-      const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      
-      return `${randomOpening} ${randomSubject1}. ${randomConnector}, ${randomSubject2}. ${randomClosing} ${t('finalClosingShort')}`;
-      
-    } else if (length === 'medium') {
-      // Medium: 2-3 paragraphs (moved from comprehensive) - add transitions and connectors
-      const transitions = language === 'es' ? 
-        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello'] :
-        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence'];
-      
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomTransition = transitions[Math.floor(Math.random() * transitions.length)];
       const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       let randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject4 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       
       // Ensure different subjects
       while (randomSubject2 === randomSubject1) {
@@ -2093,79 +1868,44 @@ May this verse continue to speak to your heart throughout the day, bringing you 
       while (randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) {
         randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
       }
-      while (randomSubject4 === randomSubject1 || randomSubject4 === randomSubject2 || randomSubject4 === randomSubject3) {
-        randomSubject4 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      }
       
-      const randomClosing1 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      let randomClosing2 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      let randomClosing3 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+      const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
       
-      while (randomClosing2 === randomClosing1) {
-        randomClosing2 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      }
-      while (randomClosing3 === randomClosing1 || randomClosing3 === randomClosing2) {
-        randomClosing3 = templates.closings[Math.floor(Math.random() * templates.closings.length)];
-      }
-      
-      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${t('comprehensiveMiddle1')}
-
-${randomSubject3}. ${randomSubject4}. ${t('comprehensiveMiddle2')}
-
-${randomTransition}, ${randomClosing1} ${randomClosing2} ${randomClosing3} ${t('finalClosingLong')}`;
-      
-    } else {
-      // Comprehensive: 4-5 paragraphs (Rich & Meaningful) - extensive prayer
-      const transitions = language === 'es' ? 
-        ['Por tanto', 'En consecuencia', 'Así mismo', 'De esta manera', 'Por ello', 'Además', 'También'] :
-        ['Therefore', 'Consequently', 'Thus', 'In this way', 'Hence', 'Furthermore', 'Moreover'];
-      
-      const reflectionPhrases = language === 'es' ? [
-        'Reflexiono sobre tu bondad infinita y tu amor inagotable',
-        'Medito en tu fidelidad que nunca falla',
-        'Contemplo tu gracia que nos sostiene cada día',
-        'Pienso en tu misericordia que se renueva cada mañana',
-        'Considero tu sabiduría que guía nuestros pasos'
+      const middlePhrases = language === 'es' ? [
+        'Te pido con fe que obres en mi vida y me guíes por tus sendas',
+        'Derramo mi corazón ante ti, confiando en tu amor y misericordia',
+        'Reconozco tu bondad y te alabo por todas tus bendiciones',
+        'Busco tu rostro y tu sabiduría para enfrentar cada día'
       ] : [
-        'I reflect on your infinite goodness and unfailing love',
-        'I meditate on your faithfulness that never fails',
-        'I contemplate your grace that sustains us each day',
-        'I think about your mercy that is renewed every morning',
-        'I consider your wisdom that guides our steps'
-      ];
-
-      const gratitudePhrases = language === 'es' ? [
-        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros',
-        'Te doy gracias por tu presencia constante en nuestras vidas',
-        'Reconozco con humildad todos los dones que nos has otorgado',
-        'Mi alma se regocija en tu amor y provisión continua',
-        'Agradezco profundamente por tu cuidado y protección'
-      ] : [
-        'My heart fills with gratitude for all the blessings you pour upon us',
-        'I thank you for your constant presence in our lives',
-        'I humbly acknowledge all the gifts you have bestowed upon us',
-        'My soul rejoices in your love and continuous provision',
-        'I deeply appreciate your care and protection'
+        'I ask with faith that you work in my life and guide me in your ways',
+        'I pour out my heart to you, trusting in your love and mercy',
+        'I acknowledge your goodness and praise you for all your blessings',
+        'I seek your face and your wisdom to face each day'
       ];
       
+      const randomMiddle = middlePhrases[Math.floor(Math.random() * middlePhrases.length)];
+      
+      return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${randomMiddle}. ${randomSubject3}. ${randomClosing} ${t('finalClosingShort')}`;
+      
+    } else if (length === 'medium') {
+      // Medium: ~200 words (Perfectly Timed)
       const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomReflection = reflectionPhrases[Math.floor(Math.random() * reflectionPhrases.length)];
-      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
+      const randomTransition = language === 'es' ? 
+        ['Por tanto', 'También', 'Además'][Math.floor(Math.random() * 3)] :
+        ['Therefore', 'Also', 'Furthermore'][Math.floor(Math.random() * 3)];
       
-      // Get 6 different subjects for a longer prayer
+      // Get 4 different subjects
       const subjects = [];
-      while (subjects.length < 6) {
+      while (subjects.length < 4) {
         const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
         if (!subjects.includes(randomSubject)) {
           subjects.push(randomSubject);
         }
       }
       
-      // Get 4 different closings
+      // Get 2 different closings
       const closings = [];
-      while (closings.length < 4) {
+      while (closings.length < 2) {
         const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
         if (!closings.includes(randomClosing)) {
           closings.push(randomClosing);
@@ -2174,13 +1914,72 @@ ${randomTransition}, ${randomClosing1} ${randomClosing2} ${randomClosing3} ${t('
       
       return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
 
-${subjects[2]}. ${subjects[3]}. ${randomReflection}.
+${randomTransition}, ${subjects[2]}. ${subjects[3]}. We trust in your perfect timing and boundless mercy. May your will be done in every aspect of our lives.
 
-${randomTransition1}, ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')}
+${closings[0]} ${closings[1]} ${t('finalClosingLong')}`;
+      
+    } else {
+      // Comprehensive: ~300 words (Rich & Meaningful)
+      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const transitions = language === 'es' ? 
+        ['Por tanto', 'También', 'Además', 'Asimismo'] :
+        ['Therefore', 'Also', 'Furthermore', 'Moreover'];
+      const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
+      
+      // Get 6 different subjects
+      const subjects = [];
+      while (subjects.length < 6) {
+        const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+        if (!subjects.includes(randomSubject)) {
+          subjects.push(randomSubject);
+        }
+      }
+      
+      // Get 3 different closings
+      const closings = [];
+      while (closings.length < 3) {
+        const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+        if (!closings.includes(randomClosing)) {
+          closings.push(randomClosing);
+        }
+      }
+      
+      const gratitudePhrases = language === 'es' ? [
+        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros',
+        'Te alabo por tu bondad constante y tu amor que nunca falla',
+        'Reconozco con humildad todos los dones que nos has otorgado'
+      ] : [
+        'My heart fills with gratitude for all the blessings you pour upon us',
+        'I praise you for your constant goodness and your love that never fails',
+        'I humbly acknowledge all the gifts you have bestowed upon us'
+      ];
+      
+      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
+      
+      // Create a substantial 4-paragraph prayer
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')} We come before you with hearts full of expectation, knowing that you hear every word we speak and understand the deepest longings of our souls.
 
-${randomGratitude}. ${randomTransition2}, ${closings[0]} ${closings[1]}
+${subjects[2]}. ${subjects[3]}. Your word reminds us that you are working all things together for good for those who love you. We place our trust in your perfect plan, even when we cannot see the full picture of what you are accomplishing in our lives.
 
-${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
+${randomTransition1}, we bring before you these concerns: ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')} We ask for your divine intervention, knowing that nothing is too difficult for you and that your power is made perfect in our weakness.
+
+${randomGratitude}. We celebrate your faithfulness in the past, trust in your provision for today, and have hope in your promises for tomorrow. ${randomTransition2}, ${closings[0]} ${closings[1]} ${closings[2]} ${t('finalClosingLong')}`;
+    }
+    } catch (error) {
+      console.error(`Prayer generation error for category: ${category}, length: ${length}`, error);
+      
+      // Fallback: Generate a simple prayer if there's an error
+      const templates = prayerTemplates[category];
+      if (templates && templates.openings && templates.subjects && templates.closings) {
+        const opening = templates.openings[0];
+        const subject = templates.subjects[0];
+        const closing = templates.closings[0];
+        return `${opening} ${subject}. ${closing} In your holy name, Amen.`;
+      }
+      
+      // Ultimate fallback
+      return `Dear God, we come to you with grateful hearts. Bless us and guide us in your love. In your holy name, Amen.`;
     }
   };
 
@@ -2191,7 +1990,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
   const prayerCategories = {
     gratitude: {
-      icon: Heart,
+      icon: () => (
+        <img 
+          src="/logo192.png" 
+          alt="Praying Hands" 
+          style={{ width: '20px', height: '20px' }} 
+        />
+      ),
       name: t('gratitude'),
       description: t('gratitudeDesc'),
       color: '#6366f1',
@@ -2299,8 +2104,47 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     setAuthLoading(false);
   };
 
+  // Password strength validation
+  const validatePassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!minLength) return 'Password must be at least 8 characters long';
+    if (!hasUpperCase) return 'Password must contain at least one uppercase letter';
+    if (!hasLowerCase) return 'Password must contain at least one lowercase letter';
+    if (!hasNumbers) return 'Password must contain at least one number';
+    if (!hasSpecialChar) return 'Password must contain at least one special character (!@#$%^&*)';
+    
+    return null; // Password is valid
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
+    
+    // Validate full name
+    if (!fullName.trim()) {
+      setAuthError('Please enter your full name');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setAuthError('Please enter a valid email address');
+      return;
+    }
+    
+    // Validate password strength
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setAuthError(passwordError);
+      return;
+    }
+    
+    // Check password confirmation
     if (password !== confirmPassword) {
       setAuthError('Passwords do not match');
       return;
@@ -2315,26 +2159,66 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          full_name: fullName,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+          // Enable email confirmation
+          emailRedirectTo: window.location.origin
         }
-      }
-    });
+      });
 
-    if (error) {
-      setAuthError(error.message);
-    } else {
-      setAuthError('Check your email for the confirmation link!');
-      // Clear form
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setFullName('');
+      if (error) {
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          setAuthError('An account with this email already exists. Please sign in instead.');
+        } else if (error.message.includes('Invalid email')) {
+          setAuthError('Please enter a valid email address.');
+        } else if (error.message.includes('Password should be at least')) {
+          setAuthError('Password must be at least 6 characters long.');
+        } else {
+          setAuthError(error.message);
+        }
+      } else {
+        // Success - show verification message
+        if (data.user && !data.user.email_confirmed_at) {
+          setAuthError('✅ Account created! Please check your email (including spam folder) for a verification link. You must verify your email before signing in.');
+        } else {
+          setAuthError('✅ Account created successfully! You can now sign in.');
+        }
+        
+        console.log('Signup successful:', data);
+        console.log('Email confirmation required:', !data.user?.email_confirmed_at);
+        
+        // Developer troubleshooting info
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📧 EMAIL VERIFICATION TROUBLESHOOTING:');
+          console.log('1. Check Supabase Dashboard > Authentication > Settings');
+          console.log('2. Ensure "Enable email confirmations" is ON');
+          console.log('3. Configure email templates if needed');
+          console.log('4. Check spam folder for verification emails');
+          console.log('5. Verify SMTP settings in Supabase project');
+        }
+        
+        // Clear form
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setFullName('');
+        // Switch back to sign in mode after a delay
+        setTimeout(() => {
+          setShowSignUp(false);
+        }, 4000);
+      }
+    } catch (err) {
+      setAuthError('An unexpected error occurred. Please try again.');
+      console.error('Signup error:', err);
     }
+    
     setAuthLoading(false);
   };
 
@@ -2444,11 +2328,14 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       return t('inappropriateContent');
     }
     
-    // Filter the person's name
+    // Filter the person's name and extract first name only
     const filteredName = name ? filterContent(name) : name;
     if (filteredName === null) {
       return t('inappropriateName');
     }
+    
+    // Extract first name only for more personal prayers
+    const firstName = filteredName ? filteredName.split(' ')[0] : filteredName;
     
     let prayerTemplate = "";
 
@@ -2507,9 +2394,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           prayerTemplate = `${randomOpening} I come to you broken and in desperate need of your healing power. ${randomMiddle} ${filteredRequest}. Break the chains that bind me and set me free from this destructive cycle. ${randomClosing} I trust in your power to make me new. Amen.`;
         }
       } else {
-        const personRef = filteredName || (language === 'es' ? 'esta persona' : 'this person');
-        const possessive = filteredName ? (language === 'es' ? `de ${filteredName}` : filteredName + "'s") : (language === 'es' ? 'su' : 'their');
-        const objectPronoun = filteredName || (language === 'es' ? 'él/ella' : 'them');
+        const personRef = firstName || (language === 'es' ? 'esta persona' : 'this person');
+        const possessive = firstName ? (language === 'es' ? `de ${firstName}` : firstName + "'s") : (language === 'es' ? 'su' : 'their');
+        const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
         
         if (language === 'es') {
           prayerTemplate = `${randomOpening} vengo ante ti con el corazón pesado, elevando a ${personRef} quien está luchando con esta situación: ${filteredRequest}. Señor, tú ves el dolor y la lucha que está experimentando. Pido tu intervención divina en la vida ${possessive}. Rompe las cadenas que atan a ${objectPronoun} y dale fuerza para superar estos desafíos. ${randomClosing} Confiamos en tu poder para redimir y restaurar a ${objectPronoun}. Amén.`;
@@ -2562,24 +2449,110 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       ];
 
       const randomOpening = customOpenings[Math.floor(Math.random() * customOpenings.length)];
-      const randomMiddle = customMiddles[Math.floor(Math.random() * customMiddles.length)];
-      const randomClosing = customClosings[Math.floor(Math.random() * customClosings.length)];
+      
+      // Use different templates based on who the prayer is for
+      let randomMiddle, randomClosing;
+      
+      if (isForSelf) {
+        randomMiddle = customMiddles[Math.floor(Math.random() * customMiddles.length)];
+        randomClosing = customClosings[Math.floor(Math.random() * customClosings.length)];
+      } else {
+        // Create third-person versions for prayers for others
+        const othersMiddles = language === 'es' ? [
+          'Te pido que escuches esta oración y respondas según tu perfecta voluntad y tiempo.',
+          'Confiamos en tu sabiduría y buscamos tu guía en esta situación.',
+          'Ponemos esta petición en tus manos, sabiendo que tu amor nunca falla.',
+          'Buscamos tu dirección y confiamos en tu plan perfecto.',
+          'Te presentamos esta necesidad, creyendo en tu poder y bondad.'
+        ] : [
+          'I ask that you hear this prayer and respond according to your perfect will and timing.',
+          'We trust in your wisdom and seek your guidance in this situation.',
+          'We place this request in your hands, knowing that your love never fails.',
+          'We seek your direction and trust in your perfect plan.',
+          'We bring this need to you, believing in your power and goodness.'
+        ];
+        
+        const othersClosings = language === 'es' ? [
+          'Concédeles fe para confiar en tu bondad, incluso cuando no puedan ver el camino adelante.',
+          'Dales paciencia mientras esperan tu respuesta y sabiduría para reconocerla.',
+          'Fortalece su fe y ayúdales a descansar en tu amor perfecto.',
+          'Guía sus pasos y llena sus corazones con tu paz.',
+          'Que tu voluntad se haga en sus vidas, y que puedan glorificarte en todo.'
+        ] : [
+          'Grant them faith to trust in your goodness, even when they cannot see the way forward.',
+          'Give them patience as they await your answer and wisdom to recognize it.',
+          'Strengthen their faith and help them rest in your perfect love.',
+          'Guide their steps and fill their hearts with your peace.',
+          'May your will be done in their lives, and may they glorify you in all things.'
+        ];
+        
+        randomMiddle = othersMiddles[Math.floor(Math.random() * othersMiddles.length)];
+        randomClosing = othersClosings[Math.floor(Math.random() * othersClosings.length)];
+      }
 
       if (isForSelf) {
         if (language === 'es') {
-          prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+          if (length === 'comprehensive') {
+            prayerTemplate = `${randomOpening} vengo ante ti con humildad y un corazón abierto, presentando este pedido: ${filteredRequest}. ${randomMiddle} 
+            
+            Señor, reconozco que tu sabiduría supera mi entendimiento, y confío en que conoces no solo lo que pido, sino también lo que realmente necesito. Ayúdame a someter mi voluntad a la tuya, sabiendo que tus planes para mí son de bien y no de mal.
+            
+            ${randomClosing} Te pido que durante este tiempo de espera, me enseñes paciencia y me fortalezcas en la fe. Que pueda ser un testimonio de tu bondad para otros que también están esperando respuestas tuyas.
+            
+            Lléname con tu amor, paz y esperanza mientras espero tu respuesta perfecta en tu tiempo perfecto. Que mi vida refleje tu gloria sin importar el resultado. Amén.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} Te pido sabiduría para entender tu voluntad y fuerza para aceptar tu respuesta. ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+          } else {
+            prayerTemplate = `${randomOpening} vengo ante ti con este pedido: ${filteredRequest}. ${randomMiddle} ${randomClosing} Lléname con tu amor, paz y esperanza mientras espero tu respuesta. Amén.`;
+          }
         } else {
-          prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+          if (length === 'comprehensive') {
+            prayerTemplate = `${randomOpening} I come before you with humility and an open heart, presenting this request: ${filteredRequest}. ${randomMiddle}
+            
+            Lord, I recognize that your wisdom surpasses my understanding, and I trust that you know not only what I'm asking for, but also what I truly need. Help me to submit my will to yours, knowing that your plans for me are for good and not for harm.
+            
+            ${randomClosing} I ask that during this time of waiting, you would teach me patience and strengthen me in faith. May I be a testimony of your goodness to others who are also waiting for answers from you.
+            
+            Fill me with your love, peace, and hope as I await your perfect answer in your perfect timing. May my life reflect your glory regardless of the outcome. Amen.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} I ask for wisdom to understand your will and strength to accept your answer. ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+          } else {
+            prayerTemplate = `${randomOpening} I come before you with this request: ${filteredRequest}. ${randomMiddle} ${randomClosing} Fill me with your love, peace, and hope as I await your answer. Amen.`;
+          }
         }
       } else {
-        const personRef = filteredName || (language === 'es' ? 'esta persona' : 'this person');
-        const possessive = filteredName ? (language === 'es' ? `de ${filteredName}` : filteredName + "'s") : (language === 'es' ? 'su' : 'their');
-        const objectPronoun = filteredName || (language === 'es' ? 'él/ella' : 'them');
+        const personRef = firstName || (language === 'es' ? 'esta persona' : 'this person');
+        const possessive = firstName ? (language === 'es' ? `de ${firstName}` : firstName + "'s") : (language === 'es' ? 'su' : 'their');
+        const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
         
         if (language === 'es') {
-          prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+          if (length === 'comprehensive') {
+            prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con gran cariño y preocupación, presentando este pedido: ${filteredRequest}. ${randomMiddle}
+            
+            Padre, tú conoces cada detalle de la vida ${possessive}, cada lucha y cada necesidad. Te pido que obres en ${possessive} situación con tu poder sobrenatural y tu amor infinito. Que ${objectPronoun} pueda sentir tu presencia tangible durante este tiempo.
+            
+            Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza renovada. ${randomClosing} Te pido también que me uses como instrumento de tu amor para apoyar a ${objectPronoun} durante este tiempo.
+            
+            Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan verdaderamente. Que tu voluntad perfecta se cumpla en ${possessive} vida. Amén.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Te pido sabiduría para ${objectPronoun} y fortaleza durante este tiempo. Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+          } else {
+            prayerTemplate = `${randomOpening} elevo a ${personRef} ante ti en oración con este pedido: ${filteredRequest}. ${randomMiddle} Bendice a ${objectPronoun} con tu presencia y llena ${possessive} corazón con esperanza. ${randomClosing} Rodea a ${objectPronoun} con tu amor y el apoyo de personas que se preocupan. Amén.`;
+          }
         } else {
-          prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+          if (length === 'comprehensive') {
+            prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with great care and concern, presenting this request: ${filteredRequest}. ${randomMiddle}
+            
+            Father, you know every detail of ${possessive} life, every struggle and every need. I ask that you work in ${possessive} situation with your supernatural power and infinite love. May ${objectPronoun} feel your tangible presence during this time.
+            
+            Bless ${objectPronoun} with your presence and fill ${possessive} heart with renewed hope. ${randomClosing} I also ask that you use me as an instrument of your love to support ${objectPronoun} during this time.
+            
+            Surround ${objectPronoun} with your love and the support of people who truly care. May your perfect will be accomplished in ${possessive} life. Amen.`;
+          } else if (length === 'medium') {
+            prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} I ask for wisdom for ${objectPronoun} and strength during this time. Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+          } else {
+            prayerTemplate = `${randomOpening} I lift up ${personRef} to you in prayer with this request: ${filteredRequest}. ${randomMiddle} Bless ${objectPronoun} with your presence and fill ${possessive} heart with hope. ${randomClosing} Surround ${objectPronoun} with your love and the support of caring people. Amen.`;
+          }
         }
       }
     }
@@ -2629,8 +2602,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     return `${prayer}${includeAttribution ? attribution : ""}${appBranding}`;
   };
   
-  // Human-like voice configurations
-  const humanVoices = {
+  // ElevenLabs configurations removed due to cost - keeping for reference
+  const removedHumanVoices = {
     nurturing: {
       name: 'Maria - Nurturing',
       description: 'Soft, caring Latina voice with bilingual warmth',
@@ -2709,131 +2682,23 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
   const speakPrayer = async (text) => {
     console.log('speakPrayer called with provider:', ttsProvider, 'isPremium:', isPremium);
     
-    // Restrict premium voices to premium users only
-    if ((ttsProvider === 'google' || ttsProvider === 'elevenlabs') && !isPremium) {
-      console.log('Non-premium user trying premium voice, falling back to system');
-      speakWithSystemVoice(text);
-      return;
-    }
-    
+    // Handle different voice providers and quality settings
     switch (ttsProvider) {
-      case 'google':
-        await speakWithGoogleCloud(text);
+      case 'azure':
+        await speakWithAzureTTS(text);
         break;
-      case 'elevenlabs':
+      case 'browser':
+      default:
         if (useHumanVoice) {
-          await speakWithHumanVoice(text);
+          speakWithEnhancedSystemVoice(text);
         } else {
           speakWithSystemVoice(text);
         }
         break;
-      case 'browser':
-      default:
-        speakWithSystemVoice(text);
-        break;
     }
   };
 
-  const speakWithHumanVoice = async (text) => {
-    try {
-      console.log('Attempting human voice with:', humanVoiceType);
-      console.log('API Key available:', !!process.env.REACT_APP_ELEVENLABS_API_KEY);
-      
-      // Check if API key is configured
-      console.log('ElevenLabs API Key:', process.env.REACT_APP_ELEVENLABS_API_KEY ? 'Present' : 'Missing');
-      if (!process.env.REACT_APP_ELEVENLABS_API_KEY || process.env.REACT_APP_ELEVENLABS_API_KEY === 'your_elevenlabs_key_here') {
-        throw new Error('Premium voices are temporarily unavailable. Please contact support to enable this feature.');
-      }
-      
-      setIsPlaying(true);
-      setIsPaused(false);
-
-      console.log('humanVoiceType:', humanVoiceType);
-      console.log('Available humanVoices keys:', Object.keys(humanVoices));
-      const voiceConfig = humanVoices[humanVoiceType];
-      console.log('voiceConfig:', voiceConfig);
-      if (!voiceConfig) {
-        throw new Error(`Voice configuration not found for: ${humanVoiceType}`);
-      }
-      console.log('Using voice config:', voiceConfig.name);
-      
-      // Truncate text for demo if too long (ElevenLabs has character limits)
-      const truncatedText = text.length > 2500 ? text.substring(0, 2500) + '...' : text;
-      
-      console.log('Making ElevenLabs API request to voice:', voiceConfig.voiceId);
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceConfig.voiceId, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': process.env.REACT_APP_ELEVENLABS_API_KEY
-        },
-        body: JSON.stringify({
-          text: truncatedText,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: voiceConfig.stability,
-            similarity_boost: voiceConfig.similarity_boost,
-            style: voiceConfig.style,
-            use_speaker_boost: voiceConfig.use_speaker_boost
-          }
-        })
-      });
-
-      console.log('ElevenLabs response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('ElevenLabs API error:', response.status, errorText);
-        throw new Error(`API Error: ${response.status} - ${errorText}`);
-      }
-
-      const audioBlob = await response.blob();
-      console.log('Audio blob size:', audioBlob.size);
-      
-      // Save the audio blob and URL for sharing
-      setCurrentAudioBlob(audioBlob);
-      
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      const audio = new Audio(audioUrl);
-      setAudioElement(audio);
-      
-      audio.onended = () => {
-        setIsPlaying(false);
-        setIsPaused(false);
-        setAudioElement(null);
-        URL.revokeObjectURL(audioUrl);
-      };
-      
-      audio.onerror = (e) => {
-        console.error('Audio playback error:', e);
-        setIsPlaying(false);
-        setIsPaused(false);
-        setAudioElement(null);
-        URL.revokeObjectURL(audioUrl);
-        // Fallback to system voice
-        alert('Human voice failed, using system voice as fallback');
-        speakWithSystemVoice(text);
-      };
-      
-      console.log('Starting audio playback...');
-      await audio.play();
-      console.log('Human voice playback started successfully!');
-      
-    } catch (error) {
-      console.error('Human voice failed, falling back to system voice:', error);
-      if (error.message.includes('temporarily unavailable')) {
-        alert(`${error.message} Using system voice instead.`);
-      } else {
-        alert(`Premium voice error: ${error.message}. Using system voice as fallback.`);
-      }
-      setIsPlaying(false);
-      setIsPaused(false);
-      // Fallback to system voice
-      speakWithSystemVoice(text);
-    }
-  };
+  // ElevenLabs function removed due to high cost
 
   const speakWithSystemVoice = (text) => {
     if (!selectedVoice) return;
@@ -2900,101 +2765,181 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     setCurrentUtterance(null);
   };
 
-  // Google Cloud Text-to-Speech functions
-  // eslint-disable-next-line no-unused-vars
-  const getGoogleCloudVoices = async () => {
-    try {
-      const response = await fetch('/api/google-voices');
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // setGoogleVoices(data.voices); // This function doesn't exist, removing
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching Google Cloud voices:', error);
-      // Fallback to system voices
-      setTtsProvider('browser');
+  const pauseAudio = () => {
+    if (audioElement) {
+      audioElement.pause();
+      setIsPaused(true);
+    } else if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
     }
   };
 
-  const speakWithGoogleCloud = async (text) => {
+  const stopAudio = () => {
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      setAudioElement(null);
+    }
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setIsPaused(false);
+    setCurrentUtterance(null);
+  };
+
+
+
+  // Enhanced system voice with better settings to simulate premium quality
+  const speakWithEnhancedSystemVoice = (text) => {
+    if (!availableVoices.length) return;
+    
+    setIsPlaying(true);
+    setIsPaused(false);
+    
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Find best quality English voice
+    const englishVoices = availableVoices.filter(voice => voice.lang.startsWith('en'));
+    const preferredVoice = englishVoices.find(voice => 
+      voice.name.includes('Samantha') || 
+      voice.name.includes('Alex') || 
+      voice.name.includes('Google')
+    ) || englishVoices[0] || availableVoices[0];
+    
+    utterance.voice = preferredVoice;
+    
+    // Enhanced voice settings for better quality
+    utterance.rate = speechRate * 0.9; // Slightly slower for prayer reading
+    utterance.pitch = 1.0; // Standard pitch
+    utterance.volume = 0.9;
+    
+    // Event handlers
+    utterance.onstart = () => {
+      console.log('Enhanced system voice started:', preferredVoice?.name);
+      setIsPlaying(true);
+      setIsPaused(false);
+    };
+    
+    utterance.onend = () => {
+      console.log('Enhanced system voice finished');
+      setIsPlaying(false);
+      setIsPaused(false);
+      setCurrentUtterance(null);
+    };
+    
+    utterance.onerror = (event) => {
+      console.error('Enhanced system voice error:', event.error);
+      setIsPlaying(false);
+      setIsPaused(false);
+      setCurrentUtterance(null);
+    };
+    
+    setCurrentUtterance(utterance);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Azure Cognitive Services Text-to-Speech (cost-effective alternative)
+  const speakWithAzureTTS = async (text) => {
     try {
-      console.log('Attempting Google Cloud TTS...');
+      console.log('Using Azure Neural TTS with voice:', selectedVoice || 'en-US-AvaMultilingualNeural');
+      
+      // Stop any currently playing audio
+      if (currentAudioBlob) {
+        try {
+          window.speechSynthesis.cancel();
+          if (window.currentAudio) {
+            window.currentAudio.pause();
+            window.currentAudio.currentTime = 0;
+          }
+        } catch (e) {
+          console.log('No current audio to stop');
+        }
+      }
+
       setIsPlaying(true);
       setIsPaused(false);
       
-      const selectedGoogleVoice = googleCloudVoices[googleVoiceType];
-      
-      const requestBody = {
-        text,
-        languageCode: selectedGoogleVoice.languageCode,
-        voiceName: selectedGoogleVoice.voiceName,
-        ssmlGender: selectedGoogleVoice.gender,
-        speakingRate: speechRate
-      };
-
-      console.log('Making Google TTS API request with:', requestBody);
-      const response = await fetch('/.netlify/functions/google-tts', {
+      // Call Azure TTS API (using simple REST implementation)
+      const response = await fetch('/api/azure-tts-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({
+          text: text,
+          voiceName: selectedVoice || 'en-US-AvaMultilingualNeural',
+          speakingRate: 0.9,
+          pitch: 0,
+          languageCode: 'en-US'
+        }),
       });
-      console.log('Google TTS API response status:', response.status);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // Convert base64 audio to blob and play
-          const audioData = atob(data.audioContent);
-          const audioArray = new Uint8Array(audioData.length);
-          for (let i = 0; i < audioData.length; i++) {
-            audioArray[i] = audioData.charCodeAt(i);
-          }
+      if (!response.ok) {
+        throw new Error(`Azure TTS request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('Azure TTS successful, playing audio...');
+        
+        // Convert base64 audio to playable format
+        const audioBlob = new Blob([
+          Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
+        ], { type: 'audio/mpeg' });
+        
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        // Store reference for cleanup
+        window.currentAudio = audio;
+        
+        audio.onloadeddata = () => {
+          console.log('Azure audio loaded successfully');
+        };
+        
+        audio.onplay = () => {
+          setIsPlaying(true);
+          setIsPaused(false);
+        };
+        
+        audio.onended = () => {
+          console.log('Azure audio playback ended');
+          setIsPlaying(false);
+          setIsPaused(false);
+          URL.revokeObjectURL(audioUrl);
+          window.currentAudio = null;
+        };
+        
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          setIsPlaying(false);
+          setIsPaused(false);
+          URL.revokeObjectURL(audioUrl);
+          window.currentAudio = null;
           
-          const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          
-          const audio = new Audio(audioUrl);
-          setAudioElement(audio);
-          
-          audio.onplay = () => {
-            setIsPlaying(true);
-            setIsPaused(false);
-          };
-          
-          audio.onended = () => {
-            setIsPlaying(false);
-            setIsPaused(false);
-            setAudioElement(null);
-            URL.revokeObjectURL(audioUrl);
-          };
-          
-          audio.onerror = (e) => {
-            console.error('Audio playback error:', e);
-            setIsPlaying(false);
-            setIsPaused(false);
-            setAudioElement(null);
-            URL.revokeObjectURL(audioUrl);
-            // Fallback to system voice
-            speakWithSystemVoice(text);
-          };
-          
-          await audio.play();
-        }
+          // Fallback to enhanced system voice
+          console.log('Falling back to system voice due to audio error');
+          speakWithEnhancedSystemVoice(text);
+        };
+        
+        await audio.play();
+        
       } else {
-        throw new Error('Google Cloud TTS API request failed');
+        throw new Error(data.details || 'Azure TTS failed');
       }
       
     } catch (error) {
-      console.error('Google Cloud TTS error:', error);
+      console.error('Azure TTS error:', error);
       setIsPlaying(false);
       setIsPaused(false);
-      // Fallback to system voice
-      speakWithSystemVoice(text);
+      
+      // Fallback to enhanced system voice
+      console.log('Falling back to enhanced system voice due to Azure error');
+      speakWithEnhancedSystemVoice(text);
     }
   };
   
@@ -3009,7 +2954,27 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       }
     },
     
-    shareToWhatsApp: (text) => {
+    shareToWhatsApp: async (text) => {
+      try {
+        // First try to share image if Web Share API is available and we have a generated image
+        if (navigator.share && generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+          // Convert data URL to blob for sharing
+          const response = await fetch(generatedImageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
+          
+          await navigator.share({
+            title: 'Prayer Image',
+            text: formatPrayerForSharing(text, false),
+            files: [file]
+          });
+          return;
+        }
+      } catch (error) {
+        console.log('Image sharing not supported, falling back to WhatsApp URL:', error);
+      }
+      
+      // Fallback to WhatsApp URL sharing
       const url = `https://wa.me/?text=${encodeURIComponent(formatPrayerForSharing(text))}`;
       window.open(url, '_blank');
     },
@@ -3026,14 +2991,65 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       window.open(url, '_blank');
     },
     
-    shareToMessages: (text) => {
+    shareToMessages: async (text) => {
+      try {
+        // First try to share image if Web Share API is available and we have a generated image
+        if (navigator.share && generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+          // Convert data URL to blob for sharing
+          const response = await fetch(generatedImageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
+          
+          await navigator.share({
+            title: 'Prayer Image',
+            text: formatPrayerForSharing(text, false), // Don't include attribution in share text
+            files: [file]
+          });
+          return;
+        }
+      } catch (error) {
+        console.log('Image sharing not supported, falling back to text:', error);
+      }
+      
+      // Fallback to text sharing
       const messagesText = formatPrayerForSharing(text);
       const url = `sms:&body=${encodeURIComponent(messagesText)}`;
       window.location.href = url;
     },
     
-    shareToInstagram: (text) => {
-      // Instagram doesn't have direct URL sharing, so we copy to clipboard and inform user
+    shareToInstagram: async (text) => {
+      try {
+        // Try to share image if Web Share API is available
+        if (navigator.share && generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+          const response = await fetch(generatedImageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
+          
+          await navigator.share({
+            title: 'Prayer Image for Instagram',
+            text: 'Beautiful prayer image to share',
+            files: [file]
+          });
+          return;
+        }
+      } catch (error) {
+        console.log('Image sharing not supported, providing copy option:', error);
+      }
+      
+      // Fallback: If image sharing isn't available, offer to download the image
+      if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+        if (confirm('Download prayer image to share on Instagram?')) {
+          const link = document.createElement('a');
+          link.download = `prayer-for-instagram-${Date.now()}.png`;
+          link.href = generatedImageUrl;
+          link.click();
+          setShareSuccess('Image downloaded! You can now upload it to Instagram.');
+          setTimeout(() => setShareSuccess(''), 5000);
+          return;
+        }
+      }
+      
+      // Final fallback to text copying
       const instagramText = formatPrayerForSharing(text);
       navigator.clipboard.writeText(instagramText).then(() => {
         setShareSuccess('Prayer copied! Open Instagram and paste in your story or post.');
@@ -3239,15 +3255,52 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       return;
     }
 
-    if (selectedCategory === 'custom') {
-      if (!customRequest.trim()) return;
+    // Since ALL categories now show custom form, handle it for all categories
+    if (showCustomForm) {
+      // Only require customRequest for 'custom' category
+      if (selectedCategory === 'custom' && !customRequest.trim()) return;
       
       setIsGenerating(true);
       setTimeout(async () => {
-        const isForSelf = prayerFor === 'myself';
-        const customPrayer = generateCustomPrayer(customRequest, isForSelf, personName, prayerLength, selectedOccasion);
-        const cleanedPrayer = cleanupPrayerText(customPrayer);
+        let generatedPrayer;
+        
+        if (selectedCategory === 'custom') {
+          // Generate fully custom prayer with user input
+          const isForSelf = prayerFor === 'myself';
+          generatedPrayer = generateCustomPrayer(customRequest, isForSelf, personName, prayerLength, selectedOccasion);
+        } else {
+          // Generate category-specific prayer with selected length
+          generatedPrayer = generateDynamicPrayer(selectedCategory, prayerLength);
+        }
+        
+        if (!generatedPrayer) {
+          console.error('Prayer generation returned null/undefined');
+          generatedPrayer = `Dear God, we come to you with grateful hearts. Thank you for your love and guidance. Please bless us and help us to grow in faith. In your holy name, Amen.`;
+        }
+        
+        const cleanedPrayer = cleanupPrayerText(generatedPrayer);
         setCurrentPrayer(cleanedPrayer);
+        
+        // Set prayer info for title bar
+        let verseReference = '';
+        let customTopic = '';
+        
+        if (selectedCategory === 'bibleVerses' && generatedPrayer) {
+          // Extract verse reference from Bible verse prayer (format: "verse text" - Reference)
+          const referenceMatch = generatedPrayer.match(/" - ([^"\n]+)/);
+          if (referenceMatch) {
+            verseReference = referenceMatch[1];
+          }
+        } else if (selectedCategory === 'custom') {
+          // For custom prayers, only show person's name if praying for someone
+          if (prayerFor === 'someone' && personName) {
+            customTopic = `Prayer for ${personName}`;
+          } else {
+            customTopic = 'Custom Prayer';
+          }
+        }
+        
+        setCurrentPrayerInfo({ category: selectedCategory, verseReference, customTopic });
         
         // Save to prayer history if user is logged in (but not guest)
         if (user && user.id !== 'guest' && supabase) {
@@ -3255,7 +3308,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             const { error } = await supabase.from('prayer_history').insert({
               user_id: user.id,
               prayer_content: cleanedPrayer,
-              category: 'custom'
+              category: selectedCategory  // Use actual selected category instead of hardcoded 'custom'
             });
             if (error) {
               console.error('Error saving prayer history:', error);
@@ -3272,6 +3325,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         }
         
         setIsGenerating(false);
+        goToScreen('prayer-view');
       }, 1200);
     } else {
       setIsGenerating(true);
@@ -3280,6 +3334,28 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         const randomPrayer = generateDynamicPrayer(selectedCategory, prayerLength);
         const cleanedPrayer = cleanupPrayerText(randomPrayer);
         setCurrentPrayer(cleanedPrayer);
+        
+        // Set prayer info for title bar
+        let verseReference = '';
+        let customTopic = '';
+        
+        if (selectedCategory === 'bibleVerses' && randomPrayer) {
+          // Extract verse reference from Bible verse prayer (format: "verse text" - Reference)
+          const referenceMatch = randomPrayer.match(/" - ([^"\n]+)/);
+          if (referenceMatch) {
+            verseReference = referenceMatch[1];
+          }
+        } else if (selectedCategory === 'custom') {
+          // For custom prayers, only show person's name if praying for someone
+          if (prayerFor === 'someone' && personName) {
+            customTopic = `Prayer for ${personName}`;
+          } else {
+            customTopic = 'Custom Prayer';
+          }
+        }
+        // Note: For non-custom categories, customTopic remains empty
+        
+        setCurrentPrayerInfo({ category: selectedCategory, verseReference, customTopic });
         
         // Save to prayer history if user is logged in (but not guest)
         if (user && user.id !== 'guest' && supabase) {
@@ -3304,14 +3380,232 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         }
         
         setIsGenerating(false);
+        goToScreen('prayer-view');
       }, 800);
     }
   };
 
   const CategoryButton = ({ categoryKey, category }) => {
-    const IconComponent = category.icon;
     const isCustom = categoryKey === 'custom';
     const isSelected = selectedCategory === categoryKey;
+    
+    // Icon gradient backgrounds
+    const getIconGradient = () => {
+      switch (categoryKey) {
+        case 'gratitude':
+          return 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)';
+        case 'morning':
+          return 'linear-gradient(135deg, #fef3c7 0%, #fde047 50%, #eab308 100%)';
+        case 'bedtime':
+          return 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #312e81 100%)';
+        case 'healing':
+          return 'linear-gradient(135deg, #dcfce7 0%, #22c55e 50%, #16a34a 100%)';
+        case 'family':
+          return 'linear-gradient(135deg, #fecaca 0%, #f87171 50%, #dc2626 100%)';
+        case 'grace':
+          return 'linear-gradient(135deg, #e0e7ff 0%, #8b5cf6 50%, #7c3aed 100%)';
+        case 'bibleVerses':
+          return 'linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #ea580c 100%)';
+        default:
+          return 'linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #64748b 100%)';
+      }
+    };
+    
+    // Ultra-detailed macOS-style icons
+    const getDetailedIcon = () => {
+      switch (categoryKey) {
+        case 'gratitude':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="gratitudeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fbbf24" />
+                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#d97706" />
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              {/* Heart shape */}
+              <path d="M24,42 C24,42 6,30 6,18 C6,12 10,8 16,8 C19,8 22,10 24,13 C26,10 29,8 32,8 C38,8 42,12 42,18 C42,30 24,42 24,42 Z" 
+                    fill="url(#gratitudeGrad)" filter="url(#glow)" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+              {/* Sparkles */}
+              <circle cx="18" cy="20" r="2" fill="#fff" opacity="0.8"/>
+              <circle cx="30" cy="22" r="1.5" fill="#fff" opacity="0.6"/>
+              <circle cx="24" cy="16" r="1" fill="#fff" opacity="0.9"/>
+            </svg>
+          );
+        
+        case 'morning':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <radialGradient id="sunGrad" cx="50%" cy="50%">
+                  <stop offset="0%" stopColor="#fef3c7" />
+                  <stop offset="70%" stopColor="#fde047" />
+                  <stop offset="100%" stopColor="#eab308" />
+                </radialGradient>
+              </defs>
+              {/* Sun rays */}
+              {[0,45,90,135,180,225,270,315].map(angle => (
+                <line key={angle} 
+                      x1={24 + Math.cos(angle * Math.PI / 180) * 20} 
+                      y1={24 + Math.sin(angle * Math.PI / 180) * 20}
+                      x2={24 + Math.cos(angle * Math.PI / 180) * 16} 
+                      y2={24 + Math.sin(angle * Math.PI / 180) * 16}
+                      stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+              ))}
+              {/* Sun circle */}
+              <circle cx="24" cy="24" r="12" fill="url(#sunGrad)" stroke="rgba(255,255,255,0.4)" strokeWidth="1"/>
+              {/* Face */}
+              <circle cx="20" cy="20" r="1.5" fill="#d97706"/>
+              <circle cx="28" cy="20" r="1.5" fill="#d97706"/>
+              <path d="M19,28 Q24,32 29,28" stroke="#d97706" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            </svg>
+          );
+          
+        case 'bedtime':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6366f1" />
+                  <stop offset="50%" stopColor="#4f46e5" />
+                  <stop offset="100%" stopColor="#312e81" />
+                </linearGradient>
+              </defs>
+              {/* Crescent moon */}
+              <path d="M30,8 C22,8 16,14 16,24 C16,34 22,40 30,40 C26,40 22,36 22,24 C22,12 26,8 30,8 Z" 
+                    fill="url(#moonGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+              {/* Stars */}
+              {[[10,12],[38,16],[14,30],[36,32],[8,24]].map(([x,y], i) => (
+                <g key={i}>
+                  <path d={`M${x},${y-3} L${x+1},${y-1} L${x+3},${y} L${x+1},${y+1} L${x},${y+3} L${x-1},${y+1} L${x-3},${y} L${x-1},${y-1} Z`} 
+                        fill="#fff" opacity={0.6 + i * 0.1}/>
+                </g>
+              ))}
+            </svg>
+          );
+          
+        case 'healing':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="healingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#dcfce7" />
+                  <stop offset="50%" stopColor="#22c55e" />
+                  <stop offset="100%" stopColor="#16a34a" />
+                </linearGradient>
+              </defs>
+              {/* Medical cross */}
+              <rect x="20" y="8" width="8" height="32" fill="url(#healingGrad)" rx="2"/>
+              <rect x="8" y="20" width="32" height="8" fill="url(#healingGrad)" rx="2"/>
+              {/* Gentle glow */}
+              <rect x="20" y="8" width="8" height="32" fill="rgba(255,255,255,0.2)" rx="2"/>
+              <rect x="8" y="20" width="32" height="8" fill="rgba(255,255,255,0.2)" rx="2"/>
+              {/* Healing particles */}
+              <circle cx="12" cy="12" r="2" fill="#22c55e" opacity="0.6"/>
+              <circle cx="36" cy="14" r="1.5" fill="#16a34a" opacity="0.7"/>
+              <circle cx="14" cy="36" r="1" fill="#22c55e" opacity="0.8"/>
+              <circle cx="34" cy="34" r="2" fill="#16a34a" opacity="0.5"/>
+            </svg>
+          );
+          
+        case 'family':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="familyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fecaca" />
+                  <stop offset="50%" stopColor="#f87171" />
+                  <stop offset="100%" stopColor="#dc2626" />
+                </linearGradient>
+              </defs>
+              {/* Family figures */}
+              {/* Parent 1 */}
+              <circle cx="16" cy="16" r="4" fill="url(#familyGrad)"/>
+              <rect x="12" y="20" width="8" height="12" fill="url(#familyGrad)" rx="2"/>
+              {/* Parent 2 */}
+              <circle cx="32" cy="16" r="4" fill="url(#familyGrad)"/>
+              <rect x="28" y="20" width="8" height="12" fill="url(#familyGrad)" rx="2"/>
+              {/* Child */}
+              <circle cx="24" cy="26" r="3" fill="url(#familyGrad)"/>
+              <rect x="21" y="29" width="6" height="8" fill="url(#familyGrad)" rx="2"/>
+              {/* Hearts */}
+              <path d="M24,40 C24,40 18,36 18,32 C18,30 19,29 21,29 C22,29 23,30 24,31 C25,30 26,29 27,29 C29,29 30,30 30,32 C30,36 24,40 24,40 Z" 
+                    fill="#fff" opacity="0.8"/>
+            </svg>
+          );
+          
+        case 'grace':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="graceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#e0e7ff" />
+                  <stop offset="50%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#7c3aed" />
+                </linearGradient>
+              </defs>
+              {/* Dove silhouette */}
+              <path d="M12,20 Q16,16 24,18 Q32,20 36,16 Q38,18 36,22 Q34,24 32,24 Q28,26 24,25 Q20,24 16,26 Q14,24 12,22 Q10,20 12,20 Z" 
+                    fill="url(#graceGrad)"/>
+              {/* Wing details */}
+              <path d="M16,22 Q20,20 24,22 Q28,20 32,22" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none"/>
+              {/* Olive branch */}
+              <path d="M24,25 Q26,28 28,30 Q30,32 32,30" stroke="#22c55e" strokeWidth="2" fill="none"/>
+              <ellipse cx="29" cy="29" rx="2" ry="1" fill="#22c55e" opacity="0.8"/>
+              <ellipse cx="31" cy="31" rx="1.5" ry="0.8" fill="#22c55e" opacity="0.8"/>
+            </svg>
+          );
+          
+        case 'bibleVerses':
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="bibleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fed7aa" />
+                  <stop offset="50%" stopColor="#fb923c" />
+                  <stop offset="100%" stopColor="#ea580c" />
+                </linearGradient>
+              </defs>
+              {/* Book cover */}
+              <rect x="10" y="8" width="28" height="32" fill="url(#bibleGrad)" rx="2"/>
+              <rect x="10" y="8" width="28" height="32" fill="rgba(255,255,255,0.1)" rx="2"/>
+              {/* Cross on cover */}
+              <rect x="22" y="16" width="4" height="16" fill="#fff" opacity="0.9" rx="1"/>
+              <rect x="16" y="22" width="16" height="4" fill="#fff" opacity="0.9" rx="1"/>
+              {/* Book spine */}
+              <rect x="8" y="8" width="4" height="32" fill="#c2410c" rx="2"/>
+              {/* Pages */}
+              <rect x="12" y="10" width="24" height="28" fill="rgba(255,255,255,0.2)" rx="1"/>
+              {/* Bookmark */}
+              <rect x="32" y="8" width="3" height="16" fill="#dc2626"/>
+              <path d="M32,24 L35,24 L33.5,20 Z" fill="#dc2626"/>
+            </svg>
+          );
+          
+        default:
+          return (
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: 'relative', zIndex: 1 }}>
+              <defs>
+                <linearGradient id="defaultGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#e2e8f0" />
+                  <stop offset="50%" stopColor="#94a3b8" />
+                  <stop offset="100%" stopColor="#64748b" />
+                </linearGradient>
+              </defs>
+              <circle cx="24" cy="24" r="16" fill="url(#defaultGrad)"/>
+              <path d="M18,20 L30,20 M18,24 L30,24 M18,28 L26,28" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          );
+      }
+    };
     
     return (
       <button
@@ -3325,57 +3619,136 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: '16px',
-          borderRadius: '12px',
-          border: 'none',
+          padding: '20px',
+          borderRadius: '20px',
           cursor: 'pointer',
           width: '100%',
-          marginBottom: '12px',
-          transition: 'all 0.2s ease',
-          background: isSelected ? category.color : '#f3f4f6',
-          color: isSelected ? 'white' : '#374151',
-          boxShadow: isSelected ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none',
-          transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+          marginBottom: '16px',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          background: isSelected 
+            ? 'rgba(59, 130, 246, 0.4)' 
+            : 'rgba(15, 23, 42, 0.6)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: isSelected 
+            ? '1px solid rgba(255, 255, 255, 0.3)' 
+            : '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: isSelected 
+            ? '0 20px 40px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+            : '0 8px 25px -8px rgba(0, 0, 0, 0.3)',
+          transform: isSelected ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
         }}
         onMouseOver={(e) => {
           if (!isSelected) {
-            e.target.style.backgroundColor = '#e5e7eb';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+            e.currentTarget.style.transform = 'translateY(-1px) scale(1.01)';
+            e.currentTarget.style.boxShadow = '0 12px 30px -8px rgba(0, 0, 0, 0.35)';
           }
         }}
         onMouseOut={(e) => {
           if (!isSelected) {
-            e.target.style.backgroundColor = '#f3f4f6';
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.4)';
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+            e.currentTarget.style.boxShadow = '0 8px 25px -8px rgba(0, 0, 0, 0.3)';
           }
         }}
       >
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '18px' }}>
-            {isCustom ? (
-              <img src="/logo192.png" alt="Praying hands" style={{ 
-                width: '29px', 
-                height: '29px',
-                filter: isSelected ? 'brightness(0) invert(1)' : 'brightness(0)' 
-              }} />
-            ) : (
-              <IconComponent size={24} />
-            )}
-            <span style={{ marginLeft: '8px' }}>{category.name}</span>
-          </div>
-          <div style={{ fontSize: '14px', marginTop: '4px', opacity: 0.9 }}>{category.description}</div>
+        {/* 3D Icon Container */}
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '16px',
+          background: getIconGradient(),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: '20px',
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2) inset',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Glossy highlight effect */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '50%',
+            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%)',
+            borderRadius: '16px 16px 0 0'
+          }} />
+          
+          {isCustom ? (
+            <img src="/logo192.png" alt="Praying hands" style={{ 
+              width: '32px', 
+              height: '32px',
+              filter: 'brightness(0) invert(1)',
+              position: 'relative',
+              zIndex: 1
+            }} />
+          ) : (
+            getDetailedIcon()
+          )}
         </div>
+        
+        {/* Text Content */}
+        <div style={{ textAlign: 'left', flex: 1 }}>
+          <div style={{ 
+            fontWeight: '600', 
+            fontSize: '18px',
+            color: 'white',
+            marginBottom: '4px',
+            textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
+          }}>
+            {category.name}
+          </div>
+          <div style={{ 
+            fontSize: '14px', 
+            color: 'rgba(255, 255, 255, 0.8)',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+          }}>
+            {category.description}
+          </div>
+        </div>
+        
+        {/* Selection Indicator */}
+        {isSelected && (
+          <div style={{
+            width: '24px',
+            height: '24px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{ 
+              width: '8px', 
+              height: '8px', 
+              background: 'rgba(255, 255, 255, 0.9)', 
+              borderRadius: '50%',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+            }} />
+          </div>
+        )}
       </button>
     );
   };
 
   // User state is now managed by parent App component
 
-  // Login/Signup Landing Page
-  if (!user) {
+  // OLD LOGIN CODE REMOVED - USING MOBILE SCREENS INSTEAD
+  // Mobile screen router handles login state
+  if (false && !user) {
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #dbeafe, #e0e7ff, #fce7f3)',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -3393,7 +3766,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 padding: '8px 12px',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
+                color: 'rgba(255, 255, 255, 0.8)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 backdropFilter: 'blur(4px)'
@@ -3456,30 +3829,36 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
           {/* Login/Signup Form */}
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
             padding: '32px',
-            border: '1px solid #e5e7eb'
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'white', marginBottom: '8px', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                 {showSignUp ? t('createAccount') : t('welcomeBack')}
               </h2>
-              <p style={{ color: '#6b7280', fontSize: '14px' }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                 {showSignUp ? t('joinCommunity') : t('signInToContinue')}
               </p>
             </div>
 
             {authError && (
               <div style={{
-                backgroundColor: authError.includes('Check your email') ? '#d1fae5' : '#fee2e2',
-                color: authError.includes('Check your email') ? '#065f46' : '#991b1b',
+                background: authError.includes('Check your email') ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                color: authError.includes('Check your email') ? 'rgba(134, 239, 172, 1)' : 'rgba(252, 165, 165, 1)',
                 padding: '12px',
                 borderRadius: '8px',
                 marginBottom: '16px',
                 fontSize: '14px',
-                textAlign: 'center'
+                textAlign: 'center',
+                border: authError.includes('Check your email') ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}>
                 {authError}
               </div>
@@ -3488,7 +3867,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             <form onSubmit={showSignUp ? handleSignUp : handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {showSignUp && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('fullName')}
                   </label>
                   <input
@@ -3499,23 +3878,33 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      border: '1px solid #d1d5db',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
                       borderRadius: '8px',
                       fontSize: '16px',
                       textAlign: 'center',
                       outline: 'none',
-                      transition: 'border-color 0.2s ease',
-                      boxSizing: 'border-box'
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box',
+                      color: 'white',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
                     required
                   />
                 </div>
               )}
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('emailAddress')}
                 </label>
                 <input
@@ -3526,22 +3915,32 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                   style={{
                     width: '100%',
                     padding: '12px 16px',
-                    border: '1px solid #d1d5db',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
                     fontSize: '16px',
                     textAlign: 'center',
                     outline: 'none',
-                    transition: 'border-color 0.2s ease',
-                    boxSizing: 'border-box'
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box',
+                    color: 'white',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
                   required
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('password')}
                 </label>
                 <input
@@ -3552,23 +3951,33 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                   style={{
                     width: '100%',
                     padding: '12px 16px',
-                    border: '1px solid #d1d5db',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
                     fontSize: '16px',
                     textAlign: 'center',
                     outline: 'none',
-                    transition: 'border-color 0.2s ease',
-                    boxSizing: 'border-box'
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box',
+                    color: 'white',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
                   required
                 />
               </div>
 
               {showSignUp && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
 {t('confirmPassword')}
                   </label>
                   <input
@@ -3579,16 +3988,26 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      border: '1px solid #d1d5db',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
                       borderRadius: '8px',
                       fontSize: '16px',
                       textAlign: 'center',
                       outline: 'none',
-                      transition: 'border-color 0.2s ease',
-                      boxSizing: 'border-box'
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box',
+                      color: 'white',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
                     required
                   />
                 </div>
@@ -3632,7 +4051,42 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
               </div>
 
-              {/* Google Sign In Button */}
+              {/* Continue as Guest Button - moved to top position */}
+              <button
+                onClick={() => {
+                  setUser({ id: 'guest', email: 'guest@demo.com' });
+                  setUserSession(null);
+                  setShowSignUp(false);
+                  setGuestPrayerCount(getGuestPrayerCount());
+                }}
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  border: '1px solid #e5e7eb',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontSize: '14px',
+                  marginBottom: '12px'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#f9fafb';
+                  e.target.style.color = '#374151';
+                  e.target.style.borderColor = '#d1d5db';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#6b7280';
+                  e.target.style.borderColor = '#e5e7eb';
+                }}
+              >
+{t('continueAsGuest')}
+              </button>
+
+              {/* Google Sign In Button - moved to bottom position */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -3640,7 +4094,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 style={{
                   width: '100%',
                   background: 'white',
-                  color: '#374151',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '12px 24px',
                   borderRadius: '8px',
                   fontWeight: '500',
@@ -3701,40 +4155,6 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
               </p>
             </div>
 
-            {/* Guest Access Button */}
-            <div style={{ marginTop: '16px', textAlign: 'center' }}>
-              <button
-                onClick={() => {
-                  setUser({ id: 'guest', email: 'guest@demo.com' });
-                  setUserSession(null);
-                  setShowSignUp(false);
-                  setGuestPrayerCount(getGuestPrayerCount());
-                }}
-                style={{
-                  background: 'transparent',
-                  color: '#6b7280',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontWeight: '400',
-                  border: '1px solid #e5e7eb',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  fontSize: '14px'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.background = '#f9fafb';
-                  e.target.style.color = '#374151';
-                  e.target.style.borderColor = '#d1d5db';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'transparent';
-                  e.target.style.color = '#6b7280';
-                  e.target.style.borderColor = '#e5e7eb';
-                }}
-              >
-{t('continueAsGuest')}
-              </button>
-            </div>
 
             <div style={{ marginTop: '16px', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
@@ -3758,11 +4178,15 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
     );
   }
 
-  // Main Prayer App (after login)
-  return (
+  // OLD MAIN APP REMOVED - USING MOBILE SCREENS INSTEAD
+  // Mobile screen router handles all states
+  if (false) return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #dbeafe, #e0e7ff, #fce7f3)',
+      background: `url('/111208-OO10MS-26.jpg')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
       padding: '16px'
     }}>
       <div style={{ maxWidth: '1024px', margin: '0 auto' }}>
@@ -3822,13 +4246,12 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           <h1 style={{
             fontSize: '48px',
             fontWeight: '300',
-            background: 'linear-gradient(135deg, #4338ca, #7c3aed)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            color: 'white',
             marginBottom: '8px',
-            letterSpacing: '2px'
+            letterSpacing: '2px',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
           }}>{t('appTitle')}</h1>
-          <p style={{ color: '#6b7280', textAlign: 'center' }}>{t('appSubtitle')}</p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center', textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>{t('appSubtitle')}</p>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
             <div style={{
               width: '96px',
@@ -3840,27 +4263,29 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           
           {/* User info */}
           <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '14px', margin: 0, textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
               Welcome, {user?.user_metadata?.full_name || user?.email}
             </p>
           </div>
 
-          {/* HIGHLY VISIBLE DEBUG */}
 
           {/* Usage Counter for all non-premium users */}
           {!isPremium && (
             <div style={{
-              backgroundColor: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#fef2f2' : '#f0f9ff',
-              border: `1px solid ${(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#fecaca' : '#bae6fd'}`,
+              background: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+              border: `1px solid ${(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
               borderRadius: '8px',
               padding: '12px 16px',
               marginTop: '16px',
-              textAlign: 'center'
+              textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
             }}>
               <div style={{
-                color: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? '#dc2626' : '#0369a1',
+                color: (userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 ? 'rgba(252, 165, 165, 1)' : 'rgba(147, 197, 253, 1)',
                 fontSize: '14px',
-                fontWeight: '500'
+                fontWeight: '500',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
               }}>
                 {(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 
                   ? '⚠️ Daily limit reached' 
@@ -3868,7 +4293,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
               </div>
               {(userSession && user?.id !== 'guest' ? dailyPrayerCount : guestPrayerCount) >= 3 && (
                 <div style={{
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   fontSize: '12px',
                   marginTop: '4px'
                 }}>
@@ -3886,7 +4311,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
         }}>
           {/* Categories */}
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px', textAlign: 'center' }}>{t('chooseCategory')}</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'white', marginBottom: '16px', textAlign: 'center', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>{t('chooseCategory')}</h2>
             {Object.entries(prayerCategories).map(([key, category]) => (
               <CategoryButton key={key} categoryKey={key} category={category} />
             ))}
@@ -3895,11 +4320,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           {/* Prayer Display */}
           <div>
             <div style={{
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              background: 'rgba(15, 23, 42, 0.6)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
               padding: '32px',
-              border: '1px solid #e5e7eb'
+              border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
               {showCustomForm ? (
                 <>
@@ -3916,7 +4343,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                     }}>
                       <img src="/logo192.png" alt="Praying hands" style={{ width: '24px', height: '24px' }} />
                     </div>
-                    <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
+                    <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'white', margin: 0, textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                       Create Custom Prayer
                     </h2>
                   </div>
@@ -3924,7 +4351,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                   <div style={{ marginBottom: '24px' }}>
                     {/* Who is this prayer for? */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         This prayer is for:
                       </label>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
@@ -3937,9 +4364,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             padding: '8px 16px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerFor === 'myself' ? '#6366f1' : '#d1d5db',
-                            backgroundColor: prayerFor === 'myself' ? '#eef2ff' : 'white',
-                            color: prayerFor === 'myself' ? '#4338ca' : '#374151',
+                            borderColor: prayerFor === 'myself' ? 'rgba(99, 102, 241, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerFor === 'myself' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                            color: prayerFor === 'myself' ? 'rgba(199, 210, 254, 1)' : 'rgba(255, 255, 255, 0.8)',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease'
                           }}
@@ -3956,9 +4383,9 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             padding: '8px 16px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerFor === 'someone' ? '#8b5cf6' : '#d1d5db',
-                            backgroundColor: prayerFor === 'someone' ? '#f3e8ff' : 'white',
-                            color: prayerFor === 'someone' ? '#7c3aed' : '#374151',
+                            borderColor: prayerFor === 'someone' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerFor === 'someone' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                            color: prayerFor === 'someone' ? 'rgba(221, 214, 254, 1)' : 'rgba(255, 255, 255, 0.8)',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease'
                           }}
@@ -3972,7 +4399,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                     {/* Person's name */}
                     {prayerFor === 'someone' && (
                       <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                           Person's name:
                         </label>
                         <input
@@ -4002,7 +4429,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
                     {/* Special occasion */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         Special occasion (optional):
                       </label>
                       <select
@@ -4046,7 +4473,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
                     {/* Prayer length */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         Prayer length:
                       </label>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
@@ -4056,8 +4483,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             padding: '6px 12px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerLength === 'brief' ? '#10b981' : '#d1d5db',
-                            backgroundColor: prayerLength === 'brief' ? '#d1fae5' : 'white',
+                            borderColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                             color: prayerLength === 'brief' ? '#047857' : '#374151',
                             cursor: 'pointer',
                             fontSize: '12px'
@@ -4071,8 +4498,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             padding: '6px 12px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerLength === 'medium' ? '#6366f1' : '#d1d5db',
-                            backgroundColor: prayerLength === 'medium' ? '#eef2ff' : 'white',
+                            borderColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                             color: prayerLength === 'medium' ? '#4338ca' : '#374151',
                             cursor: 'pointer',
                             fontSize: '12px'
@@ -4086,8 +4513,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             padding: '6px 12px',
                             borderRadius: '8px',
                             border: '2px solid',
-                            borderColor: prayerLength === 'comprehensive' ? '#8b5cf6' : '#d1d5db',
-                            backgroundColor: prayerLength === 'comprehensive' ? '#f3e8ff' : 'white',
+                            borderColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                            backgroundColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                             color: prayerLength === 'comprehensive' ? '#7c3aed' : '#374151',
                             cursor: 'pointer',
                             fontSize: '12px'
@@ -4100,7 +4527,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
 
                     {/* Prayer request */}
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px', textAlign: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'white', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                         What would you like to pray about?
                       </label>
                       <div style={{ 
@@ -4164,7 +4591,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           borderRadius: '8px',
                           border: '2px solid',
                           borderColor: prayerLength === 'brief' ? '#10b981' : '#d1d5db',
-                          backgroundColor: prayerLength === 'brief' ? '#ecfdf5' : 'white',
+                          backgroundColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                           color: prayerLength === 'brief' ? '#047857' : '#374151',
                           cursor: 'pointer',
                           fontSize: '14px',
@@ -4181,7 +4608,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           borderRadius: '8px',
                           border: '2px solid',
                           borderColor: prayerLength === 'medium' ? '#6366f1' : '#d1d5db',
-                          backgroundColor: prayerLength === 'medium' ? '#eef2ff' : 'white',
+                          backgroundColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                           color: prayerLength === 'medium' ? '#4338ca' : '#374151',
                           cursor: 'pointer',
                           fontSize: '14px',
@@ -4198,7 +4625,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                           borderRadius: '8px',
                           border: '2px solid',
                           borderColor: prayerLength === 'comprehensive' ? '#8b5cf6' : '#d1d5db',
-                          backgroundColor: prayerLength === 'comprehensive' ? '#f3e8ff' : 'white',
+                          backgroundColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                           color: prayerLength === 'comprehensive' ? '#7c3aed' : '#374151',
                           cursor: 'pointer',
                           fontSize: '14px',
@@ -4266,19 +4693,23 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 {(currentPrayer && currentPrayer.trim() && !isGenerating) ? (
                   <div style={{ textAlign: 'center', width: '100%', maxWidth: '600px' }}>
                     <div style={{
-                      background: 'linear-gradient(135deg, #eef2ff, #f3e8ff, #fef7f7)',
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
                       padding: '24px',
                       borderRadius: '12px',
                       marginBottom: '16px',
-                      border: '1px solid #c7d2fe',
-                      margin: '0 auto 16px'
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      margin: '0 auto 16px',
+                      boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
                     }}>
                       <p style={{
                         fontSize: '18px',
-                        color: '#374151',
+                        color: 'white',
                         lineHeight: '1.6',
                         textAlign: 'center',
-                        margin: 0
+                        margin: 0,
+                        textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
                       }}>
                         {currentPrayer}
                       </p>
@@ -4292,11 +4723,14 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                       gap: '12px', 
                       marginBottom: '16px',
                       padding: '12px',
-                      background: '#f8fafc',
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
                       borderRadius: '8px',
-                      border: '1px solid #e2e8f0'
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      boxShadow: '0 4px 15px -4px rgba(0, 0, 0, 0.3)'
                     }}>
-                      <Volume2 size={20} color="#64748b" />
+                      <Volume2 size={20} color="rgba(255, 255, 255, 0.8)" />
                       
                       {!isPlaying ? (
                         <button
@@ -4406,44 +4840,31 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                       <div style={{
                         marginBottom: '16px',
                         padding: '16px',
-                        background: '#ffffff',
-                        border: '1px solid #e2e8f0',
+                        background: 'rgba(15, 23, 42, 0.6)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '8px',
-                        textAlign: 'left'
+                        textAlign: 'center',
+                        boxShadow: '0 4px 15px -4px rgba(0, 0, 0, 0.3)'
                       }}>
-                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: 'white', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                           Voice Settings
                         </h4>
                         
-                        {/* Voice Type Toggle */}
+                        {/* Voice Quality Selection */}
                         <div style={{ marginBottom: '16px' }}>
-                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                          <label style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '8px', display: 'block', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                             Voice Quality:
                           </label>
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              onClick={() => setUseHumanVoice(true)}
-                              style={{
-                                flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: useHumanVoice ? '#10b981' : '#f3f4f6',
-                                color: useHumanVoice ? 'white' : '#6b7280',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              🎭 Human-like
-                            </button>
                             <button
                               onClick={() => setUseHumanVoice(false)}
                               style={{
                                 flex: 1,
                                 padding: '8px 12px',
-                                backgroundColor: !useHumanVoice ? '#10b981' : '#f3f4f6',
-                                color: !useHumanVoice ? 'white' : '#6b7280',
+                                backgroundColor: !useHumanVoice ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                                color: !useHumanVoice ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '4px',
                                 fontSize: '12px',
@@ -4453,12 +4874,28 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             >
                               🤖 System
                             </button>
+                            <button
+                              onClick={() => setUseHumanVoice(true)}
+                              style={{
+                                flex: 1,
+                                padding: '8px 12px',
+                                backgroundColor: useHumanVoice ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                                color: useHumanVoice ? 'white' : 'rgba(255, 255, 255, 0.8)',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              🎭 Human-like
+                            </button>
                           </div>
                         </div>
 
                         {/* Voice Tier Selection */}
                         <div style={{ marginBottom: '16px' }}>
-                          <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', display: 'block' }}>
+                          <label style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '8px', display: 'block', textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                             Choose voice tier:
                           </label>
                           <div style={{ display: 'flex', gap: '8px' }}>
@@ -4466,12 +4903,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               onClick={() => setTtsProvider('browser')}
                               style={{
                                 flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: ttsProvider === 'browser' ? '#10b981' : '#f3f4f6',
-                                color: ttsProvider === 'browser' ? 'white' : '#6b7280',
+                                padding: '10px 16px',
+                                backgroundColor: ttsProvider === 'browser' ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                                color: ttsProvider === 'browser' ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                fontWeight: '500',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s'
                               }}
@@ -4479,131 +4917,137 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               Free
                             </button>
                             <button
-                              onClick={() => setTtsProvider('google')}
+                              onClick={() => setTtsProvider('azure')}
                               style={{
                                 flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: ttsProvider === 'google' ? '#3b82f6' : '#f3f4f6',
-                                color: ttsProvider === 'google' ? 'white' : '#6b7280',
+                                padding: '10px 16px',
+                                backgroundColor: ttsProvider === 'azure' ? '#6366f1' : 'rgba(255, 255, 255, 0.1)',
+                                color: ttsProvider === 'azure' ? 'white' : 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                fontWeight: '500',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s'
                               }}
                             >
-                              Standard $4.99
-                            </button>
-                            <button
-                              onClick={() => setTtsProvider('elevenlabs')}
-                              style={{
-                                flex: 1,
-                                padding: '8px 12px',
-                                backgroundColor: ttsProvider === 'elevenlabs' ? '#6366f1' : '#f3f4f6',
-                                color: ttsProvider === 'elevenlabs' ? 'white' : '#6b7280',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              Premium $7.99
+                              Premium
                             </button>
                           </div>
                         </div>
 
-                        {/* FREE TIER: No voice selection */}
+                        {/* System Voice Selection */}
+                        {!useHumanVoice && (
+                          <div style={{ marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
+                              Select System Voice:
+                            </label>
+                            <select
+                              value={selectedVoice?.name || ''}
+                              onChange={(e) => {
+                                const voice = availableVoices.find(v => v.name === e.target.value);
+                                setSelectedVoice(voice);
+                              }}
+                              style={{
+                                width: '100%',
+                                padding: '6px 8px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '4px',
+                                fontSize: '13px',
+                                backgroundColor: 'white'
+                              }}
+                            >
+                              {availableVoices
+                                .filter(voice => voice.lang.startsWith('en'))
+                                .map((voice) => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        )}
+
+                        {/* FREE TIER: System voices */}
                         {ttsProvider === 'browser' && (
                           <div style={{
                             textAlign: 'center',
-                            color: '#6b7280',
+                            color: 'rgba(255, 255, 255, 0.8)',
                             fontSize: '14px',
-                            padding: '20px',
+                            padding: '16px',
                             backgroundColor: '#f9fafb',
                             borderRadius: '8px',
                             border: '1px solid #e5e7eb'
                           }}>
                             🎤 Using system voices (Free tier)
                             <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                              No voice selection needed
+                              {useHumanVoice ? 'Enhanced browser voices' : 'Standard device voices'}
                             </div>
                           </div>
                         )}
 
-                        {/* PREMIUM TIER: ElevenLabs Voices */}
-                        {ttsProvider === 'elevenlabs' && (
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                {Object.entries(humanVoices).map(([key, voice]) => (
-                                  <button
-                                    key={key}
-                                    onClick={() => setHumanVoiceType(key)}
+                        {/* PREMIUM TIER: Azure Cognitive Services Voices */}
+                        {ttsProvider === 'azure' && (
+                              <div>
+                                <div style={{ 
+                                  textAlign: 'center', 
+                                  fontSize: '14px', 
+                                  color: '#6366f1', 
+                                  padding: '12px 20px',
+                                  backgroundColor: '#f0f9ff',
+                                  borderRadius: '8px',
+                                  border: '1px solid #bfdbfe',
+                                  marginBottom: '16px'
+                                }}>
+                                  <div style={{ fontSize: '16px', marginBottom: '4px' }}>🎭</div>
+                                  <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                    Azure Premium Neural Voices
+                                  </div>
+                                  <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.3' }}>
+                                    High-quality neural voices with emotional range
+                                  </div>
+                                </div>
+                                
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+                                  <select 
+                                    value={selectedVoice || 'en-US-AvaMultilingualNeural'}
+                                    onChange={(e) => setSelectedVoice(e.target.value)}
                                     style={{
-                                      padding: '12px',
-                                      backgroundColor: humanVoiceType === key ? '#eef2ff' : '#ffffff',
-                                      border: humanVoiceType === key ? '2px solid #6366f1' : '1px solid #e5e7eb',
+                                      gridColumn: '1 / -1',
+                                      padding: '8px 12px',
+                                      border: '1px solid #d1d5db',
                                       borderRadius: '6px',
-                                      textAlign: 'left',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s'
+                                      fontSize: '14px',
+                                      backgroundColor: 'white'
                                     }}
                                   >
-                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
-                                      {voice.name}
-                                    </div>
-                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                      {voice.description}
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* STANDARD TIER: Google Cloud TTS Voices */}
-                            {ttsProvider === 'google' && (
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                {Object.entries(googleCloudVoices).map(([key, voice]) => (
-                                  <button
-                                    key={key}
-                                    onClick={() => setGoogleVoiceType(key)}
-                                    style={{
-                                      padding: '12px',
-                                      backgroundColor: googleVoiceType === key ? '#dbeafe' : '#ffffff',
-                                      border: googleVoiceType === key ? '2px solid #3b82f6' : '1px solid #e5e7eb',
-                                      borderRadius: '6px',
-                                      textAlign: 'left',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s'
-                                    }}
-                                  >
-                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '2px' }}>
-                                      {voice.name}
-                                    </div>
-                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                      {voice.description}
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* FREE TIER: No voice selection */}
-                            {ttsProvider === 'browser' && (
-                              <div style={{
-                                textAlign: 'center',
-                                color: '#6b7280',
-                                fontSize: '14px',
-                                padding: '20px',
-                                backgroundColor: '#f9fafb',
-                                borderRadius: '8px',
-                                border: '1px solid #e5e7eb'
-                              }}>
-                                🎤 Using system voices (Free tier)
-                                <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                                  Choose Standard or Premium for more voice options
+                                    <optgroup label="Premium Female Voices">
+                                      <option value="en-US-AvaMultilingualNeural">Ava - Warm & Expressive</option>
+                                      <option value="en-US-EmmaMultilingualNeural">Emma - Gentle & Soothing</option>
+                                      <option value="en-US-AriaNeural">Aria - Natural & Dynamic</option>
+                                      <option value="en-US-JennyNeural">Jenny - Friendly & Clear</option>
+                                    </optgroup>
+                                    <optgroup label="Premium Male Voices">
+                                      <option value="en-US-AndrewMultilingualNeural">Andrew - Professional & Clear</option>
+                                      <option value="en-US-BrianMultilingualNeural">Brian - Engaging & Confident</option>
+                                      <option value="en-US-DavisNeural">Davis - Professional & Polished</option>
+                                      <option value="en-US-GuyNeural">Guy - Calm & Measured</option>
+                                    </optgroup>
+                                    <optgroup label="International">
+                                      <option value="en-GB-SoniaNeural">Sonia - British Accent</option>
+                                      <option value="en-GB-RyanNeural">Ryan - British Accent</option>
+                                      <option value="en-AU-NatashaNeural">Natasha - Australian Accent</option>
+                                    </optgroup>
+                                  </select>
+                                </div>
+                                
+                                <div style={{ textAlign: 'center', fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>
+                                  💡 Premium neural voices provide natural speech with emotional expression
                                 </div>
                               </div>
                             )}
+
+
                             
                             <div style={{ 
                               fontSize: '11px', 
@@ -4748,7 +5192,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             if (currentPrayer) e.target.style.backgroundColor = '#059669';
                           }}
                         >
-                          📸 Download Image
+                          Download Image
                         </button>
                         
                         <button
@@ -4823,12 +5267,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
@@ -4847,12 +5287,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
@@ -4882,7 +5318,13 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}>
-                        {(selectedCategory === 'gratitude' || !selectedCategory) && <Heart size={36} color="white" />}
+                        {(selectedCategory === 'gratitude' || !selectedCategory) && (
+                          <img 
+                            src="/logo192.png" 
+                            alt="Praying Hands" 
+                            style={{ width: '36px', height: '36px', filter: 'brightness(0) invert(1)' }} 
+                          />
+                        )}
                         {selectedCategory === 'morning' && <Sun size={36} color="white" />}
                         {selectedCategory === 'bedtime' && <Moon size={36} color="white" />}
                         {selectedCategory === 'healing' && <Sparkles size={36} color="white" />}
@@ -4938,7 +5380,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                             if (currentPrayer) e.target.style.backgroundColor = '#059669';
                           }}
                         >
-                          📸 Download Image
+                          Download Image
                         </button>
                         
                         <button
@@ -5013,12 +5455,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
@@ -5037,12 +5475,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseOver={(e) => {
-                              e.target.style.backgroundColor = '#b91c1c';
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.backgroundColor = '#dc2626';
-                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
                           >
                             Sign Out
                           </button>
@@ -5055,6 +5489,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             </div>
           </div>
         </div>
+
 
         <div style={{ marginTop: '32px', textAlign: 'center', color: '#6b7280', fontSize: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
@@ -5085,18 +5520,21 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           padding: '16px'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '500px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
             width: '100%',
             maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+            overflowY: 'auto'
           }}>
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#1f2937' }}>
+              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                 Share this prayer
               </h3>
               <button
@@ -5106,7 +5544,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '4px'
                 }}
               >
@@ -5115,7 +5553,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
             </div>
 
             {/* Anonymous sharing toggle */}
-            <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+            <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '8px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
@@ -5214,7 +5652,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 </div>
                 <div style={{ 
                   fontSize: '12px', 
-                  color: '#6b7280', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
                   backgroundColor: '#f3f4f6', 
                   padding: '8px', 
                   borderRadius: '4px' 
@@ -5231,13 +5669,19 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                 <button
-                  onClick={() => socialSharing.copyToClipboard(currentPrayer)}
+                  onClick={() => {
+                    // Instagram sharing
+                    navigator.clipboard.writeText(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpmeray.app`).then(() => {
+                      alert('Prayer text copied! Now opening Instagram - paste this with your prayer.');
+                      window.open('https://www.instagram.com/', '_blank');
+                    });
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
                     padding: '10px 12px',
-                    backgroundColor: '#6b7280',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -5246,8 +5690,8 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                     transition: 'background-color 0.2s'
                   }}
                 >
-                  <Copy size={16} />
-                  Copy
+                  <Instagram size={16} />
+                  Instagram
                 </button>
                 
                 <button
@@ -5268,26 +5712,6 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 >
                   <MessageCircle size={16} />
                   WhatsApp
-                </button>
-                
-                <button
-                  onClick={() => socialSharing.shareToTwitter(currentPrayer)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 12px',
-                    backgroundColor: '#1da1f2',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                >
-                  <Twitter size={16} />
-                  Twitter
                 </button>
                 
                 <button
@@ -5328,26 +5752,6 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 >
                   <Smartphone size={16} />
                   Messages
-                </button>
-                
-                <button
-                  onClick={() => socialSharing.shareToInstagram(currentPrayer)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 12px',
-                    backgroundColor: '#E4405F',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                >
-                  <Instagram size={16} />
-                  Instagram
                 </button>
               </div>
             </div>
@@ -5420,7 +5824,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                 style={{
                   padding: '8px 16px',
                   backgroundColor: '#f3f4f6',
-                  color: '#374151',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '14px',
@@ -5450,22 +5854,25 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           padding: '20px'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '12px',
             maxWidth: '800px',
             width: '100%',
             maxHeight: '80vh',
             overflow: 'hidden',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{
               padding: '24px',
-              borderBottom: '1px solid #e5e7eb',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <h2 style={{ margin: 0, color: '#1f2937', fontSize: '24px', fontWeight: 'bold' }}>
+              <h2 style={{ margin: 0, color: 'white', fontSize: '24px', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
                 {t('myPrayers')}
               </h2>
               <button
@@ -5475,7 +5882,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   padding: '4px'
                 }}
               >
@@ -5507,7 +5914,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                     }}>
                       <div style={{
                         fontSize: '12px',
-                        color: '#6b7280',
+                        color: 'rgba(255, 255, 255, 0.8)',
                         marginBottom: '8px'
                       }}>
                         {t('createdOn')} {new Date(prayer.created_at).toLocaleString()}
@@ -5566,11 +5973,14 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
           padding: '20px'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderRadius: '12px',
             maxWidth: '500px',
             width: '100%',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{
               padding: '24px',
@@ -5635,7 +6045,7 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
                   onClick={() => setShowUpgradeModal(false)}
                   style={{
                     backgroundColor: '#f3f4f6',
-                    color: '#374151',
+                    color: 'rgba(255, 255, 255, 0.8)',
                     border: 'none',
                     padding: '12px 24px',
                     borderRadius: '8px',
@@ -5665,6 +6075,3230 @@ ${closings[2]} ${closings[3]} ${t('finalClosingLong')}`;
       `}</style>
     </div>
   );
+
+  // ===== MOBILE SCREEN ARCHITECTURE =====
+  
+  // Categories for mobile screens
+  const categories = [
+    { key: 'gratitude', name: t('gratitude') },
+    { key: 'morning', name: t('morning') },
+    { key: 'bedtime', name: t('bedtime') },
+    { key: 'healing', name: t('healing') },
+    { key: 'family', name: t('family') },
+    { key: 'grace', name: t('grace') },
+    { key: 'bibleVerses', name: t('bibleVerses') },
+    { key: 'custom', name: t('custom') }
+  ];
+
+  // Mobile Screen Router
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'login':
+        return renderLoginScreen();
+      case 'prayer-selection':
+        return renderPrayerSelectionScreen();
+      case 'prayer-generation':
+        return renderPrayerGenerationScreen();
+      case 'prayer-view':
+        return renderPrayerViewScreen();
+      case 'prayer-sharing':
+        return renderPrayerSharingScreen();
+      case 'audio-sharing':
+        return renderAudioSharingScreen();
+      case 'image-sharing':
+        return renderImageSharingScreen();
+      case 'unified-sharing':
+        return renderUnifiedSharingScreen();
+      default:
+        return renderLoginScreen();
+    }
+  };
+
+  // Screen 1: Login Screen
+  const renderLoginScreen = () => {
+    if (user) {
+      setCurrentScreen('prayer-selection');
+      return null;
+    }
+    
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <div style={{ width: '100%', maxWidth: '400px' }}>
+          {/* App Title */}
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '16px',
+              marginBottom: '8px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '120px', 
+                  height: '120px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                color: 'white', 
+                fontSize: '36px', 
+                fontWeight: '600',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                margin: '0'
+              }}>
+                Help Me Pray App
+              </h1>
+            </div>
+            <p style={{ 
+              color: 'rgba(255, 255, 255, 0.8)', 
+              fontSize: '16px',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
+            }}>
+              Find peace through prayer
+            </p>
+          </div>
+
+          {/* Login Form */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '30px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+          }}>
+            <div style={{ display: 'grid', gap: '15px' }}>
+              <button
+                onClick={handleGoogleSignIn}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+              >
+                <User size={20} />
+                Continue with Google
+              </button>
+              
+              <button
+                onClick={() => setUser({ id: 'guest', email: 'guest@demo.com' })}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+              >
+                <UserCheck size={20} />
+                Continue as Guest
+              </button>
+
+              {/* Divider */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '12px',
+                margin: '20px 0'
+              }}>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }}></div>
+                <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>or</span>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }}></div>
+              </div>
+
+              {/* Email/Password Sign In Form */}
+              {!showSignUp ? (
+                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+
+                  {authError && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      color: '#fca5a5',
+                      fontSize: '14px',
+                      textAlign: 'center'
+                    }}>
+                      {authError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    style={{
+                      width: '100%',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: authLoading ? 'rgba(107, 114, 128, 0.6)' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: authLoading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {authLoading ? 'Signing In...' : 'Sign In'}
+                  </button>
+                </form>
+              ) : (
+                // Sign Up Form
+                <form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Enter your password"
+                    />
+                    {/* Password strength indicator */}
+                    {password && (
+                      <div style={{ marginTop: '8px' }}>
+                        <div style={{ 
+                          display: 'flex', 
+                          gap: '2px', 
+                          marginBottom: '6px' 
+                        }}>
+                          {[1, 2, 3, 4, 5].map((level) => {
+                            const passwordStrength = (() => {
+                              let score = 0;
+                              if (password.length >= 8) score++;
+                              if (/[A-Z]/.test(password)) score++;
+                              if (/[a-z]/.test(password)) score++;
+                              if (/\d/.test(password)) score++;
+                              if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+                              return score;
+                            })();
+                            
+                            return (
+                              <div
+                                key={level}
+                                style={{
+                                  height: '4px',
+                                  flex: 1,
+                                  borderRadius: '2px',
+                                  background: level <= passwordStrength 
+                                    ? passwordStrength <= 2 ? '#ef4444' 
+                                      : passwordStrength <= 3 ? '#f59e0b' 
+                                      : '#10b981'
+                                    : 'rgba(255, 255, 255, 0.2)'
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: 'rgba(255, 255, 255, 0.7)' 
+                        }}>
+                          Password must contain: 8+ chars, uppercase, lowercase, number, special char
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
+                      color: 'white', 
+                      marginBottom: '8px',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
+                    }}>
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '16px',
+                        backdropFilter: 'blur(10px)',
+                        boxSizing: 'border-box'
+                      }}
+                      placeholder="Confirm your password"
+                    />
+                  </div>
+
+                  {authError && (
+                    <div style={{
+                      background: authError.includes('✅') || authError.includes('Account created') 
+                        ? 'rgba(16, 185, 129, 0.1)' 
+                        : 'rgba(239, 68, 68, 0.1)',
+                      border: authError.includes('✅') || authError.includes('Account created')
+                        ? '1px solid rgba(16, 185, 129, 0.3)'
+                        : '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      color: authError.includes('✅') || authError.includes('Account created')
+                        ? '#6ee7b7'
+                        : '#fca5a5',
+                      fontSize: '14px',
+                      textAlign: 'center'
+                    }}>
+                      {authError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    style={{
+                      width: '100%',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: authLoading ? 'rgba(107, 114, 128, 0.6)' : 'linear-gradient(135deg, #10b981, #059669)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: authLoading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {authLoading ? 'Creating Account...' : 'Create Account'}
+                  </button>
+                </form>
+              )}
+
+              {/* Sign Up / Sign In Toggle */}
+              <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px', margin: '0 0 8px 0' }}>
+                  {showSignUp ? 'Already have an account?' : "Don't have an account?"}
+                </p>
+                <button
+                  onClick={() => {
+                    setShowSignUp(!showSignUp);
+                    setAuthError('');
+                    setEmail('');
+                    setPassword('');
+                    setConfirmPassword('');
+                    setFullName('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#60a5fa',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseOver={(e) => e.target.style.color = '#3b82f6'}
+                  onMouseOut={(e) => e.target.style.color = '#60a5fa'}
+                >
+                  {showSignUp ? 'Sign In' : 'Sign Up'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 2: Prayer Selection Screen
+  const renderPrayerSelectionScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            {/* App Title with Logo */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                color: 'white', 
+                fontSize: '28px', 
+                fontWeight: '600',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                margin: '0'
+              }}>
+                Help Me Pray App
+              </h1>
+            </div>
+            
+            <h2 style={{ 
+              color: 'white', 
+              fontSize: '20px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              marginBottom: '8px'
+            }}>
+              Choose Your Prayer
+            </h2>
+            <p style={{ 
+              color: 'rgba(255, 255, 255, 0.8)', 
+              fontSize: '14px',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
+            }}>
+              Select a category that speaks to your heart
+            </p>
+          </div>
+
+          {/* Category Buttons with Beautiful 3D Icons */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '12px',
+            '@media (min-width: 768px)': {
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'
+            }
+          }}>
+            {categories.map((category) => {
+              const categoryDescriptions = {
+                gratitude: "Prayers for thanksgiving and expressing appreciation",
+                morning: "Prayers to start your day with purpose and hope", 
+                bedtime: "Prayers for reflection, rest, and peaceful sleep",
+                healing: "Prayers for physical, emotional, and spiritual restoration",
+                family: "Prayers for relationships and loved ones",
+                grace: "Dedicated to blessing the meals",
+                bibleVerses: "Prayers inspired by Scripture",
+                custom: "Generate personalized prayers for any situation"
+              };
+              
+              return (
+                <button 
+                  key={category.key} 
+                  onClick={() => { 
+                    setSelectedCategory(category.key); 
+                    setShowCustomForm(true);  // ALL categories now show custom form
+                    setCurrentScreen('prayer-generation');
+                  }} 
+                  style={{ 
+                    padding: '0',
+                    borderRadius: '18px',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)',
+                    transform: 'translateY(0)'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.4), 0 6px 12px rgba(0, 0, 0, 0.2)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)';
+                  }}
+                >
+                  {/* Header Section - Darker Bluish Gray like Notes app */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
+                    padding: '12px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    borderTopLeftRadius: '16px',
+                    borderTopRightRadius: '16px'
+                  }}>
+                    <div style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px'
+                    }}>
+                      <div>
+                        {categoryIcons[category.key]}
+                      </div>
+                    </div>
+                    <div style={{ 
+                      fontWeight: '600',
+                      fontSize: '16px',
+                      color: '#ffffff',
+                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
+                      flex: 1,
+                      textAlign: 'center',
+                      lineHeight: '1.2'
+                    }}>
+                      {category.key === 'custom' ? (
+                        <div style={{ lineHeight: '1.1', whiteSpace: 'pre-line' }}>
+                          Create Custom{'\n'}Prayer
+                        </div>
+                      ) : (
+                        category.name
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Content Section - Black like Notes app */}
+                  <div style={{
+                    background: 'rgba(0, 0, 0, 0.95)',
+                    padding: '14px 20px',
+                    borderBottomLeftRadius: '16px',
+                    borderBottomRightRadius: '16px',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{ 
+                      fontSize: '13px',
+                      color: 'white',
+                      textAlign: 'center',
+                      lineHeight: '1.4',
+                      textShadow: '0 1px 3px rgba(0, 0, 0, 0.8)'
+                    }}>
+                      {categoryDescriptions[category.key]}
+                    </span>
+                  </div>
+                </button>
+            );
+            })}
+          </div>
+
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setUser(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 3: Prayer Generation Screen
+  const renderPrayerGenerationScreen = () => {
+    // No longer auto-generate since ALL categories now show custom form for user choice
+    
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <div style={{ textAlign: 'center', color: 'white' }}>
+          {/* App Title with Logo */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            marginBottom: '40px'
+          }}>
+            <img 
+              src="/prayhands.png" 
+              alt="Praying hands" 
+              style={{ 
+                width: '80px', 
+                height: '80px',
+                filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+              }} 
+            />
+            <h1 style={{ 
+              color: 'white', 
+              fontSize: '28px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              margin: '0'
+            }}>
+              Help Me Pray
+            </h1>
+          </div>
+          
+          {showCustomForm ? (
+            // Custom Prayer Form - Now for ALL categories
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '0',  // Remove padding since header will have its own
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)',
+              marginBottom: '20px',
+              maxWidth: '400px',
+              width: '100%',
+              overflow: 'hidden'  // Ensure header bars fit cleanly
+            }}>
+              {/* Header Section - Match category button design */}
+              <div style={{
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
+                padding: '12px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                borderTopLeftRadius: '19px',
+                borderTopRightRadius: '19px'
+              }}>
+                {/* Category icon with category color */}
+                <div style={{ 
+                  fontSize: '16px'
+                }}>
+                  {categoryIcons[selectedCategory] || categoryIcons.custom}
+                </div>
+                
+                {/* Category-specific title */}
+                <div style={{ 
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
+                }}>
+                  {selectedCategory === 'custom' 
+                    ? 'Create Your Custom Prayer'
+                    : `Customize Your ${categories.find(c => c.key === selectedCategory)?.name || 'Custom'} Prayer`
+                  }
+                </div>
+              </div>
+
+              {/* Content Section */}
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.95)',
+                padding: '24px 30px 30px 30px'
+              }}>
+
+              {/* Show full customization options only for 'custom' category */}
+              {selectedCategory === 'custom' && (
+                <>
+              {/* Prayer For Selection */}
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '12px', fontSize: '14px' }}>
+                  This prayer is for:
+                </p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => setPrayerFor('myself')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerFor === 'myself' ? '#3b82f6' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerFor === 'myself' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Myself
+                  </button>
+                  <button
+                    onClick={() => setPrayerFor('someone')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerFor === 'someone' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerFor === 'someone' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Someone Else
+                  </button>
+                </div>
+              </div>
+
+              {/* Person's Name Input */}
+              {prayerFor === 'someone' && (
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: '14px', 
+                    color: 'rgba(255, 255, 255, 0.8)', 
+                    marginBottom: '8px' 
+                  }}>
+                    Person's name:
+                  </label>
+                  <input
+                    type="text"
+                    value={personName}
+                    onChange={(e) => setPersonName(e.target.value)}
+                    placeholder="Enter their name..."
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      fontSize: '14px',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Special Occasion Dropdown */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '14px', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  marginBottom: '8px' 
+                }}>
+                  Special occasion (optional):
+                </label>
+                <select
+                  value={selectedOccasion}
+                  onChange={(e) => setSelectedOccasion(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    fontSize: '14px',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <option value="">Select an occasion (optional)</option>
+                  <option value="birthday">Birthday</option>
+                  <option value="anniversary">Anniversary</option>
+                  <option value="graduation">Graduation</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="funeral">Funeral/Memorial</option>
+                  <option value="illness">Illness</option>
+                  <option value="surgery">Surgery</option>
+                  <option value="pregnancy">Pregnancy</option>
+                  <option value="retirement">Retirement</option>
+                  <option value="moving">Moving/New Home</option>
+                  <option value="addiction">Recovery/Addiction</option>
+                </select>
+              </div>
+
+              {/* Prayer Request Text Area */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '14px', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  marginBottom: '8px' 
+                }}>
+                  What would you like to pray about?
+                </label>
+                <textarea
+                  value={customRequest}
+                  onChange={(e) => setCustomRequest(e.target.value.slice(0, 500))}
+                  placeholder="Describe what you'd like to pray about..."
+                  style={{
+                    width: '100%',
+                    height: '120px',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    fontSize: '14px',
+                    resize: 'vertical',
+                    boxSizing: 'border-box',
+                    fontFamily: 'inherit'
+                  }}
+                />
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: 'rgba(255, 255, 255, 0.6)', 
+                  textAlign: 'right', 
+                  marginTop: '4px' 
+                }}>
+                  {customRequest.length}/500 characters
+                </div>
+              </div>
+                </>
+              )}
+
+              {/* Prayer Length Selection - Show for ALL categories */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '14px', 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  marginBottom: '12px',
+                  textAlign: 'center'
+                }}>
+                  Prayer length:
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <button
+                    onClick={() => setPrayerLength('brief')}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerLength === 'brief' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: prayerLength === 'brief' ? '600' : '400',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>{t('briefBeautiful')}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{t('briefDesc')}</div>
+                  </button>
+                  <button
+                    onClick={() => setPrayerLength('medium')}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerLength === 'medium' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: prayerLength === 'medium' ? '600' : '400',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>{t('perfectlyTimed')}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{t('mediumDesc')}</div>
+                  </button>
+                  <button
+                    onClick={() => setPrayerLength('comprehensive')}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      border: '2px solid',
+                      borderColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: prayerLength === 'comprehensive' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: prayerLength === 'comprehensive' ? '600' : '400',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>{t('richMeaningful')}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{t('comprehensiveDesc')}</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Generate Prayer Button */}
+              <button
+                onClick={generatePrayer}
+                disabled={selectedCategory === 'custom' && !customRequest.trim()}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: (selectedCategory === 'custom' && !customRequest.trim()) ? 'rgba(107, 114, 128, 0.6)' : 'rgba(59, 130, 246, 0.8)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: (selectedCategory === 'custom' && !customRequest.trim()) ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  opacity: (selectedCategory === 'custom' && !customRequest.trim()) ? 0.6 : 1,
+                  marginBottom: '12px'
+                }}
+              >
+                {(() => {
+                  const buttonTextMap = {
+                    gratitude: 'Generate A Prayer for Gratitude',
+                    morning: 'Generate A Prayer to Start Your Day', 
+                    bedtime: 'Generate A Prayer for a Good Night',
+                    healing: 'Generate A Prayer for Healing',
+                    family: 'Generate A Prayer for Family and Friends',
+                    grace: 'Generate A Prayer for Saying Grace',
+                    bibleVerses: 'Generate A Bible Verse Prayer',
+                    custom: 'Generate A Custom Prayer'
+                  };
+                  return buttonTextMap[selectedCategory] || 'Generate Prayer';
+                })()}
+              </button>
+
+              </div> {/* Close content section */}
+            </div>
+          ) : (
+            <>
+              <div style={{ 
+                fontSize: '22px', 
+                fontWeight: '500',
+                marginBottom: '30px',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+              }}>
+                Generating your prayer...
+              </div>
+              <div style={{ 
+                width: '60px', 
+            height: '60px', 
+            border: '4px solid rgba(255,255,255,0.3)', 
+            borderTop: '4px solid white', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite', 
+            margin: '0 auto' 
+          }}></div>
+          <div style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255, 0.7)',
+            marginTop: '8px',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+          }}>
+            Creating something beautiful for you...
+          </div>
+            </>
+          )}
+          
+          {/* Navigation Arrow - Below content, aligned left */}
+          <div style={{
+            marginTop: '8px',
+            textAlign: 'left'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-selection')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 4: Prayer View/Share/Audio Screen
+  const renderPrayerViewScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          {/* App Title with Logo */}
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: '30px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
+          }}>
+            <img 
+              src="/prayhands.png" 
+              alt="Praying hands" 
+              style={{ 
+                width: '80px', 
+                height: '80px',
+                filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+              }} 
+            />
+            <h1 style={{ 
+              color: 'white', 
+              fontSize: '28px', 
+              fontWeight: '600',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              margin: '0'
+            }}>
+              Help Me Pray
+            </h1>
+          </div>
+
+          {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
+          <div style={{
+            padding: '0',
+            borderRadius: '18px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            background: 'transparent',
+            marginBottom: '20px',
+            overflow: 'hidden',
+            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)'
+          }}>
+            {/* Header Section - Prayer Title Bar */}
+            {currentPrayerInfo.category && (
+              <div style={{
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
+                padding: '12px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                borderTopLeftRadius: '16px',
+                borderTopRightRadius: '16px'
+              }}>
+                <div style={{ 
+                  fontWeight: '600',
+                  fontSize: '16px',
+                  color: '#ffffff',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
+                  textAlign: 'center',
+                  lineHeight: '1.2'
+                }}>
+                  {currentPrayerInfo.category === 'bibleVerses' && currentPrayerInfo.verseReference 
+                    ? currentPrayerInfo.verseReference 
+                    : currentPrayerInfo.category === 'custom' && currentPrayerInfo.customTopic
+                    ? currentPrayerInfo.customTopic
+                    : (() => {
+                        const categoryNames = {
+                          gratitude: 'A Prayer for Gratitude',
+                          morning: 'A Prayer to Start Your Day', 
+                          bedtime: 'A Prayer for a Good Night',
+                          healing: 'A Prayer for Healing',
+                          family: 'A Prayer for Family and Friends',
+                          grace: 'A Prayer for Saying Grace',
+                          bibleVerses: 'A Bible Verse Prayer',
+                          custom: 'A Custom Prayer'
+                        };
+                        return categoryNames[currentPrayerInfo.category] || `${currentPrayerInfo.category.charAt(0).toUpperCase() + currentPrayerInfo.category.slice(1)} Prayer`;
+                      })()
+                  }
+                </div>
+              </div>
+            )}
+            
+            {/* Content Section - Prayer Text */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.95)',
+              padding: '30px',
+              borderBottomLeftRadius: '16px',
+              borderBottomRightRadius: '16px',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)'
+            }}>
+              <p style={{
+                color: 'white',
+                fontSize: '18px',
+                lineHeight: '1.6',
+                textAlign: 'center',
+                margin: 0,
+                textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
+              }}>
+                {currentPrayer}
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons - Share, Logout */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+            {/* Share Prayer Button */}
+            <button 
+              onClick={() => setCurrentScreen('unified-sharing')}
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                background: 'rgba(59, 130, 246, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <Share2 size={20} />
+              Share
+            </button>
+
+            {/* Logout Button */}
+            <button 
+              onClick={() => setUser(null)} 
+              style={{ 
+                padding: '16px',
+                borderRadius: '15px',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.6)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              Logout
+            </button>
+          </div>
+          
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => {
+                setCurrentPrayer('');
+                setSelectedCategory('');
+                setPersonName('');
+                setPrayerFor('myself');
+                setCustomRequest('');
+                setCurrentScreen('prayer-selection');
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 5: Prayer Sharing Screen
+  const renderPrayerSharingScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            {/* App Title with Logo */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                fontSize: '32px', 
+                fontWeight: '600', 
+                color: 'white',
+                margin: 0,
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
+              }}>
+                Share Prayer
+              </h1>
+            </div>
+          </div>
+
+          {/* Share Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Share Image Option */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '18px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                <Share2 size={20} color="#10b981" />
+                Share Prayer Image
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Download and share a beautiful image of your prayer
+              </p>
+              <button
+                onClick={() => setCurrentScreen('unified-sharing')}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Image Sharing Options
+              </button>
+            </div>
+
+            {/* Share Audio Option */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '18px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                <Volume2 size={20} color="#8b5cf6" />
+                Share Audio Prayer
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Listen to your prayer and share the audio
+              </p>
+              <button
+                onClick={() => setCurrentScreen('unified-sharing')}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Audio Sharing Options
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-view')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 6: Audio Sharing Screen  
+  const renderAudioSharingScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                fontSize: '32px', 
+                fontWeight: '600', 
+                color: 'white',
+                margin: 0,
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
+              }}>
+                Share Audio Prayer
+              </h1>
+            </div>
+          </div>
+
+          {/* Audio Player Controls */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '24px',
+            marginBottom: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: '600',
+              margin: '0 0 16px 0',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              <Volume2 size={20} color="#8b5cf6" />
+              Audio Controls
+            </h3>
+
+            {/* Play/Pause Button */}
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              {!isPlaying ? (
+                <button
+                  onClick={() => speakPrayer(currentPrayer)}
+                  style={{
+                    background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                    border: 'none',
+                    borderRadius: '50px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    padding: '16px 32px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    margin: '0 auto',
+                    transition: 'transform 0.2s'
+                  }}
+                  onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                  onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <Play size={20} />
+                  Play Prayer
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <button
+                    onClick={pauseAudio}
+                    style={{
+                      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                      border: 'none',
+                      borderRadius: '50px',
+                      color: 'white',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      padding: '12px 24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Pause size={16} />
+                    Pause
+                  </button>
+                  <button
+                    onClick={stopAudio}
+                    style={{
+                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                      border: 'none',
+                      borderRadius: '50px',
+                      color: 'white',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      padding: '12px 24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Square size={16} />
+                    Stop
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sharing Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Download Audio */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center'
+              }}>
+                💾 Download Audio File
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Save the audio prayer as an MP3 file
+              </p>
+              <button
+                onClick={() => {
+                  if (currentAudioBlob) {
+                    const url = URL.createObjectURL(currentAudioBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `prayer-audio-${Date.now()}.mp3`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  } else {
+                    alert('Please play the audio first to generate the download file.');
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Download MP3
+              </button>
+            </div>
+
+            {/* Share to Social Media */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center'
+              }}>
+                📱 Share on Social Media
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Share your prayer audio with friends and family
+              </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                <button
+                  onClick={() => {
+                    // WhatsApp sharing
+                    const text = encodeURIComponent(`🎵 Listen to this beautiful prayer I created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpmeray.app`);
+                    window.open(`https://wa.me/?text=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  WhatsApp
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Instagram sharing (opens Instagram with encouragement to share)
+                    navigator.clipboard.writeText(`🎵 Beautiful prayer audio created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`).then(() => {
+                      alert('Prayer text copied! Now opening Instagram - share this with your downloaded audio.');
+                      window.open('https://www.instagram.com/', '_blank');
+                    });
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Instagram
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Facebook sharing
+                    const text = encodeURIComponent(`🎵 Beautiful prayer created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helpmepray.app')}&quote=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Facebook
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Twitter sharing
+                    const text = encodeURIComponent(`🎵 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer.substring(0, 150)}...\n\n#Prayer #Faith #HelpMePray`);
+                    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent('https://helpmepray.app')}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #1da1f2, #0d8bd9)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Twitter
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Messages sharing (SMS)
+                    const text = encodeURIComponent(`🎵 Listen to this beautiful prayer I created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                    window.open(`sms:?body=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #34c759, #30d158)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Messages
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-view')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Screen 7: Image Sharing Screen
+  const renderImageSharingScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1e40af',
+        padding: '20px'
+      }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <img 
+                src="/prayhands.png" 
+                alt="Praying hands" 
+                style={{ 
+                  width: '80px', 
+                  height: '80px',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                }} 
+              />
+              <h1 style={{ 
+                fontSize: '32px', 
+                fontWeight: '600', 
+                color: 'white',
+                margin: 0,
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
+              }}>
+                Share Prayer Image
+              </h1>
+            </div>
+          </div>
+
+          {/* Image Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Download Image */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                <Share2 size={20} color="#10b981" />
+                Download Prayer Image
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Save the beautiful prayer image to your device
+              </p>
+              <button
+                onClick={() => downloadPrayerImage()}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Download Image
+              </button>
+            </div>
+
+            {/* Share to Social Media */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ 
+                color: 'white', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                margin: '0 0 16px 0',
+                textAlign: 'center'
+              }}>
+                📱 Share on Social Media
+              </h3>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '14px',
+                textAlign: 'center',
+                margin: '0 0 16px 0' 
+              }}>
+                Share your prayer image with friends and family
+              </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                <button
+                  onClick={() => {
+                    // Generate image and share to WhatsApp
+                    downloadPrayerImage();
+                    setTimeout(() => {
+                      const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                      window.open(`https://wa.me/?text=${text}`, '_blank');
+                    }, 1000);
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  WhatsApp
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Instagram sharing (opens Instagram app or web)
+                    const text = encodeURIComponent(`Beautiful prayer created with Help Me Pray app! 🙏\n\n#Prayer #Faith #HelpMePray #Inspiration`);
+                    window.open(`https://www.instagram.com/`, '_blank');
+                    // Also copy text for user to paste
+                    navigator.clipboard.writeText(`Beautiful prayer created with Help Me Pray app! 🙏\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray #Inspiration`);
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Instagram
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Facebook sharing
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 200)}...`);
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helpmepray.app')}&quote=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Facebook
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // WhatsApp sharing
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`);
+                    window.open(`https://wa.me/?text=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  WhatsApp
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Instagram sharing (opens Instagram with encouragement to share)
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer created with Help Me Pray app!\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`);
+                    // Instagram doesn't have direct URL sharing, so we'll copy text and open Instagram
+                    navigator.clipboard.writeText(`🖼️ Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`).then(() => {
+                      alert('Prayer text copied! Now opening Instagram - paste this with your downloaded image.');
+                      window.open('https://www.instagram.com/', '_blank');
+                    });
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Instagram
+                </button>
+                
+                <button
+                  onClick={() => {
+                    // Messages sharing (SMS)
+                    const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                    window.open(`sms:?body=${text}`, '_blank');
+                  }}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #34c759, #30d158)',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Messages
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation and User Status - Same level, opposite sides */}
+          <div style={{
+            marginTop: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-view')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // UNIFIED SHARING SCREEN - Shows image, audio controls, and sharing options in one view
+  const renderUnifiedSharingScreen = () => {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/111208-OO10MS-26.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        padding: '20px'
+      }}>
+        <div style={{ 
+          width: '100%', 
+          maxWidth: '400px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          {/* Header */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            textAlign: 'center',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h2 style={{
+              color: 'white',
+              fontSize: '20px',
+              fontWeight: '700',
+              margin: '0 0 8px 0',
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              <Share2 size={22} color="white" />
+              Share Your Prayer
+            </h2>
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '13px',
+              margin: '0',
+              lineHeight: '1.4'
+            }}>
+              See your image and listen to your audio, then share what you like
+            </p>
+          </div>
+
+          {/* Generated Image Display */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '600',
+              margin: '0 0 16px 0',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              <Image size={18} color="white" />
+              Prayer Image
+            </h3>
+            
+            <div style={{ textAlign: 'center' }}>
+              {isGeneratingImage ? (
+                <div style={{
+                  width: '280px',
+                  height: '350px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '12px',
+                  margin: '0 auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '14px'
+                }}>
+                  Generating image...
+                </div>
+              ) : generatedImageUrl && generatedImageUrl !== 'fallback' ? (
+                <div>
+                  <img 
+                    src={generatedImageUrl}
+                    alt="Prayer"
+                    style={{
+                      width: '280px',
+                      height: '350px',
+                      borderRadius: '12px',
+                      objectFit: 'cover',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      setGeneratedImageUrl(null);
+                      generateImagePreview(true); // Force regeneration with new random background
+                    }}
+                    style={{
+                      marginTop: '8px',
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      color: 'white',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Generate New Image
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setGeneratedImageUrl(null);
+                    generateImagePreview(true);
+                  }}
+                  style={{
+                    width: '280px',
+                    height: '350px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '2px dashed rgba(255, 255, 255, 0.3)',
+                    borderRadius: '12px',
+                    color: 'white',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                >
+                  <Eye size={24} />
+                  Click to Generate Image Preview
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Audio Controls */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '600',
+              margin: '0 0 16px 0',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              <Headphones size={18} color="white" />
+              Prayer Audio
+            </h3>
+            
+            <div style={{ textAlign: 'center' }}>
+              {!isPlaying ? (
+                <button
+                  onClick={() => speakPrayer(currentPrayer)}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50px',
+                    padding: '14px 28px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    margin: '0 auto'
+                  }}
+                  onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                  onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <Play size={18} />
+                  Listen to Prayer
+                </button>
+              ) : (
+                <button
+                  onClick={pauseAudio}
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50px',
+                    padding: '14px 28px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    margin: '0 auto'
+                  }}
+                  onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                  onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <Pause size={18} />
+                  Pause Audio
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Sharing Options */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '600',
+              margin: '0 0 16px 0',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              <Share2 size={18} color="white" />
+              Share Options
+            </h3>
+
+            {/* Share Type Buttons */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              <button
+                onClick={() => setShowImageSharingDialog(true)}
+                style={{
+                  padding: '10px 8px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Image size={16} />
+                Share Image
+              </button>
+
+              <button
+                onClick={() => setShowAudioSharingDialog(true)}
+                style={{
+                  padding: '10px 8px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Headphones size={16} />
+                Share Audio
+              </button>
+
+              <button
+                onClick={() => setShowBothSharingDialog(true)}
+                style={{
+                  padding: '10px 8px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Package size={16} />
+                Share Both
+              </button>
+            </div>
+
+          </div>
+
+          {/* Image Sharing Dialog */}
+          {showImageSharingDialog && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(30, 30, 30, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.5)',
+                maxWidth: '400px',
+                width: '100%'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Image size={20} color="#8b5cf6" />
+                    Share Prayer Image
+                  </h3>
+                  <button
+                    onClick={() => setShowImageSharingDialog(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                      window.open(`https://wa.me/?text=${text}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helpmepray.app`).then(() => {
+                        alert('Prayer text copied! Image downloaded. Now opening Instagram - paste and attach your image.');
+                        window.open('https://www.instagram.com/', '_blank');
+                      });
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Instagram size={16} />
+                    Instagram
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helpmepray.app')}&quote=${text}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Facebook size={16} />
+                    Facebook
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
+                      window.open(`sms:?body=${text}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Smartphone size={16} />
+                    Messages
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '16px',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      const emailSubject = encodeURIComponent('Beautiful Prayer Image');
+                      const emailBody = encodeURIComponent(`🙏 I wanted to share this beautiful prayer image I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nYou can download the app at helmnpray.app to create your own personalized prayers.`);
+                      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      setShowImageSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      width: '100%'
+                    }}
+                  >
+                    📧 Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Audio Sharing Dialog */}
+          {showAudioSharingDialog && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(30, 30, 30, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.5)',
+                maxWidth: '400px',
+                width: '100%'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Headphones size={20} color="#10b981" />
+                    Share Prayer Audio
+                  </h3>
+                  <button
+                    onClick={() => setShowAudioSharingDialog(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      socialSharing.shareAudioToWhatsApp();
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`🎵 Beautiful prayer audio created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helimepray.app`).then(() => {
+                        socialSharing.downloadAudio();
+                        alert('Prayer text copied and audio downloaded! Now opening Instagram - paste text and attach your audio file.');
+                        window.open('https://www.instagram.com/', '_blank');
+                      });
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Instagram size={16} />
+                    Instagram
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      socialSharing.downloadAudio();
+                      const text = encodeURIComponent(`🎵 Beautiful prayer audio created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helkmepray.app')}&quote=${text}`, '_blank');
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Facebook size={16} />
+                    Facebook
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      socialSharing.shareAudioToMessages();
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Smartphone size={16} />
+                    Messages
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '16px',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => {
+                      socialSharing.downloadAudio();
+                      const emailSubject = encodeURIComponent('Beautiful Prayer Audio');
+                      const emailBody = encodeURIComponent(`🎵 I wanted to share this beautiful prayer audio I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nThe audio file has been downloaded. Please attach it to this email.\n\nYou can download the app at helmeray.app to create your own personalized prayer audio.`);
+                      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      setShowAudioSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      width: '100%'
+                    }}
+                  >
+                    📧 Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Both Sharing Dialog */}
+          {showBothSharingDialog && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}>
+              <div style={{
+                background: 'rgba(30, 30, 30, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.5)',
+                maxWidth: '400px',
+                width: '100%'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <Package size={20} color="#f59e0b" />
+                    Share Both Image & Audio
+                  </h3>
+                  <button
+                    onClick={() => setShowBothSharingDialog(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '24px',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.shareAudioToWhatsApp();
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.downloadAudio();
+                      navigator.clipboard.writeText(`🙏🎵 Beautiful prayer image and audio created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpray.app`).then(() => {
+                        alert('Prayer text copied! Both image and audio downloaded. Now opening Instagram - paste text and attach both files.');
+                        window.open('https://www.instagram.com/', '_blank');
+                      });
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Instagram size={16} />
+                    Instagram
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.downloadAudio();
+                      const text = encodeURIComponent(`🙏🎵 Beautiful prayer image and audio created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmpray.app')}&quote=${text}`, '_blank');
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Facebook size={16} />
+                    Facebook
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.shareAudioToMessages();
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Smartphone size={16} />
+                    Messages
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '16px',
+                  textAlign: 'center'
+                }}>
+                  <button
+                    onClick={() => {
+                      downloadPrayerImage();
+                      socialSharing.downloadAudio();
+                      const emailSubject = encodeURIComponent('Beautiful Prayer Image & Audio');
+                      const emailBody = encodeURIComponent(`🙏🎵 I wanted to share this beautiful prayer image and audio I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nBoth the image and audio files have been downloaded. Please attach them to this email.\n\nYou can download the app at helmepray.app to create your own personalized prayers.`);
+                      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      setShowBothSharingDialog(false);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      width: '100%'
+                    }}
+                  >
+                    📧 Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation and User Status */}
+          <div style={{
+            marginTop: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={() => setCurrentScreen('prayer-view')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '32px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '4px',
+                transition: 'opacity 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.opacity = '0.7'}
+              onMouseOut={(e) => e.target.style.opacity = '1'}
+            >
+              ←
+            </button>
+            
+            {/* User Status Indicator */}
+            {user && (
+              <div style={{
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
+                textAlign: 'right'
+              }}>
+                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // MOBILE SCREEN ROUTER - Use this instead of the old complex UI
+  return renderScreen();
 };
 
 // Main App component with subscription context
@@ -5672,7 +9306,7 @@ let appInitialized = false;
 const App = () => {
   if (!appInitialized) {
     console.log('App component initializing...');
-  console.log('FORCE DEPLOYMENT - Google button fix active');
+  console.log('🔥 HELP ME PRAY V2 - Development Version - Ready for experiments!');
     appInitialized = true;
   }
   const [user, setUser] = useState(null);
