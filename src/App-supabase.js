@@ -580,7 +580,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
     
     setIsGeneratingImage(false);
-  }, [currentPrayer, selectedCategory]);
+  }, [currentPrayer, selectedCategory, generatedImageUrl, isGeneratingImage]);
 
   // Auto-generate image when entering unified sharing screen
   useEffect(() => {
@@ -591,16 +591,15 @@ const HelpMePrayApp = ({ user, setUser }) => {
       isGenerating: isGeneratingImage
     });
     
-    if (currentScreen === 'unified-sharing' && currentPrayer) {
+    if (currentScreen === 'unified-sharing' && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
       console.log('AUTO-GENERATING PRAYER IMAGE FOR SHARING SCREEN...');
-      setGeneratedImageUrl(null); // Clear any existing image
       
       // Use setTimeout to avoid potential React cycle issues
       setTimeout(() => {
         generateImagePreview(true); // Force generation
       }, 100);
     }
-  }, [currentScreen, currentPrayer]);
+  }, [currentScreen, currentPrayer, generatedImageUrl, isGeneratingImage, generateImagePreview]);
 
   // Reset image when leaving sharing screen
   useEffect(() => {
