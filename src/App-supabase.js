@@ -2955,26 +2955,26 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     },
     
     shareToWhatsApp: async (text) => {
-      try {
-        // First try to share image if Web Share API is available and we have a generated image
-        if (navigator.share && generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
-          // Convert data URL to blob for sharing
-          const response = await fetch(generatedImageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
+      // For WhatsApp, download the image first so user can share it manually
+      if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+        if (window.confirm('Download prayer image to share via WhatsApp?')) {
+          // Download the image first
+          const link = document.createElement('a');
+          link.download = `prayer-for-whatsapp-${selectedCategory}-${Date.now()}.png`;
+          link.href = generatedImageUrl;
+          link.click();
           
-          await navigator.share({
-            title: 'Prayer Image',
-            text: formatPrayerForSharing(text, false),
-            files: [file]
-          });
+          // Small delay then open WhatsApp
+          setTimeout(() => {
+            const whatsappText = `Beautiful prayer image downloaded! Share it along with this message: ${formatPrayerForSharing(text, false)}`;
+            const url = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+            window.open(url, '_blank');
+          }, 1000);
           return;
         }
-      } catch (error) {
-        console.log('Image sharing not supported, falling back to WhatsApp URL:', error);
       }
       
-      // Fallback to WhatsApp URL sharing
+      // Fallback to WhatsApp text-only sharing
       const url = `https://wa.me/?text=${encodeURIComponent(formatPrayerForSharing(text))}`;
       window.open(url, '_blank');
     },
@@ -2992,26 +2992,26 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     },
     
     shareToMessages: async (text) => {
-      try {
-        // First try to share image if Web Share API is available and we have a generated image
-        if (navigator.share && generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
-          // Convert data URL to blob for sharing
-          const response = await fetch(generatedImageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], `prayer-${selectedCategory}.png`, { type: 'image/png' });
+      // For Messages, download the image first so user can share it manually
+      if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
+        if (window.confirm('Download prayer image to share via Messages?')) {
+          // Download the image first
+          const link = document.createElement('a');
+          link.download = `prayer-for-messages-${selectedCategory}-${Date.now()}.png`;
+          link.href = generatedImageUrl;
+          link.click();
           
-          await navigator.share({
-            title: 'Prayer Image',
-            text: formatPrayerForSharing(text, false), // Don't include attribution in share text
-            files: [file]
-          });
+          // Small delay then open Messages
+          setTimeout(() => {
+            const messagesText = `Beautiful prayer image downloaded! Share it along with this message: ${formatPrayerForSharing(text, false)}`;
+            const url = `sms:&body=${encodeURIComponent(messagesText)}`;
+            window.location.href = url;
+          }, 1000);
           return;
         }
-      } catch (error) {
-        console.log('Image sharing not supported, falling back to text:', error);
       }
       
-      // Fallback to text sharing
+      // Fallback to text-only sharing
       const messagesText = formatPrayerForSharing(text);
       const url = `sms:&body=${encodeURIComponent(messagesText)}`;
       window.location.href = url;
@@ -3038,7 +3038,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       
       // Fallback: If image sharing isn't available, offer to download the image
       if (generatedImageUrl && generatedImageUrl.startsWith('data:image')) {
-        if (confirm('Download prayer image to share on Instagram?')) {
+        if (window.confirm('Download prayer image to share on Instagram?')) {
           const link = document.createElement('a');
           link.download = `prayer-for-instagram-${Date.now()}.png`;
           link.href = generatedImageUrl;
@@ -3059,6 +3059,44 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       });
     },
     
+    // Universal image sharing function
+    shareImage: async () => {
+      if (!generatedImageUrl || !generatedImageUrl.startsWith('data:image')) {
+        alert('No image available to share. Please wait for the image to generate first.');
+        return;
+      }
+
+      try {
+        // Try Web Share API first (works on modern mobile browsers)
+        if (navigator.share && navigator.canShare) {
+          const response = await fetch(generatedImageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `prayer-${selectedCategory}-${Date.now()}.png`, { type: 'image/png' });
+          
+          // Check if we can share files
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Beautiful Prayer Image',
+              text: 'Sharing a beautiful prayer image',
+              files: [file]
+            });
+            return;
+          }
+        }
+      } catch (error) {
+        console.log('Native sharing failed, using download method:', error);
+      }
+
+      // Fallback: Download the image so user can share manually
+      const link = document.createElement('a');
+      link.download = `prayer-image-${selectedCategory}-${Date.now()}.png`;
+      link.href = generatedImageUrl;
+      link.click();
+      
+      setShareSuccess('Image downloaded! You can now share it from your Photos app.');
+      setTimeout(() => setShareSuccess(''), 5000);
+    },
+
     // Audio sharing functions
     downloadAudio: () => {
       if (!currentAudioBlob) {
@@ -8153,16 +8191,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Share your prayer image with friends and family
               </p>
               
+              {/* Primary Share Image Button */}
+              <button
+                onClick={() => socialSharing.shareImage()}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px 16px',
+                  backgroundColor: '#007AFF',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginBottom: '16px',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#007AFF'}
+              >
+                <Share2 size={18} />
+                Share Prayer Image
+              </button>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                 <button
-                  onClick={() => {
-                    // Generate image and share to WhatsApp
-                    downloadPrayerImage();
-                    setTimeout(() => {
-                      const text = encodeURIComponent(`🖼️ Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helpmepray.app`);
-                      window.open(`https://wa.me/?text=${text}`, '_blank');
-                    }, 1000);
-                  }}
+                  onClick={() => socialSharing.shareToWhatsApp(currentPrayer)}
                   style={{
                     padding: '12px',
                     borderRadius: '10px',
