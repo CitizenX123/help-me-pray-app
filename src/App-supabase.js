@@ -9291,7 +9291,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         fontWeight: '700',
                         cursor: 'pointer',
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '10px',
@@ -9301,16 +9300,16 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
                       onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                     >
-                      <span style={{ fontSize: '32px' }}>📧</span>
+                      <Mail size={18} />
                       Email
                     </button>
 
-                    {/* Messenger Button */}
+                    {/* Messages Button */}
                     <button
                       onClick={() => {
                         downloadPrayerImage();
                         const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmnepray.app`);
-                        window.open(`https://m.me/?text=${text}`, '_blank');
+                        window.open(`sms:?body=${text}`, '_blank');
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -9323,7 +9322,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         fontWeight: '700',
                         cursor: 'pointer',
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '10px',
@@ -9333,40 +9331,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
                       onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                     >
-                      <span style={{ fontSize: '32px' }}>💬</span>
-                      Messenger
-                    </button>
-
-                    {/* Facebook Button */}
-                    <button
-                      onClick={() => {
-                        downloadPrayerImage();
-                        const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
-                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmprayapp.com')}&quote=${text}`, '_blank');
-                        setShowImageSharingDialog(false);
-                      }}
-                      style={{
-                        padding: '20px',
-                        borderRadius: '15px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #1877f2, #166fe5)',
-                        color: 'white',
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                        minHeight: '120px',
-                        transition: 'transform 0.2s'
-                      }}
-                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-                    >
-                      <span style={{ fontSize: '32px' }}>📘</span>
-                      Facebook
+                      <Smartphone size={18} />
+                      Messages
                     </button>
 
                     {/* Instagram Button */}
@@ -9389,7 +9355,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         fontWeight: '700',
                         cursor: 'pointer',
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '10px',
@@ -9399,8 +9364,39 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
                       onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                     >
-                      <span style={{ fontSize: '32px' }}>📸</span>
+                      <Instagram size={18} />
                       Instagram
+                    </button>
+
+                    {/* Facebook Button */}
+                    <button
+                      onClick={() => {
+                        downloadPrayerImage();
+                        const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
+                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmprayapp.com')}&quote=${text}`, '_blank');
+                        setShowImageSharingDialog(false);
+                      }}
+                      style={{
+                        padding: '20px',
+                        borderRadius: '15px',
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                        color: 'white',
+                        fontSize: '18px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px',
+                        minHeight: '120px',
+                        transition: 'transform 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                    >
+                      <Facebook size={18} />
+                      Facebook
                     </button>
                   </div>
 
