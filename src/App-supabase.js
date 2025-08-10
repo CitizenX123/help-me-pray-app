@@ -424,8 +424,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
       // Simple approach that avoids any complex imports or references
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      canvas.width = 400;
-      canvas.height = 500;
+      canvas.width = 1200;
+      canvas.height = 1500;
       
       // Enable high-quality rendering from the start
       ctx.imageSmoothingEnabled = true;
@@ -433,11 +433,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Photo-realistic backgrounds
       const photos = [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&crop=center',
-        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop&crop=center',
-        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=500&fit=crop&crop=center',
-        'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=500&fit=crop&crop=center',
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop&crop=center'
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=1500&fit=crop&crop=center&q=85',
+        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&h=1500&fit=crop&crop=center&q=85',
+        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&h=1500&fit=crop&crop=center&q=85',
+        'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=1500&fit=crop&crop=center&q=85',
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=1500&fit=crop&crop=center&q=85'
       ];
       
       const photoUrl = photos[Math.floor(Math.random() * photos.length)];
@@ -475,25 +475,27 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Add title with proper text wrapping and bounds checking
       const titles = {
-        morning: 'A Prayer to Start Your Day',
+        morning: 'A Prayer for Morning',
         gratitude: 'A Prayer for Gratitude',
-        bedtime: 'A Prayer for a Good Night',
+        bedtime: 'A Prayer for Bedtime',
         healing: 'A Prayer for Healing',
-        family: 'A Prayer for Family and Friends'
+        family: 'A Prayer for Family and Friends',
+        grace: 'A Prayer for Grace',
+        bibleVerses: 'A Prayer for Bible Verses'
       };
       
       const titleText = titles[selectedCategory] || 'Prayer';
-      const maxTitleWidth = canvas.width - 40; // 20px padding on each side
+      const maxTitleWidth = canvas.width - 120; // 60px padding on each side (scaled up)
       
       // Start with large font and reduce if needed
-      let titleFontSize = 28;
+      let titleFontSize = 84; // 3x scale from 28px
       ctx.font = `bold ${titleFontSize}px Georgia, serif`;
       ctx.fillStyle = 'white';
       ctx.textAlign = 'center';
       ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 12; // 3x scale from 4px
+      ctx.shadowOffsetX = 6; // 3x scale from 2px
+      ctx.shadowOffsetY = 6; // 3x scale from 2px
       
       // Check if title fits, if not, wrap it or reduce font size
       let titleLines = [];
@@ -524,7 +526,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
         
         // If still too many lines or individual words too long, reduce font size
         if (titleLines.length > 2 || titleLines.some(line => ctx.measureText(line).width > maxTitleWidth)) {
-          titleFontSize = 24;
+          titleFontSize = 72; // 3x scale from 24px
           ctx.font = `bold ${titleFontSize}px Georgia, serif`;
           
           // Re-calculate with smaller font
@@ -549,8 +551,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
       }
       
       // Draw title lines
-      const titleStartY = 35;
-      const titleLineHeight = titleFontSize + 5;
+      const titleStartY = 105; // 3x scale from 35px
+      const titleLineHeight = titleFontSize + 15; // 3x scale from 5px
       
       titleLines.forEach((line, index) => {
         ctx.fillText(line, canvas.width / 2, titleStartY + (index * titleLineHeight));
@@ -558,15 +560,15 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Add prayer text
       const prayer = currentPrayer.replace(/🙏/g, '').replace(/\.+/g, '.').trim();
-      ctx.font = '16px Georgia, serif';
-      ctx.shadowBlur = 2;
-      ctx.shadowOffsetX = 1;
-      ctx.shadowOffsetY = 1;
+      ctx.font = '48px Georgia, serif'; // 3x scale from 16px
+      ctx.shadowBlur = 6; // 3x scale from 2px
+      ctx.shadowOffsetX = 3; // 3x scale from 1px
+      ctx.shadowOffsetY = 3; // 3x scale from 1px
       
       const words = prayer.split(' ');
       const lines = [];
       let line = '';
-      const maxW = canvas.width - 40;
+      const maxW = canvas.width - 120; // 3x scale from 40px
       
       for (let word of words) {
         const test = line + word + ' ';
@@ -580,14 +582,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
       lines.push(line.trim());
       
       // Center prayer text between title and logo
-      const titleBottom = titleStartY + (titleLines.length * titleLineHeight) + 20; // Dynamic space after title
-      const logoTop = canvas.height - 70; // Space before logo area
+      const titleBottom = titleStartY + (titleLines.length * titleLineHeight) + 60; // 3x scale from 20px
+      const logoTop = canvas.height - 210; // 3x scale from 70px
       const availableHeight = logoTop - titleBottom;
-      const totalTextHeight = Math.min(lines.length, 15) * 20;
+      const totalTextHeight = Math.min(lines.length, 15) * 60; // 3x scale from 20px
       const startY = titleBottom + (availableHeight - totalTextHeight) / 2;
       
       for (let i = 0; i < Math.min(lines.length, 15); i++) {
-        ctx.fillText(lines[i], canvas.width / 2, startY + (i * 20));
+        ctx.fillText(lines[i], canvas.width / 2, startY + (i * 60)); // 3x scale from 20px
       }
       
       // Load praying hands logo
@@ -607,14 +609,14 @@ const HelpMePrayApp = ({ user, setUser }) => {
       });
       
       // Add branding with high-quality logo
-      const brandY = canvas.height - 30;
+      const brandY = canvas.height - 90; // 3x scale from 30px
       if (logoLoaded) {
         // Logo + text branding with improved quality
-        const logoSz = 60; // Increased from 40 for better quality
+        const logoSz = 180; // 3x scale from 60px for better quality
         const brand = 'Help Me Pray App';
-        ctx.font = 'bold 14px Arial'; // Slightly larger and bold for better readability
+        ctx.font = 'bold 42px Arial'; // 3x scale from 14px
         const txtW = ctx.measureText(brand).width;
-        const totW = logoSz + 8 + txtW; // Increased spacing
+        const totW = logoSz + 24 + txtW; // 3x scale from 8px spacing
         const startX = (canvas.width - totW) / 2;
         
         // High-quality white-filtered logo with proper scaling
@@ -622,7 +624,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
         const tempCtx = temp.getContext('2d');
         
         // Use higher resolution for the temporary canvas to maintain quality
-        const scale = 2; // 2x scale for crisp rendering
+        const scale = 3; // Increased scale for ultra-crisp rendering at high res
         temp.width = logoSz * scale;
         temp.height = logoSz * scale;
         
@@ -649,19 +651,19 @@ const HelpMePrayApp = ({ user, setUser }) => {
         ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
         ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 2;
-        ctx.shadowOffsetX = 1;
-        ctx.shadowOffsetY = 1;
-        ctx.fillText(brand, startX + logoSz + 8, brandY + 5);
+        ctx.shadowBlur = 6; // 3x scale from 2px
+        ctx.shadowOffsetX = 3; // 3x scale from 1px
+        ctx.shadowOffsetY = 3; // 3x scale from 1px
+        ctx.fillText(brand, startX + logoSz + 24, brandY + 15); // 3x scale positioning
       } else {
         // Text-only fallback with better styling
-        ctx.font = 'bold 14px Arial';
+        ctx.font = 'bold 42px Arial'; // 3x scale from 14px
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
         ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 2;
-        ctx.shadowOffsetX = 1;
-        ctx.shadowOffsetY = 1;
+        ctx.shadowBlur = 6; // 3x scale from 2px
+        ctx.shadowOffsetX = 3; // 3x scale from 1px
+        ctx.shadowOffsetY = 3; // 3x scale from 1px
         ctx.fillText('Help Me Pray App', canvas.width / 2, brandY);
       }
       
@@ -891,12 +893,12 @@ const HelpMePrayApp = ({ user, setUser }) => {
       // Use the same category names as in prayer view screen
       const categoryTitles = {
         gratitude: 'A Prayer for Gratitude',
-        morning: 'A Prayer to Start Your Day', 
-        bedtime: 'A Prayer for a Good Night',
+        morning: 'A Prayer for Morning', 
+        bedtime: 'A Prayer for Bedtime',
         healing: 'A Prayer for Healing',
         family: 'A Prayer for Family and Friends',
-        grace: 'A Prayer for Saying Grace',
-        bibleVerses: 'A Bible Verse Prayer',
+        grace: 'A Prayer for Grace',
+        bibleVerses: 'A Prayer for Bible Verses',
         custom: 'A Custom Prayer'
       };
       
@@ -7670,12 +7672,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 {(() => {
                   const buttonTextMap = {
                     gratitude: 'Generate A Prayer for Gratitude',
-                    morning: 'Generate A Prayer to Start Your Day', 
-                    bedtime: 'Generate A Prayer for a Good Night',
+                    morning: 'Generate A Prayer for Morning', 
+                    bedtime: 'Generate A Prayer for Bedtime',
                     healing: 'Generate A Prayer for Healing',
                     family: 'Generate A Prayer for Family and Friends',
-                    grace: 'Generate A Prayer for Saying Grace',
-                    bibleVerses: 'Generate A Bible Verse Prayer',
+                    grace: 'Generate A Prayer for Grace',
+                    bibleVerses: 'Generate A Prayer for Bible Verses',
                     custom: 'Generate A Custom Prayer'
                   };
                   return buttonTextMap[selectedCategory] || 'Generate Prayer';
@@ -7822,12 +7824,12 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     : (() => {
                         const categoryNames = {
                           gratitude: 'A Prayer for Gratitude',
-                          morning: 'A Prayer to Start Your Day', 
-                          bedtime: 'A Prayer for a Good Night',
+                          morning: 'A Prayer for Morning', 
+                          bedtime: 'A Prayer for Bedtime',
                           healing: 'A Prayer for Healing',
                           family: 'A Prayer for Family and Friends',
-                          grace: 'A Prayer for Saying Grace',
-                          bibleVerses: 'A Bible Verse Prayer',
+                          grace: 'A Prayer for Grace',
+                          bibleVerses: 'A Prayer for Bible Verses',
                           custom: 'A Custom Prayer'
                         };
                         return categoryNames[currentPrayerInfo.category] || `${currentPrayerInfo.category.charAt(0).toUpperCase() + currentPrayerInfo.category.slice(1)} Prayer`;
