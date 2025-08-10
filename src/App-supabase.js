@@ -591,7 +591,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       isGenerating: isGeneratingImage
     });
     
-    if (currentScreen === 'unified-sharing' && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
+    if ((currentScreen === 'unified-sharing' || currentScreen === 'image-sharing-page') && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
       console.log('AUTO-GENERATING PRAYER IMAGE FOR SHARING SCREEN...');
       
       // Use setTimeout to avoid potential React cycle issues
@@ -603,7 +603,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   // Reset image when leaving sharing screen
   useEffect(() => {
-    if (currentScreen !== 'unified-sharing') {
+    if (currentScreen !== 'unified-sharing' && currentScreen !== 'image-sharing-page') {
       setGeneratedImageUrl(null);
       setIsGeneratingImage(false);
     }
@@ -6201,6 +6201,287 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     </div>
   );
 
+  const renderImageSharingPage = () => {
+    // Auto-generate image if needed
+    const handleGenerateImage = () => {
+      if (!isGeneratingImage) {
+        generateImagePreview(true);
+      }
+    };
+
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#1a1a1a',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        position: 'relative'
+      }}>
+        {/* Back button */}
+        <button
+          onClick={() => setCurrentScreen('prayer-view')}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '50px',
+            height: '50px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: 'white',
+            fontSize: '18px'
+          }}
+        >
+          ←
+        </button>
+
+        <div style={{
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center'
+        }}>
+          {/* Title */}
+          <h1 style={{
+            color: 'white',
+            fontSize: '28px',
+            fontWeight: 'bold',
+            marginBottom: '20px',
+            fontFamily: 'Georgia, serif'
+          }}>
+            Share Your Prayer Image
+          </h1>
+
+          {/* Generated Image Display */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '20px',
+            padding: '20px',
+            marginBottom: '30px',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            {isGeneratingImage ? (
+              <div style={{
+                padding: '60px 20px',
+                color: 'white',
+                fontSize: '18px'
+              }}>
+                <div style={{
+                  display: 'inline-block',
+                  animation: 'spin 1s linear infinite',
+                  marginBottom: '20px'
+                }}>⚪</div>
+                <br />
+                Generating your beautiful prayer image...
+              </div>
+            ) : generatedImageUrl ? (
+              <>
+                <img
+                  src={generatedImageUrl}
+                  alt="Generated Prayer"
+                  style={{
+                    width: '100%',
+                    maxWidth: '400px',
+                    height: 'auto',
+                    borderRadius: '15px',
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+                    marginBottom: '20px'
+                  }}
+                />
+                <button
+                  onClick={handleGenerateImage}
+                  style={{
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '12px 20px',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    marginTop: '10px'
+                  }}
+                >
+                  Generate New Image
+                </button>
+              </>
+            ) : (
+              <div style={{
+                padding: '40px 20px',
+                color: 'white',
+                fontSize: '16px'
+              }}>
+                <button
+                  onClick={handleGenerateImage}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '16px 24px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Generate Prayer Image
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Sharing Options - only show if image is ready */}
+          {generatedImageUrl && !isGeneratingImage && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '15px',
+              marginBottom: '20px'
+            }}>
+              {/* Download Button */}
+              <button
+                onClick={() => downloadPrayerImage()}
+                style={{
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '16px 20px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                📱 Download Image
+              </button>
+
+              {/* WhatsApp Share */}
+              <button
+                onClick={() => {
+                  const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n"${currentPrayer.substring(0, 100)}..."\n\n#Prayer #Faith #HelpMePray`);
+                  // First download the image, then open WhatsApp
+                  downloadPrayerImage();
+                  setTimeout(() => {
+                    window.open(`https://wa.me/?text=${text}`, '_blank');
+                  }, 500);
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '16px 20px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                💬 Share to WhatsApp
+              </button>
+
+              {/* Instagram Share */}
+              <button
+                onClick={() => {
+                  // Download first, then give instructions for Instagram
+                  downloadPrayerImage();
+                  setTimeout(() => {
+                    if (window.confirm('Image downloaded! Open Instagram to share it in your story or post. Click OK to open Instagram.')) {
+                      window.open('https://www.instagram.com/', '_blank');
+                    }
+                  }, 500);
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '16px 20px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                📸 Share to Instagram
+              </button>
+
+              {/* Email Share */}
+              <button
+                onClick={() => {
+                  const subject = encodeURIComponent('Beautiful Prayer Image');
+                  const body = encodeURIComponent(`I wanted to share this beautiful prayer image I created:\n\n"${currentPrayer}"\n\nCreated with Help Me Pray app - helpmepray.app\n\n🙏 Blessings`);
+                  // Download first, then open email
+                  downloadPrayerImage();
+                  setTimeout(() => {
+                    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+                  }, 500);
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #ea4335, #c53929)',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '16px 20px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                📧 Share via Email
+              </button>
+            </div>
+          )}
+
+          {/* Instructions */}
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '14px',
+            textAlign: 'center',
+            lineHeight: '1.5',
+            marginTop: '20px'
+          }}>
+            {generatedImageUrl ? 
+              "Click any sharing option above. The image will be downloaded to your device and the sharing app will open." :
+              "Your beautiful prayer image will appear here once generated."
+            }
+          </p>
+        </div>
+
+        {/* Spinning animation */}
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  };
+
   // ===== MOBILE SCREEN ARCHITECTURE =====
   
   // Categories for mobile screens
@@ -6234,6 +6515,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         return renderImageSharingScreen();
       case 'unified-sharing':
         return renderUnifiedSharingScreen();
+      case 'image-sharing-page':
+        return renderImageSharingPage();
       default:
         return renderLoginScreen();
     }
@@ -7476,7 +7759,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             {/* Share Prayer Button */}
             <button 
-              onClick={() => setCurrentScreen('unified-sharing')}
+              onClick={() => setCurrentScreen('image-sharing-page')}
               style={{ 
                 padding: '16px',
                 borderRadius: '15px',
@@ -7652,7 +7935,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Download and share a beautiful image of your prayer
               </p>
               <button
-                onClick={() => setCurrentScreen('unified-sharing')}
+                onClick={() => setCurrentScreen('image-sharing-page')}
                 style={{
                   width: '100%',
                   padding: '14px',
@@ -7705,7 +7988,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Listen to your prayer and share the audio
               </p>
               <button
-                onClick={() => setCurrentScreen('unified-sharing')}
+                onClick={() => setCurrentScreen('image-sharing-page')}
                 style={{
                   width: '100%',
                   padding: '14px',
