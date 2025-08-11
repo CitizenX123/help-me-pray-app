@@ -9203,62 +9203,55 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'rgba(0, 0, 0, 0.95)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               zIndex: 1000,
-              padding: '20px',
+              padding: '20px'
+            }}>
+            <div style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '600px',
+              width: '100%',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+              maxHeight: '90vh',
               overflowY: 'auto'
             }}>
-              
-              {/* Close Button */}
-              <button
-                onClick={() => setShowImageSharingDialog(false)}
-                style={{
-                  position: 'absolute',
-                  top: '20px',
-                  right: '20px',
-                  background: 'rgba(0, 0, 0, 0.7)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  zIndex: 1001
-                }}
-              >
-                ×
-              </button>
-
-              {/* Title */}
-              <h1 style={{
-                color: 'white',
-                fontSize: '32px',
-                fontWeight: 'bold',
-                marginBottom: '30px',
-                textAlign: 'center',
-                fontFamily: 'Georgia, serif'
-              }}>
-                Share Your Prayer Image
-              </h1>
+              {/* Modal Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
+                  Share Your Prayer Image
+                </h3>
+                <button
+                  onClick={() => setShowImageSharingDialog(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    padding: '4px'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
 
               {/* Generated Image Display */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '20px',
-                padding: '20px',
-                marginBottom: '40px',
-                border: '2px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
               }}>
                 {isGeneratingImage ? (
                   <div style={{
@@ -9304,12 +9297,22 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         style={{
                           background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                           border: 'none',
-                          borderRadius: '10px',
-                          padding: '10px 16px',
+                          borderRadius: '8px',
+                          padding: '12px 24px',
                           color: 'white',
                           fontSize: '14px',
-                          fontWeight: '600',
-                          cursor: 'pointer'
+                          fontWeight: '500',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                        }}
+                        onMouseOver={(e) => {
+                          e.target.style.transform = 'scale(1.05)';
+                          e.target.style.background = 'linear-gradient(135deg, #4f46e5, #7c3aed)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.target.style.transform = 'scale(1)';
+                          e.target.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
                         }}
                       >
                         Generate New Image
@@ -9336,12 +9339,22 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       style={{
                         background: 'linear-gradient(135deg, #10b981, #059669)',
                         border: 'none',
-                        borderRadius: '12px',
-                        padding: '16px 24px',
+                        borderRadius: '8px',
+                        padding: '12px 24px',
                         color: 'white',
                         fontSize: '16px',
-                        fontWeight: '600',
-                        cursor: 'pointer'
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                      }}
+                      onMouseOver={(e) => {
+                        e.target.style.transform = 'scale(1.05)';
+                        e.target.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                       }}
                     >
                       Generate Prayer Image
@@ -9353,23 +9366,22 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               {/* Platform Sharing Buttons - only show if image is ready */}
               {generatedImageUrl && !isGeneratingImage && (
                 <>
-                  <h2 style={{
+                  <h4 style={{
                     color: 'white',
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    marginBottom: '30px',
-                    textAlign: 'center'
+                    fontSize: '18px',
+                    fontWeight: '600',
+                    marginBottom: '16px',
+                    textAlign: 'center',
+                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
                   }}>
                     Choose Your Platform
-                  </h2>
+                  </h4>
 
                   <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '20px',
-                    maxWidth: '800px',
-                    width: '100%',
-                    marginBottom: '20px'
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                    gap: '12px',
+                    marginBottom: '16px'
                   }}>
                     {/* Email Button */}
                     <button
@@ -9381,25 +9393,30 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         setShowImageSharingDialog(false);
                       }}
                       style={{
-                        padding: '20px',
-                        borderRadius: '15px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #ea4335, #c53929)',
-                        color: 'white',
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                        minHeight: '120px',
-                        transition: 'transform 0.2s'
+                        gap: '8px',
+                        padding: '12px 16px',
+                        background: 'linear-gradient(135deg, #ea4335, #c53929)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                       }}
-                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                      onMouseOver={(e) => {
+                        e.target.style.transform = 'scale(1.05)';
+                        e.target.style.background = 'linear-gradient(135deg, #c53929, #a91e1e)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.background = 'linear-gradient(135deg, #ea4335, #c53929)';
+                      }}
                     >
-                      <Mail size={18} />
+                      <Mail size={16} />
                       Email
                     </button>
 
@@ -9412,25 +9429,30 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         setShowImageSharingDialog(false);
                       }}
                       style={{
-                        padding: '20px',
-                        borderRadius: '15px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #007aff, #0056cc)',
-                        color: 'white',
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                        minHeight: '120px',
-                        transition: 'transform 0.2s'
+                        gap: '8px',
+                        padding: '12px 16px',
+                        background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                       }}
-                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                      onMouseOver={(e) => {
+                        e.target.style.transform = 'scale(1.05)';
+                        e.target.style.background = 'linear-gradient(135deg, #0056cc, #004499)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.background = 'linear-gradient(135deg, #007aff, #0056cc)';
+                      }}
                     >
-                      <Smartphone size={18} />
+                      <Smartphone size={16} />
                       Messages
                     </button>
 
@@ -9439,31 +9461,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       onClick={() => {
                         downloadPrayerImage();
                         navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray`).then(() => {
-                          alert('Prayer text copied! Image downloaded. Now opening Instagram - paste and attach your image.');
+                          alert('✓ Image file downloaded to your device!\n✓ Prayer text copied to clipboard!\n\nNow opening Instagram - attach your downloaded image file and paste the text.');
                           window.open('https://www.instagram.com/', '_blank');
                         });
                         setShowImageSharingDialog(false);
                       }}
                       style={{
-                        padding: '20px',
-                        borderRadius: '15px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #e4405f, #c13584, #833ab4)',
-                        color: 'white',
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                        minHeight: '120px',
-                        transition: 'transform 0.2s'
+                        gap: '8px',
+                        padding: '12px 16px',
+                        background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                       }}
-                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                      onMouseOver={(e) => {
+                        e.target.style.transform = 'scale(1.05)';
+                        e.target.style.background = 'linear-gradient(135deg, #c13584, #833ab4)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.background = 'linear-gradient(135deg, #e4405f, #c13584)';
+                      }}
                     >
-                      <Instagram size={18} />
+                      <Instagram size={16} />
                       Instagram
                     </button>
 
@@ -9476,40 +9503,46 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         setShowImageSharingDialog(false);
                       }}
                       style={{
-                        padding: '20px',
-                        borderRadius: '15px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #1877f2, #166fe5)',
-                        color: 'white',
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                        minHeight: '120px',
-                        transition: 'transform 0.2s'
+                        gap: '8px',
+                        padding: '12px 16px',
+                        background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                       }}
-                      onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                      onMouseOver={(e) => {
+                        e.target.style.transform = 'scale(1.05)';
+                        e.target.style.background = 'linear-gradient(135deg, #166fe5, #1555cc)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.background = 'linear-gradient(135deg, #1877f2, #166fe5)';
+                      }}
                     >
-                      <Facebook size={18} />
+                      <Facebook size={16} />
                       Facebook
                     </button>
                   </div>
 
                   {/* Instructions */}
                   <p style={{
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    fontSize: '16px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontSize: '14px',
                     textAlign: 'center',
-                    lineHeight: '1.6',
-                    maxWidth: '600px',
-                    marginTop: '30px'
+                    lineHeight: '1.5',
+                    marginTop: '16px',
+                    fontStyle: 'italic'
                   }}>
-                    Click any platform above. Your beautiful prayer image will download automatically, 
-                    and the sharing app will open so you can attach and share your image.
+                    ✓ Click any platform above to download your image file and open the sharing destination<br/>
+                    ✓ The actual image file will be saved to your device's Downloads folder<br/>
+                    ✓ Simply attach the downloaded image file when sharing
                   </p>
                 </>
               )}
@@ -9522,6 +9555,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 }
               `}</style>
             </div>
+          </div>
           )}
 
           {/* Audio Sharing Dialog */}
