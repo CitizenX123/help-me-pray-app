@@ -9295,24 +9295,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           }
                         }}
                         style={{
-                          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                          backgroundColor: '#6366f1',
                           border: 'none',
                           borderRadius: '8px',
-                          padding: '12px 24px',
+                          padding: '10px 12px',
                           color: 'white',
                           fontSize: '14px',
-                          fontWeight: '500',
                           cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                        }}
-                        onMouseOver={(e) => {
-                          e.target.style.transform = 'scale(1.05)';
-                          e.target.style.background = 'linear-gradient(135deg, #4f46e5, #7c3aed)';
-                        }}
-                        onMouseOut={(e) => {
-                          e.target.style.transform = 'scale(1)';
-                          e.target.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+                          transition: 'background-color 0.2s'
                         }}
                       >
                         Generate New Image
@@ -9337,24 +9327,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         }
                       }}
                       style={{
-                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        backgroundColor: '#10b981',
                         border: 'none',
                         borderRadius: '8px',
-                        padding: '12px 24px',
+                        padding: '10px 12px',
                         color: 'white',
-                        fontSize: '16px',
-                        fontWeight: '500',
+                        fontSize: '14px',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                      }}
-                      onMouseOver={(e) => {
-                        e.target.style.transform = 'scale(1.05)';
-                        e.target.style.background = 'linear-gradient(135deg, #059669, #047857)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.target.style.transform = 'scale(1)';
-                        e.target.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                        transition: 'background-color 0.2s'
                       }}
                     >
                       Generate Prayer Image
@@ -9396,24 +9376,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        padding: '12px 16px',
-                        background: 'linear-gradient(135deg, #ea4335, #c53929)',
+                        padding: '10px 12px',
+                        backgroundColor: '#ea4335',
                         color: 'white',
                         border: 'none',
                         borderRadius: '8px',
                         fontSize: '14px',
-                        fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                      }}
-                      onMouseOver={(e) => {
-                        e.target.style.transform = 'scale(1.05)';
-                        e.target.style.background = 'linear-gradient(135deg, #c53929, #a91e1e)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.target.style.transform = 'scale(1)';
-                        e.target.style.background = 'linear-gradient(135deg, #ea4335, #c53929)';
+                        transition: 'background-color 0.2s'
                       }}
                     >
                       <Mail size={16} />
@@ -9432,24 +9402,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        padding: '12px 16px',
-                        background: 'linear-gradient(135deg, #007aff, #0056cc)',
+                        padding: '10px 12px',
+                        backgroundColor: '#007aff',
                         color: 'white',
                         border: 'none',
                         borderRadius: '8px',
                         fontSize: '14px',
-                        fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                      }}
-                      onMouseOver={(e) => {
-                        e.target.style.transform = 'scale(1.05)';
-                        e.target.style.background = 'linear-gradient(135deg, #0056cc, #004499)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.target.style.transform = 'scale(1)';
-                        e.target.style.background = 'linear-gradient(135deg, #007aff, #0056cc)';
+                        transition: 'background-color 0.2s'
                       }}
                     >
                       <Smartphone size={16} />
@@ -9470,24 +9430,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        padding: '12px 16px',
-                        background: 'linear-gradient(135deg, #e4405f, #c13584)',
+                        padding: '10px 12px',
+                        backgroundColor: '#e4405f',
                         color: 'white',
                         border: 'none',
                         borderRadius: '8px',
                         fontSize: '14px',
-                        fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                      }}
-                      onMouseOver={(e) => {
-                        e.target.style.transform = 'scale(1.05)';
-                        e.target.style.background = 'linear-gradient(135deg, #c13584, #833ab4)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.target.style.transform = 'scale(1)';
-                        e.target.style.background = 'linear-gradient(135deg, #e4405f, #c13584)';
+                        transition: 'background-color 0.2s'
                       }}
                     >
                       <Instagram size={16} />
@@ -9506,24 +9456,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        padding: '12px 16px',
-                        background: 'linear-gradient(135deg, #1877f2, #166fe5)',
+                        padding: '10px 12px',
+                        backgroundColor: '#1877f2',
                         color: 'white',
                         border: 'none',
                         borderRadius: '8px',
                         fontSize: '14px',
-                        fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                      }}
-                      onMouseOver={(e) => {
-                        e.target.style.transform = 'scale(1.05)';
-                        e.target.style.background = 'linear-gradient(135deg, #166fe5, #1555cc)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.target.style.transform = 'scale(1)';
-                        e.target.style.background = 'linear-gradient(135deg, #1877f2, #166fe5)';
+                        transition: 'background-color 0.2s'
                       }}
                     >
                       <Facebook size={16} />
