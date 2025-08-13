@@ -730,6 +730,60 @@ const HelpMePrayApp = ({ user, setUser }) => {
       link.click();
       return;
     }
+  };
+
+  // New function for sharing image with Web Share API
+  const shareImageFile = async (platform = 'generic') => {
+    if (!currentPrayer) {
+      alert('Please generate a prayer first!');
+      return;
+    }
+
+    try {
+      // Use existing generated image or generate new one
+      let imageDataUrl = generatedImageUrl;
+      if (!imageDataUrl || !imageDataUrl.startsWith('data:image')) {
+        // Generate image if not available
+        await generateImagePreview();
+        imageDataUrl = generatedImageUrl;
+      }
+
+      if (!imageDataUrl || !imageDataUrl.startsWith('data:image')) {
+        alert('Unable to generate image. Please try again.');
+        return;
+      }
+
+      // Convert data URL to blob
+      const response = await fetch(imageDataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `prayer-${selectedCategory}-${Date.now()}.png`, { type: 'image/png' });
+
+      // Check if Web Share API is supported and supports files
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: 'Beautiful Prayer Image',
+            text: `🙏 I created this prayer image with Help Me Pray app!\n\n"${currentPrayer.substring(0, 100)}..."\n\nDownload the app: helmpepray.app`,
+            files: [file]
+          });
+          return true;
+        } catch (shareError) {
+          console.log('Web Share failed, falling back to download:', shareError);
+        }
+      }
+
+      // Fallback: Download the file
+      const link = document.createElement('a');
+      link.download = file.name;
+      link.href = imageDataUrl;
+      link.click();
+      
+      return false; // Indicates fallback was used
+    } catch (error) {
+      console.error('Error sharing image:', error);
+      alert('Error sharing image. Please try again.');
+      return false;
+    }
 
     try {
       const canvas = document.createElement('canvas');
@@ -9365,11 +9419,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   }}>
                     {/* Email Button */}
                     <button
-                      onClick={() => {
-                        downloadPrayerImage();
-                        const emailSubject = encodeURIComponent('Beautiful Prayer Image');
-                        const emailBody = encodeURIComponent(`🙏 I wanted to share this beautiful prayer image I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nYou can download the app at helmpepray.app to create your own personalized prayers.`);
-                        window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                      onClick={async () => {
+                        const shared = await shareImageFile('email');
+                        if (!shared) {
+                          // Fallback to email with text if file sharing failed
+                          const emailSubject = encodeURIComponent('Beautiful Prayer Image');
+                          const emailBody = encodeURIComponent(`🙏 I wanted to share this beautiful prayer image I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nYou can download the app at helmpepray.app to create your own personalized prayers.\n\nNote: The image file was downloaded to your device. Please attach it to this email.`);
+                          window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                        }
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -9392,10 +9449,13 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                     {/* Messages Button */}
                     <button
-                      onClick={() => {
-                        downloadPrayerImage();
-                        const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmnepray.app`);
-                        window.open(`sms:?body=${text}`, '_blank');
+                      onClick={async () => {
+                        const shared = await shareImageFile('messages');
+                        if (!shared) {
+                          // Fallback to SMS with text if file sharing failed
+                          const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpepray.app\n\nNote: Image file downloaded to your device.`);
+                          window.open(`sms:?body=${text}`, '_blank');
+                        }
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -9418,12 +9478,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                     {/* Instagram Button */}
                     <button
-                      onClick={() => {
-                        downloadPrayerImage();
-                        navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray`).then(() => {
-                          alert('✓ Image file downloaded to your device!\n✓ Prayer text copied to clipboard!\n\nNow opening Instagram - attach your downloaded image file and paste the text.');
-                          window.open('https://www.instagram.com/', '_blank');
-                        });
+                      onClick={async () => {
+                        const shared = await shareImageFile('instagram');
+                        if (!shared) {
+                          // Fallback for Instagram (no direct sharing API)
+                          navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray`).then(() => {
+                            alert('✓ Image file downloaded to your device!\n✓ Prayer text copied to clipboard!\n\nNow opening Instagram - attach your downloaded image file and paste the text.');
+                            window.open('https://www.instagram.com/', '_blank');
+                          });
+                        }
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -9446,10 +9509,13 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
                     {/* Facebook Button */}
                     <button
-                      onClick={() => {
-                        downloadPrayerImage();
-                        const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}...`);
-                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmprayapp.com')}&quote=${text}`, '_blank');
+                      onClick={async () => {
+                        const shared = await shareImageFile('facebook');
+                        if (!shared) {
+                          // Fallback for Facebook
+                          const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}... Image file downloaded to your device.`);
+                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmprayapp.com')}&quote=${text}`, '_blank');
+                        }
                         setShowImageSharingDialog(false);
                       }}
                       style={{
