@@ -732,7 +732,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   };
 
-  // Enhanced function for sharing image files with multiple fallback methods
+  // Optimized image sharing - focuses on what actually works
   const shareImageFile = async (platform = 'generic') => {
     if (!currentPrayer) {
       alert('Please generate a prayer first!');
@@ -743,7 +743,6 @@ const HelpMePrayApp = ({ user, setUser }) => {
       // Use existing generated image or generate new one
       let imageDataUrl = generatedImageUrl;
       if (!imageDataUrl || !imageDataUrl.startsWith('data:image')) {
-        // Generate image if not available
         await generateImagePreview();
         imageDataUrl = generatedImageUrl;
       }
@@ -759,67 +758,68 @@ const HelpMePrayApp = ({ user, setUser }) => {
       const fileName = `prayer-${selectedCategory}-${Date.now()}.png`;
       const file = new File([blob], fileName, { type: 'image/png' });
 
-      // Method 1: Try Web Share API with files (limited browser support)
+      // Try Web Share API with files first (works on newer mobile browsers)
       if (navigator.share && navigator.canShare) {
         try {
-          const canShareFiles = navigator.canShare({ files: [file] });
-          if (canShareFiles) {
+          if (navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: 'Beautiful Prayer Image',
-              text: `🙏 I created this prayer image with Help Me Pray app!\n\n"${currentPrayer.substring(0, 100)}..."\n\nDownload the app: helmpepray.app`,
+              text: `🙏 Prayer created with Help Me Pray app`,
               files: [file]
             });
-            return { success: true, shared: true, method: 'web-share-api' };
+            return { success: true, shared: true, method: 'native-share' };
           }
         } catch (shareError) {
-          console.log('Web Share with files failed:', shareError);
+          console.log('Native share failed, trying clipboard:', shareError);
         }
       }
 
-      // Method 2: Try Web Share API with just text and copy image to clipboard
-      if (navigator.share && navigator.clipboard && navigator.clipboard.write) {
+      // Try copying image to clipboard (works on many browsers)
+      if (navigator.clipboard && navigator.clipboard.write) {
         try {
-          // Copy image to clipboard
           await navigator.clipboard.write([
             new ClipboardItem({
               'image/png': blob
             })
           ]);
           
-          // Share text
-          await navigator.share({
-            title: 'Beautiful Prayer Image',
-            text: `🙏 I created this prayer image with Help Me Pray app!\n\n"${currentPrayer}"\n\nDownload the app: helmpepray.app\n\n📷 Image copied to clipboard - paste it into your message!`
-          });
-          return { success: true, shared: true, method: 'clipboard-copy' };
+          // Different behavior for different platforms
+          let message = '✅ Prayer image copied to clipboard!\n\n';
+          if (platform === 'messages' || platform === 'email') {
+            message += '📱 Now open your Messages/Email app and paste the image (Ctrl+V or Cmd+V)';
+            alert(message);
+            return { success: true, shared: true, method: 'clipboard' };
+          }
         } catch (clipboardError) {
-          console.log('Clipboard copy failed:', clipboardError);
+          console.log('Clipboard failed:', clipboardError);
         }
       }
 
-      // Method 3: Download file and provide sharing instructions
+      // Fallback: Download the image file
       const link = document.createElement('a');
       link.download = fileName;
       link.href = imageDataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
-      // Show platform-specific instructions
-      let message = `✅ Image file "${fileName}" downloaded to your device!\n\n`;
+      // Show appropriate message for platform
+      let message = '';
       switch (platform) {
-        case 'email':
-          message += '📧 Opening email app - please attach the downloaded image file.';
-          break;
         case 'messages':
-          message += '💬 Opening messages app - please attach the downloaded image file.';
+          message = `📱 Prayer image downloaded as "${fileName}"\n\nTo share via Messages:\n1. Open Messages app\n2. Start a new message\n3. Tap the photo icon\n4. Select the downloaded image from your Photos/Downloads`;
+          break;
+        case 'email':
+          message = `📧 Prayer image downloaded as "${fileName}"\n\nTo share via Email:\n1. Open your email app\n2. Compose new email\n3. Tap attachment icon (📎)\n4. Select the downloaded image`;
           break;
         case 'instagram':
-          message += '📸 Opening Instagram - please select the downloaded image file when creating your post.';
+          message = `📸 Prayer image downloaded as "${fileName}"\n\nTo share on Instagram:\n1. Open Instagram app\n2. Tap the + to create post\n3. Select the downloaded image from your gallery`;
           break;
         case 'facebook':
-          message += '📘 Opening Facebook - please attach the downloaded image file to your post.';
+          message = `📘 Prayer image downloaded as "${fileName}"\n\nTo share on Facebook:\n1. Open Facebook app\n2. Create new post\n3. Tap photo icon\n4. Select the downloaded image`;
           break;
         default:
-          message += '📱 Please attach the downloaded image file when sharing.';
+          message = `✅ Prayer image downloaded as "${fileName}"\n\nYou can now attach this image file when sharing!`;
       }
       
       alert(message);
@@ -8910,13 +8910,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Email Button */}
                     <button
                       onClick={async () => {
-                        const result = await shareImageFile('email');
-                        if (result.success && !result.shared && result.method === 'download') {
-                          // Open email with text after download
-                          const emailSubject = encodeURIComponent('Beautiful Prayer Image');
-                          const emailBody = encodeURIComponent(`🙏 I wanted to share this beautiful prayer image I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nYou can download the app at helmpepray.app to create your own personalized prayers.\n\nNote: Please attach the image file that was just downloaded to your device.`);
-                          window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
-                        }
+                        await shareImageFile('email');
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -8940,12 +8934,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Messages Button */}
                     <button
                       onClick={async () => {
-                        const result = await shareImageFile('messages');
-                        if (result.success && !result.shared && result.method === 'download') {
-                          // Open SMS with text after download
-                          const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpepray.app\n\nNote: Please attach the image file that was just downloaded.`);
-                          window.open(`sms:?body=${text}`, '_blank');
-                        }
+                        await shareImageFile('messages');
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -8969,13 +8958,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Instagram Button */}
                     <button
                       onClick={async () => {
-                        const result = await shareImageFile('instagram');
-                        if (result.success && !result.shared && result.method === 'download') {
-                          // Copy text and open Instagram after download
-                          navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray`).then(() => {
-                            window.open('https://www.instagram.com/', '_blank');
-                          });
-                        }
+                        await shareImageFile('instagram');
                         setShowImageSharingDialog(false);
                       }}
                       style={{
@@ -8999,12 +8982,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Facebook Button */}
                     <button
                       onClick={async () => {
-                        const result = await shareImageFile('facebook');
-                        if (result.success && !result.shared && result.method === 'download') {
-                          // Open Facebook sharer after download
-                          const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}... Please attach the image file that was just downloaded.`);
-                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmprayapp.com')}&quote=${text}`, '_blank');
-                        }
+                        await shareImageFile('facebook');
                         setShowImageSharingDialog(false);
                       }}
                       style={{
