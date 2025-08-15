@@ -736,7 +736,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const shareImageFile = async (platform = 'generic') => {
     if (!currentPrayer) {
       alert('Please generate a prayer first!');
-      return;
+      return { success: false, error: 'No prayer' };
     }
 
     try {
@@ -750,7 +750,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
       if (!imageDataUrl || !imageDataUrl.startsWith('data:image')) {
         alert('Unable to generate image. Please try again.');
-        return;
+        return { success: false, error: 'Image generation failed' };
       }
 
       // Convert data URL to blob
@@ -766,581 +766,22 @@ const HelpMePrayApp = ({ user, setUser }) => {
             text: `🙏 I created this prayer image with Help Me Pray app!\n\n"${currentPrayer.substring(0, 100)}..."\n\nDownload the app: helmpepray.app`,
             files: [file]
           });
-          return true;
+          return { success: true, shared: true };
         } catch (shareError) {
-          console.log('Web Share failed, falling back to download:', shareError);
+          console.log('Web Share failed:', shareError);
+          // Return the file data for manual download
+          return { success: true, shared: false, file, imageDataUrl };
         }
       }
 
-      // Fallback: Download the file
-      const link = document.createElement('a');
-      link.download = file.name;
-      link.href = imageDataUrl;
-      link.click();
-      
-      return false; // Indicates fallback was used
+      // Return the file data for manual download
+      return { success: true, shared: false, file, imageDataUrl };
     } catch (error) {
       console.error('Error sharing image:', error);
       alert('Error sharing image. Please try again.');
-      return false;
-    }
-
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      // Set canvas size with higher resolution
-      canvas.width = 800;
-      canvas.height = 1000;
-      
-      // Enable high-quality image rendering
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      
-      // Create photo-realistic backgrounds using actual photographs
-      const createPhotoRealisticBackground = async () => {
-        // Generate random seed for uniqueness each time
-        const randomSeed = Math.random();
-        const timeStamp = Date.now();
-
-        // Function to load and draw image on canvas - Safari compatible
-        const loadAndDrawImage = (imageUrl) => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            
-            // Safari-specific: Add timeout and better error handling
-            const timeoutId = setTimeout(() => {
-              reject(new Error('Image load timeout'));
-            }, 15000);
-            
-            img.onload = () => {
-              clearTimeout(timeoutId);
-              // Draw image to fill canvas while maintaining aspect ratio
-              const canvasRatio = canvas.width / canvas.height;
-              const imageRatio = img.width / img.height;
-              
-              let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
-              
-              if (canvasRatio > imageRatio) {
-                // Canvas is wider than image
-                drawWidth = canvas.width;
-                drawHeight = canvas.width / imageRatio;
-                offsetY = (canvas.height - drawHeight) / 2;
-              } else {
-                // Canvas is taller than image
-                drawHeight = canvas.height;
-                drawWidth = canvas.height * imageRatio;
-                offsetX = (canvas.width - drawWidth) / 2;
-              }
-              
-              ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-              
-              // Add subtle dark overlay for better text readability
-              ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              
-              resolve();
-            };
-            img.onerror = () => {
-              clearTimeout(timeoutId);
-              // Fallback to gradient if image fails to load
-              const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-              gradient.addColorStop(0, '#87CEEB');
-              gradient.addColorStop(1, '#4682B4');
-              ctx.fillStyle = gradient;
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              resolve();
-            };
-            
-            // Safari-specific: Set crossOrigin after setting up handlers
-            img.crossOrigin = 'anonymous';
-            img.src = imageUrl;
-          });
-        };
-
-        // Curated photo collections for each category - specific photorealistic images
-        const photoCollections = {
-          morning: [
-            // SUNRISE scenes only - mountain, beach, field sunrises
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Mountain sunrise
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Beach sunrise over ocean
-            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center', // Field sunrise
-            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&h=1000&fit=crop&crop=center'  // Lake sunrise reflection
-          ],
-          bedtime: [
-            // STARRY NIGHT, MOON scenes - peaceful nighttime only
-            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=1000&fit=crop&crop=center', // Milky Way starry sky
-            'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=800&h=1000&fit=crop&crop=center', // Starry night sky
-            'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=800&h=1000&fit=crop&crop=center', // Moon and stars
-            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center'  // Night landscape with stars
-          ],
-          family: [
-            // FAMILY gathering spaces - parks, gardens, peaceful outdoor areas
-            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=1000&fit=crop&crop=center', // Peaceful garden path
-            'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=800&h=1000&fit=crop&crop=center', // Family picnic area
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Peaceful meadow
-            'https://images.unsplash.com/photo-1515263487990-61b07816b132?w=800&h=1000&fit=crop&crop=center'  // Cozy outdoor family space
-          ],
-          healing: [
-            // PEACEFUL FOREST paths, gentle nature healing scenes
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Forest healing path
-            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Sunlight through healing trees
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center', // Peaceful healing forest
-            'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=1000&fit=crop&crop=center'  // Serene nature healing
-          ],
-          gratitude: [
-            // GOLDEN WHEAT fields, harvest abundance, golden hour scenes
-            'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=1000&fit=crop&crop=center', // Golden wheat field abundance
-            'https://images.unsplash.com/photo-1574919995582-ca2b037ed3cc?w=800&h=1000&fit=crop&crop=center', // Harvest gratitude field
-            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=1000&fit=crop&crop=center', // Golden hour gratitude field
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Abundant nature landscape
-          ],
-          bibleVerses: [
-            // ANCIENT biblical landscapes, desert, Middle Eastern terrain, holy land
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop&crop=center', // Desert biblical mountain
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=1000&fit=crop&crop=center', // Ancient biblical path
-            'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&h=1000&fit=crop&crop=center', // Holy land style terrain
-            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop&crop=center'  // Middle Eastern biblical landscape
-          ]
-        };
-
-        // Select random photo from the category collection
-        const categoryPhotos = photoCollections[selectedCategory] || photoCollections['morning'];
-        const selectedPhoto = categoryPhotos[Math.floor(randomSeed * categoryPhotos.length)];
-        
-        try {
-          await loadAndDrawImage(selectedPhoto);
-        } catch (error) {
-          console.warn('Failed to load photo, using fallback gradient:', error);
-          // Fallback gradient
-          const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-          gradient.addColorStop(0, '#87CEEB');
-          gradient.addColorStop(1, '#4682B4');
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        // Photo background is already loaded above
-      };
-
-      // Create the background (wait for photo to load) - Safari compatible with timeout
-      try {
-        await Promise.race([
-          createPhotoRealisticBackground(),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Background generation timeout')), 20000)
-          )
-        ]);
-      } catch (error) {
-        console.warn('Background generation failed, using simple gradient:', error);
-        // Simple fallback gradient for Safari compatibility
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-      
-      // Add elegant category title at the top
-      let categoryTitle;
-      
-      // Use the same category names as in prayer view screen
-      const categoryTitles = {
-        gratitude: 'A Prayer for Gratitude',
-        morning: 'A Prayer for Morning', 
-        bedtime: 'A Prayer for Bedtime',
-        healing: 'A Prayer for Healing',
-        family: 'A Prayer for Family and Friends',
-        grace: 'A Prayer for Grace',
-        bibleVerses: 'A Prayer for Bible Verses',
-        custom: 'A Custom Prayer'
-      };
-      
-      categoryTitle = categoryTitles[selectedCategory] || 'Prayer';
-      
-      // Create personalized titles for custom prayers
-      if (selectedCategory === 'custom') {
-        if (prayerFor === 'myself') {
-          if (selectedOccasion && selectedOccasion !== 'none') {
-            // Map occasion values to readable titles
-            const occasionTitles = {
-              'birthday': 'Birthday',
-              'anniversary': 'Anniversary', 
-              'graduation': 'Graduation',
-              'wedding': 'Wedding',
-              'newJob': 'New Job',
-              'illness': 'Healing',
-              'loss': 'Comfort',
-              'travel': 'Safe Travel',
-              'exams': 'Exams',
-              'pregnancy': 'Pregnancy',
-              'retirement': 'Retirement',
-              'moving': 'New Home',
-              'addiction': 'Recovery'
-            };
-            categoryTitle = `A Prayer For ${occasionTitles[selectedOccasion] || selectedOccasion}`;
-          } else {
-            categoryTitle = 'A Personal Prayer';
-          }
-        } else if (prayerFor === 'someone' && personName.trim()) {
-          // Extract first name only for the title
-          const firstName = personName.trim().split(' ')[0];
-          if (selectedOccasion && selectedOccasion !== 'none') {
-            const occasionTitles = {
-              'birthday': 'Birthday',
-              'anniversary': 'Anniversary',
-              'graduation': 'Graduation', 
-              'wedding': 'Wedding',
-              'newJob': 'New Job',
-              'illness': 'Healing',
-              'loss': 'Comfort',
-              'travel': 'Safe Travel',
-              'exams': 'Exams',
-              'pregnancy': 'Pregnancy',
-              'retirement': 'Retirement',
-              'moving': 'New Home',
-              'addiction': 'Recovery'
-            };
-            categoryTitle = `A Prayer For ${firstName}'s ${occasionTitles[selectedOccasion] || selectedOccasion}`;
-          } else {
-            categoryTitle = `A Prayer For ${firstName}`;
-          }
-        } else {
-          // Fallback for someone else without a name
-          if (selectedOccasion && selectedOccasion !== 'none') {
-            const occasionTitles = {
-              'birthday': 'Birthday',
-              'anniversary': 'Anniversary',
-              'graduation': 'Graduation',
-              'wedding': 'Wedding', 
-              'newJob': 'New Job',
-              'illness': 'Healing',
-              'loss': 'Comfort',
-              'travel': 'Safe Travel',
-              'exams': 'Exams',
-              'pregnancy': 'Pregnancy',
-              'retirement': 'Retirement',
-              'moving': 'New Home',
-              'addiction': 'Recovery'
-            };
-            categoryTitle = `A Prayer For ${occasionTitles[selectedOccasion] || selectedOccasion}`;
-          } else {
-            categoryTitle = 'A Prayer For Someone Special';
-          }
-        }
-      }
-      
-      // Extract creative titles for Bible verses
-      else if (selectedCategory === 'bibleVerses') {
-        const versePatterns = [
-          {match: /plans to prosper you/i, title: "Plans to Prosper You"},
-          {match: /plans.*hope.*future/i, title: "Hope and a Future"},
-          {match: /fear not|do not fear/i, title: "Fear Not"},
-          {match: /trust in the lord/i, title: "Trust in the Lord"},
-          {match: /peace.*understanding/i, title: "Peace Beyond Understanding"},
-          {match: /love.*never fails/i, title: "Love Never Fails"},
-          {match: /refuge.*strength/i, title: "Refuge and Strength"},
-          {match: /light.*darkness/i, title: "Light in Darkness"},
-          {match: /joy.*morning/i, title: "Joy Comes in the Morning"},
-          {match: /good shepherd/i, title: "The Good Shepherd"},
-          {match: /valley.*shadow/i, title: "Through the Valley"},
-          {match: /rest.*weary/i, title: "Rest for the Weary"},
-          {match: /grace.*sufficient/i, title: "Sufficient Grace"},
-          {match: /new mercies/i, title: "New Mercies"},
-          {match: /eagles.*wings/i, title: "Wings Like Eagles"},
-          {match: /mountains.*faith/i, title: "Faith Moves Mountains"},
-          {match: /living water/i, title: "Living Water"},
-          {match: /bread of life/i, title: "Bread of Life"},
-          {match: /narrow.*gate/i, title: "The Narrow Gate"},
-          {match: /pearl.*great price/i, title: "Pearl of Great Price"},
-        ];
-        
-        for (let pattern of versePatterns) {
-          if (pattern.match.test(currentPrayer)) {
-            categoryTitle = pattern.title;
-            break;
-          }
-        }
-      }
-      
-      // Category-specific title styling - ENHANCED for better visibility
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 64px Georgia, serif';  // Increased from 48px to 64px and made bold
-      
-      // Add elegant styling based on category
-      switch(selectedCategory) {
-        case 'morning':
-          // Golden sunrise colors
-          const morningTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          morningTitleGradient.addColorStop(0, '#FFD700');
-          morningTitleGradient.addColorStop(1, '#FFA500');
-          ctx.fillStyle = morningTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
-          ctx.shadowBlur = 8;                      // Increased blur
-          ctx.shadowOffsetX = 4;                   // Increased offset
-          ctx.shadowOffsetY = 4;
-          break;
-          
-        case 'bedtime':
-          // Soft moonlight silver
-          const bedtimeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bedtimeTitleGradient.addColorStop(0, '#E6E6FA');
-          bedtimeTitleGradient.addColorStop(1, '#C0C0C0');
-          ctx.fillStyle = bedtimeTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-          
-        case 'healing':
-          // Natural forest green
-          const healingTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          healingTitleGradient.addColorStop(0, '#98FB98');
-          healingTitleGradient.addColorStop(1, '#228B22');
-          ctx.fillStyle = healingTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-          
-        case 'gratitude':
-          // Warm golden wheat
-          const gratitudeTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          gratitudeTitleGradient.addColorStop(0, '#F0E68C');
-          gratitudeTitleGradient.addColorStop(1, '#DAA520');
-          ctx.fillStyle = gratitudeTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
-          ctx.shadowBlur = 8;                      // Increased blur
-          ctx.shadowOffsetX = 4;                   // Increased offset
-          ctx.shadowOffsetY = 4;
-          break;
-          
-        case 'family':
-          // Peaceful blue waters
-          const familyTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          familyTitleGradient.addColorStop(0, '#87CEEB');
-          familyTitleGradient.addColorStop(1, '#4682B4');
-          ctx.fillStyle = familyTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-          
-        case 'bibleVerses':
-          // Ancient parchment
-          const bibleTitleGradient = ctx.createLinearGradient(0, 40, 0, 100);
-          bibleTitleGradient.addColorStop(0, '#F5DEB3');
-          bibleTitleGradient.addColorStop(1, '#D2691E');
-          ctx.fillStyle = bibleTitleGradient;
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';  // Darker shadow
-          ctx.shadowBlur = 8;                      // Increased blur
-          ctx.shadowOffsetX = 4;                   // Increased offset
-          ctx.shadowOffsetY = 4;
-          break;
-          
-        default:
-          ctx.fillStyle = 'white';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-          ctx.shadowBlur = 4;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          break;
-      }
-      
-      // Draw the category title with proper spacing from top
-      ctx.fillText(categoryTitle, canvas.width / 2, 120);
-      
-      // Reset shadow for prayer text
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      
-      // Clean prayer text first
-      const cleanPrayer = currentPrayer
-        .replace(/🙏/g, '') // Remove emoji
-        .replace(/\.+/g, '.') // Fix multiple periods
-        .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
-        .trim();
-      
-      // Calculate dynamic font size based on text length and available space
-      const availableHeight = canvas.height - 280; // Reserve space for title (140px) and branding (140px)
-      const textLength = cleanPrayer.length;
-      const maxWidth = canvas.width - 120;
-      
-      let fontSize, lineHeight;
-      
-      // Dynamic font sizing based on prayer length
-      if (textLength < 300) {
-        // Short prayers - larger font
-        fontSize = 28;
-        lineHeight = 34;
-      } else if (textLength < 600) {
-        // Medium prayers - medium font
-        fontSize = 24;
-        lineHeight = 30;
-      } else if (textLength < 1200) {
-        // Long prayers - smaller font
-        fontSize = 20;
-        lineHeight = 26;
-      } else {
-        // Very long prayers - smallest font
-        fontSize = 18;
-        lineHeight = 24;
-      }
-      
-      // Set font and styling
-      ctx.font = `normal ${fontSize}px Georgia, serif`;
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      
-      // Word wrap with current font size
-      const words = cleanPrayer.split(' ');
-      const lines = [];
-      let currentLine = '';
-      
-      for (let word of words) {
-        const testLine = currentLine + word + ' ';
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && currentLine !== '') {
-          lines.push(currentLine.trim());
-          currentLine = word + ' ';
-        } else {
-          currentLine = testLine;
-        }
-      }
-      lines.push(currentLine.trim());
-      
-      // Double-check if text fits in available height and adjust if needed
-      let totalTextHeight = lines.length * lineHeight;
-      
-      // If text is still too tall, reduce font size further
-      while (totalTextHeight > availableHeight && fontSize > 14) {
-        fontSize -= 2;
-        lineHeight = fontSize + 6;
-        ctx.font = `normal ${fontSize}px Georgia, serif`;
-        
-        // Recalculate word wrap with new font size
-        const newLines = [];
-        let newCurrentLine = '';
-        
-        for (let word of words) {
-          const testLine = newCurrentLine + word + ' ';
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxWidth && newCurrentLine !== '') {
-            newLines.push(newCurrentLine.trim());
-            newCurrentLine = word + ' ';
-          } else {
-            newCurrentLine = testLine;
-          }
-        }
-        newLines.push(newCurrentLine.trim());
-        
-        lines.length = 0;
-        lines.push(...newLines);
-        totalTextHeight = lines.length * lineHeight;
-      }
-      
-      // Final calculation for positioning
-      totalTextHeight = lines.length * lineHeight;
-      const startY = 180 + (availableHeight - totalTextHeight) / 2;
-      
-      // Ensure text doesn't go below branding area
-      const maxEndY = canvas.height - 140;
-      const actualEndY = startY + totalTextHeight;
-      
-      // If text is too long, adjust starting position
-      const adjustedStartY = actualEndY > maxEndY ? startY - (actualEndY - maxEndY) : startY;
-      
-      lines.forEach((line, index) => {
-        // Clean the line to remove any unwanted emojis or characters
-        const cleanLine = line
-          .replace(/🙏/g, '') // Remove emoji
-          .replace(/\.+/g, '.') // Fix multiple periods
-          .replace(/\.\s*\./g, '.') // Remove duplicate periods with spaces
-          .trim();
-        ctx.fillText(cleanLine, canvas.width / 2, adjustedStartY + (index * lineHeight));
-      });
-      
-      // Add branding with actual logo
-      const addBrandingWithLogo = async () => {
-        try {
-          // Load the actual praying hands logo
-          const logoImg = new Image();
-          logoImg.src = '/prayhands.png';
-          
-          await new Promise((resolve, reject) => {
-            logoImg.onload = resolve;
-            logoImg.onerror = reject;
-          });
-          
-          // Position logo and text at the bottom (properly centered)
-          const brandingY = canvas.height - 60;
-          const logoSize = 80; // Reduced from 120px for better proportions
-          const brandingText = 'Help Me Pray App';
-          
-          // Measure text width for proper centering
-          ctx.font = '18px Arial';
-          const textWidth = ctx.measureText(brandingText).width;
-          const spacing = 8; // Space between logo and text
-          const totalWidth = logoSize + spacing + textWidth;
-          
-          // Center the entire branding group
-          const startX = (canvas.width - totalWidth) / 2;
-          
-          // Draw logo with white filter
-          // Create a temporary canvas to apply white filter to the logo
-          const tempCanvas = document.createElement('canvas');
-          const tempCtx = tempCanvas.getContext('2d');
-          tempCanvas.width = logoSize;
-          tempCanvas.height = logoSize;
-          
-          // Enable high-quality rendering on temp canvas
-          tempCtx.imageSmoothingEnabled = true;
-          tempCtx.imageSmoothingQuality = 'high';
-          
-          // Draw logo on temp canvas
-          tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
-          
-          // Apply white filter
-          tempCtx.globalCompositeOperation = 'source-atop';
-          tempCtx.fillStyle = 'white';
-          tempCtx.fillRect(0, 0, logoSize, logoSize);
-          
-          // Draw the white-filtered logo on main canvas
-          ctx.drawImage(tempCanvas, startX, brandingY - logoSize / 2, logoSize, logoSize);
-          
-          // Draw text next to logo
-          ctx.fillStyle = 'white';
-          ctx.textAlign = 'left';
-          ctx.fillText(brandingText, startX + logoSize + spacing, brandingY + 5);
-          
-        } catch (error) {
-          // Fallback to text-only branding if logo fails to load
-          ctx.font = '18px Arial';
-          ctx.fillStyle = 'white';
-          ctx.textAlign = 'center';
-          ctx.fillText('Help Me Pray App', canvas.width / 2, canvas.height - 60);
-        }
-      };
-      
-      await addBrandingWithLogo();
-      
-      // Download the image with descriptive filename
-      const link = document.createElement('a');
-      link.download = `${categoryTitle.replace(/\s+/g, '_')}_Prayer.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-      
-    } catch (error) {
-      console.error('Error generating prayer image:', error);
-      alert('Error generating image. Please try again.');
+      return { success: false, error: error.message };
     }
   };
-
   // Text cleanup function for prayer formatting
   const cleanupPrayerText = (text) => {
     if (!text) return '';
@@ -9420,9 +8861,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Email Button */}
                     <button
                       onClick={async () => {
-                        const shared = await shareImageFile('email');
-                        if (!shared) {
-                          // Fallback to email with text if file sharing failed
+                        const result = await shareImageFile('email');
+                        if (result.success && !result.shared && result.imageDataUrl) {
+                          // Download the file for email attachment
+                          const link = document.createElement('a');
+                          link.download = result.file.name;
+                          link.href = result.imageDataUrl;
+                          link.click();
+                          
+                          // Open email with text
                           const emailSubject = encodeURIComponent('Beautiful Prayer Image');
                           const emailBody = encodeURIComponent(`🙏 I wanted to share this beautiful prayer image I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nYou can download the app at helmpepray.app to create your own personalized prayers.\n\nNote: The image file was downloaded to your device. Please attach it to this email.`);
                           window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
@@ -9450,9 +8897,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Messages Button */}
                     <button
                       onClick={async () => {
-                        const shared = await shareImageFile('messages');
-                        if (!shared) {
-                          // Fallback to SMS with text if file sharing failed
+                        const result = await shareImageFile('messages');
+                        if (result.success && !result.shared && result.imageDataUrl) {
+                          // Download the file for messages
+                          const link = document.createElement('a');
+                          link.download = result.file.name;
+                          link.href = result.imageDataUrl;
+                          link.click();
+                          
+                          // Open SMS with text
                           const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer.substring(0, 100)}...\n\nDownload: helmpepray.app\n\nNote: Image file downloaded to your device.`);
                           window.open(`sms:?body=${text}`, '_blank');
                         }
@@ -9479,9 +8932,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Instagram Button */}
                     <button
                       onClick={async () => {
-                        const shared = await shareImageFile('instagram');
-                        if (!shared) {
-                          // Fallback for Instagram (no direct sharing API)
+                        const result = await shareImageFile('instagram');
+                        if (result.success && !result.shared && result.imageDataUrl) {
+                          // Download the file for Instagram
+                          const link = document.createElement('a');
+                          link.download = result.file.name;
+                          link.href = result.imageDataUrl;
+                          link.click();
+                          
+                          // Copy text and open Instagram
                           navigator.clipboard.writeText(`🙏 Beautiful prayer image created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray`).then(() => {
                             alert('✓ Image file downloaded to your device!\n✓ Prayer text copied to clipboard!\n\nNow opening Instagram - attach your downloaded image file and paste the text.');
                             window.open('https://www.instagram.com/', '_blank');
@@ -9510,9 +8969,15 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     {/* Facebook Button */}
                     <button
                       onClick={async () => {
-                        const shared = await shareImageFile('facebook');
-                        if (!shared) {
-                          // Fallback for Facebook
+                        const result = await shareImageFile('facebook');
+                        if (result.success && !result.shared && result.imageDataUrl) {
+                          // Download the file for Facebook
+                          const link = document.createElement('a');
+                          link.download = result.file.name;
+                          link.href = result.imageDataUrl;
+                          link.click();
+                          
+                          // Open Facebook sharer
                           const text = encodeURIComponent(`🙏 Beautiful prayer image created with Help Me Pray app! ${currentPrayer.substring(0, 100)}... Image file downloaded to your device.`);
                           window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://helmprayapp.com')}&quote=${text}`, '_blank');
                         }
