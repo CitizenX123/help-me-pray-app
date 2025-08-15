@@ -250,7 +250,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [showImageSharingDialog, setShowImageSharingDialog] = useState(false);
+  // Removed showImageSharingDialog - using direct downloads now
   const [showAudioSharingDialog, setShowAudioSharingDialog] = useState(false);
   const [showBothSharingDialog, setShowBothSharingDialog] = useState(false);
   
@@ -705,15 +705,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   }, [currentScreen]);
 
-  // Auto-generate image when image sharing dialog opens
-  useEffect(() => {
-    if (showImageSharingDialog && currentPrayer && !generatedImageUrl && !isGeneratingImage) {
-      console.log('AUTO-GENERATING IMAGE FOR SHARING DIALOG...');
-      setTimeout(() => {
-        generateImagePreview(true);
-      }, 300);
-    }
-  }, [showImageSharingDialog, currentPrayer, generatedImageUrl, isGeneratingImage, generateImagePreview]);
+  // Auto-generate image removed - using direct downloads now
 
   const downloadPrayerImage = async () => {
     if (!currentPrayer) {
@@ -732,11 +724,11 @@ const HelpMePrayApp = ({ user, setUser }) => {
     }
   };
 
-  // Optimized image sharing - focuses on what actually works
-  const shareImageFile = async (platform = 'generic') => {
+  // Simple direct download functions
+  const downloadImage = async () => {
     if (!currentPrayer) {
       alert('Please generate a prayer first!');
-      return { success: false, error: 'No prayer' };
+      return;
     }
 
     try {
@@ -749,86 +741,78 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
       if (!imageDataUrl || !imageDataUrl.startsWith('data:image')) {
         alert('Unable to generate image. Please try again.');
-        return { success: false, error: 'Image generation failed' };
+        return;
       }
 
-      // Convert data URL to blob
-      const response = await fetch(imageDataUrl);
-      const blob = await response.blob();
+      // Download the image file
       const fileName = `prayer-${selectedCategory}-${Date.now()}.png`;
-      const file = new File([blob], fileName, { type: 'image/png' });
-
-      // Try Web Share API with files first (works on newer mobile browsers)
-      if (navigator.share && navigator.canShare) {
-        try {
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: 'Beautiful Prayer Image',
-              text: `🙏 Prayer created with Help Me Pray app`,
-              files: [file]
-            });
-            return { success: true, shared: true, method: 'native-share' };
-          }
-        } catch (shareError) {
-          console.log('Native share failed, trying clipboard:', shareError);
-        }
-      }
-
-      // Try copying image to clipboard (works on many browsers)
-      if (navigator.clipboard && navigator.clipboard.write) {
-        try {
-          await navigator.clipboard.write([
-            new ClipboardItem({
-              'image/png': blob
-            })
-          ]);
-          
-          // Different behavior for different platforms
-          let message = '✅ Prayer image copied to clipboard!\n\n';
-          if (platform === 'messages' || platform === 'email') {
-            message += '📱 Now open your Messages/Email app and paste the image (Ctrl+V or Cmd+V)';
-            alert(message);
-            return { success: true, shared: true, method: 'clipboard' };
-          }
-        } catch (clipboardError) {
-          console.log('Clipboard failed:', clipboardError);
-        }
-      }
-
-      // Fallback: Download the image file
       const link = document.createElement('a');
       link.download = fileName;
       link.href = imageDataUrl;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      // Show appropriate message for platform
-      let message = '';
-      switch (platform) {
-        case 'messages':
-          message = `📱 Prayer image downloaded as "${fileName}"\n\nTo share via Messages:\n1. Open Messages app\n2. Start a new message\n3. Tap the photo icon\n4. Select the downloaded image from your Photos/Downloads`;
-          break;
-        case 'email':
-          message = `📧 Prayer image downloaded as "${fileName}"\n\nTo share via Email:\n1. Open your email app\n2. Compose new email\n3. Tap attachment icon (📎)\n4. Select the downloaded image`;
-          break;
-        case 'instagram':
-          message = `📸 Prayer image downloaded as "${fileName}"\n\nTo share on Instagram:\n1. Open Instagram app\n2. Tap the + to create post\n3. Select the downloaded image from your gallery`;
-          break;
-        case 'facebook':
-          message = `📘 Prayer image downloaded as "${fileName}"\n\nTo share on Facebook:\n1. Open Facebook app\n2. Create new post\n3. Tap photo icon\n4. Select the downloaded image`;
-          break;
-        default:
-          message = `✅ Prayer image downloaded as "${fileName}"\n\nYou can now attach this image file when sharing!`;
-      }
       
-      alert(message);
-      return { success: true, shared: false, file, imageDataUrl, method: 'download' };
+      // Simple success message
+      alert(`✅ Prayer image downloaded as "${fileName}"`);
 
     } catch (error) {
-      console.error('Error sharing image:', error);
-      alert('Error sharing image. Please try again.');
-      return { success: false, error: error.message };
+      console.error('Error downloading image:', error);
+      alert('Error downloading image. Please try again.');
+    }
+  };
+
+  const downloadAudio = async () => {
+    if (!currentPrayer) {
+      alert('Please generate a prayer first!');
+      return;
+    }
+
+    try {
+      // Generate audio if not available
+      if (!window.currentAudio) {
+        await speakWithAzureTTS(currentPrayer);
+      }
+
+      if (window.currentAudio && window.currentAudio.src) {
+        // Download the audio file
+        const fileName = `prayer-audio-${selectedCategory}-${Date.now()}.mp3`;
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = window.currentAudio.src;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert(`✅ Prayer audio downloaded as "${fileName}"`);
+      } else {
+        alert('Audio not available. Please try generating audio first.');
+      }
+
+    } catch (error) {
+      console.error('Error downloading audio:', error);
+      alert('Error downloading audio. Please try again.');
+    }
+  };
+
+  const downloadBoth = async () => {
+    if (!currentPrayer) {
+      alert('Please generate a prayer first!');
+      return;
+    }
+
+    try {
+      // Download image first
+      await downloadImage();
+      
+      // Wait a moment then download audio
+      setTimeout(async () => {
+        await downloadAudio();
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error downloading files:', error);
+      alert('Error downloading files. Please try again.');
     }
   };
   // Text cleanup function for prayer formatting
@@ -8213,7 +8197,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               
               {/* Primary Share Image Button */}
               <button
-                onClick={() => setShowImageSharingDialog(true)}
+                onClick={downloadImage}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -8674,7 +8658,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             {/* Share Type Buttons */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
               <button
-                onClick={() => setShowImageSharingDialog(true)}
+                onClick={downloadImage}
                 style={{
                   padding: '10px 8px',
                   borderRadius: '10px',
@@ -8695,7 +8679,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </button>
 
               <button
-                onClick={() => setShowAudioSharingDialog(true)}
+                onClick={downloadAudio}
                 style={{
                   padding: '10px 8px',
                   borderRadius: '10px',
@@ -8716,7 +8700,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </button>
 
               <button
-                onClick={() => setShowBothSharingDialog(true)}
+                onClick={downloadBoth}
                 style={{
                   padding: '10px 8px',
                   borderRadius: '10px',
@@ -8739,297 +8723,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
           </div>
 
-          {/* Image Sharing Dialog */}
-          {showImageSharingDialog && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000,
-              padding: '20px'
-            }}>
-            <div style={{
-              background: 'rgba(15, 23, 42, 0.6)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderRadius: '16px',
-              padding: '24px',
-              maxWidth: '600px',
-              width: '100%',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
-              maxHeight: '90vh',
-              overflowY: 'auto'
-            }}>
-              {/* Modal Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
-                  Share Your Prayer Image
-                </h3>
-                <button
-                  onClick={() => setShowImageSharingDialog(false)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '24px',
-                    cursor: 'pointer',
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    padding: '4px'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Generated Image Display */}
-              <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '12px',
-                padding: '16px',
-                marginBottom: '20px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)'
-              }}>
-                {isGeneratingImage ? (
-                  <div style={{
-                    width: '400px',
-                    height: '500px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '18px'
-                  }}>
-                    <div style={{
-                      display: 'inline-block',
-                      animation: 'spin 1s linear infinite',
-                      marginBottom: '20px'
-                    }}>
-                      <RefreshCw size={40} color="white" />
-                    </div>
-                    Generating your beautiful prayer image...
-                  </div>
-                ) : generatedImageUrl ? (
-                  <>
-                    <img
-                      src={generatedImageUrl}
-                      alt="Generated Prayer"
-                      style={{
-                        width: '100%',
-                        maxWidth: '400px',
-                        height: 'auto',
-                        borderRadius: '15px',
-                        boxShadow: '0 15px 40px rgba(0, 0, 0, 0.4)',
-                        display: 'block'
-                      }}
-                    />
-                    <div style={{ textAlign: 'center', marginTop: '15px' }}>
-                      <button
-                        onClick={() => {
-                          if (!isGeneratingImage) {
-                            generateImagePreview(true);
-                          }
-                        }}
-                        style={{
-                          backgroundColor: '#6366f1',
-                          border: 'none',
-                          borderRadius: '8px',
-                          padding: '10px 12px',
-                          color: 'white',
-                          fontSize: '14px',
-                          cursor: 'pointer',
-                          transition: 'background-color 0.2s'
-                        }}
-                      >
-                        Generate New Image
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div style={{
-                    width: '400px',
-                    height: '500px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '16px'
-                  }}>
-                    <button
-                      onClick={() => {
-                        if (!isGeneratingImage) {
-                          generateImagePreview(true);
-                        }
-                      }}
-                      style={{
-                        backgroundColor: '#10b981',
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '10px 12px',
-                        color: 'white',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                    >
-                      Generate Prayer Image
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Platform Sharing Buttons - only show if image is ready */}
-              {generatedImageUrl && !isGeneratingImage && (
-                <>
-                  <h4 style={{
-                    color: 'white',
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginBottom: '16px',
-                    textAlign: 'center',
-                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
-                  }}>
-                    Choose Your Platform
-                  </h4>
-
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                    gap: '12px',
-                    marginBottom: '16px'
-                  }}>
-                    {/* Email Button */}
-                    <button
-                      onClick={async () => {
-                        await shareImageFile('email');
-                        setShowImageSharingDialog(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 12px',
-                        backgroundColor: '#ea4335',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                    >
-                      <Mail size={16} />
-                      Email
-                    </button>
-
-                    {/* Messages Button */}
-                    <button
-                      onClick={async () => {
-                        await shareImageFile('messages');
-                        setShowImageSharingDialog(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 12px',
-                        backgroundColor: '#007aff',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                    >
-                      <Smartphone size={16} />
-                      Messages
-                    </button>
-
-                    {/* Instagram Button */}
-                    <button
-                      onClick={async () => {
-                        await shareImageFile('instagram');
-                        setShowImageSharingDialog(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 12px',
-                        backgroundColor: '#e4405f',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                    >
-                      <Instagram size={16} />
-                      Instagram
-                    </button>
-
-                    {/* Facebook Button */}
-                    <button
-                      onClick={async () => {
-                        await shareImageFile('facebook');
-                        setShowImageSharingDialog(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 12px',
-                        backgroundColor: '#1877f2',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                    >
-                      <Facebook size={16} />
-                      Facebook
-                    </button>
-                  </div>
-
-                  {/* Instructions */}
-                  <p style={{
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    fontSize: '14px',
-                    textAlign: 'center',
-                    lineHeight: '1.5',
-                    marginTop: '16px',
-                    fontStyle: 'italic'
-                  }}>
-                    ✓ Click any platform above to download your image file and open the sharing destination<br/>
-                    ✓ The actual image file will be saved to your device's Downloads folder<br/>
-                    ✓ Simply attach the downloaded image file when sharing
-                  </p>
-                </>
-              )}
-
-              {/* Spinning animation */}
-              <style>{`
-                @keyframes spin {
-                  0% { transform: rotate(0deg); }
-                  100% { transform: rotate(360deg); }
-                }
-              `}</style>
-            </div>
-          </div>
-          )}
 
           {/* Audio Sharing Dialog */}
           {showAudioSharingDialog && (
