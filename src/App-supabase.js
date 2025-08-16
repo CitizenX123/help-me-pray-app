@@ -431,15 +431,32 @@ const HelpMePrayApp = ({ user, setUser }) => {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       
-      // Photo-realistic backgrounds
-      const photos = [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=1500&fit=crop&crop=center&q=85',
-        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&h=1500&fit=crop&crop=center&q=85',
-        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&h=1500&fit=crop&crop=center&q=85',
-        'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=1500&fit=crop&crop=center&q=85',
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=1500&fit=crop&crop=center&q=85'
-      ];
+      // Category-specific photo backgrounds
+      const categoryPhotos = {
+        bedtime: [
+          // Nighttime scenes with moon, stars, and peaceful water
+          'https://images.unsplash.com/photo-1507908708918-778587c9e563?w=1200&h=1500&fit=crop&crop=center&q=85', // Moon and stars over water
+          'https://images.unsplash.com/photo-1509233725247-49e657c54213?w=1200&h=1500&fit=crop&crop=center&q=85', // Starry night sky
+          'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&h=1500&fit=crop&crop=center&q=85', // Night sky with stars
+          'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=1200&h=1500&fit=crop&crop=center&q=85', // Moon reflection on water
+          'https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?w=1200&h=1500&fit=crop&crop=center&q=85'  // Night lake with stars
+        ],
+        morning: [
+          // Sunrise and morning scenes
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=1500&fit=crop&crop=center&q=85',
+          'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&h=1500&fit=crop&crop=center&q=85',
+          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&h=1500&fit=crop&crop=center&q=85'
+        ],
+        default: [
+          // General peaceful scenes for other categories
+          'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=1500&fit=crop&crop=center&q=85',
+          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=1500&fit=crop&crop=center&q=85',
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=1500&fit=crop&crop=center&q=85'
+        ]
+      };
       
+      // Select appropriate photo array based on category
+      const photos = categoryPhotos[selectedCategory] || categoryPhotos.default;
       const photoUrl = photos[Math.floor(Math.random() * photos.length)];
       
       // Load photo background
