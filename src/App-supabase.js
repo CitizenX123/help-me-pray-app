@@ -2046,7 +2046,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       } else {
         const personRef = firstName || (language === 'es' ? 'esta persona' : 'this person');
         const possessive = firstName ? (language === 'es' ? `de ${firstName}` : firstName + "'s") : (language === 'es' ? 'su' : 'their');
-        const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
+        const objectPronoun = language === 'es' ? 'él/ella' : 'them';
         
         if (language === 'es') {
           prayerTemplate = `${randomOpening} vengo ante ti con el corazón pesado, elevando a ${personRef} quien está luchando con esta situación: ${filteredRequest}. Señor, tú ves el dolor y la lucha que está experimentando. Pido tu intervención divina en la vida ${possessive}. Rompe las cadenas que atan a ${objectPronoun} y dale fuerza para superar estos desafíos. ${randomClosing} Confiamos en tu poder para redimir y restaurar a ${objectPronoun}. Amén.`;
@@ -2173,7 +2173,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
       } else {
         const personRef = firstName || (language === 'es' ? 'esta persona' : 'this person');
         const possessive = firstName ? (language === 'es' ? `de ${firstName}` : firstName + "'s") : (language === 'es' ? 'su' : 'their');
-        const objectPronoun = firstName || (language === 'es' ? 'él/ella' : 'them');
+        const objectPronoun = language === 'es' ? 'él/ella' : 'them';
         
         if (language === 'es') {
           if (length === 'comprehensive') {
