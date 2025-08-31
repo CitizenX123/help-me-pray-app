@@ -3542,7 +3542,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 padding: '8px 12px',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: 'rgba(255, 255, 255, 0.8)',
+                color: '#374151',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 backdropFilter: 'blur(4px)'
