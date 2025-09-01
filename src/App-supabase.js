@@ -6953,8 +6953,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             </button>
           </div>
           
-        <div style={{ textAlign: 'center', color: 'white' }}>
-          {/* App Title with Logo */}
+          <div style={{ textAlign: 'center', color: 'white' }}>
+            {/* App Title with Logo */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -7345,6 +7345,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
           </div>
+        </div>
         </div>
       </div>
     );
