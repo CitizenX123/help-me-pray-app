@@ -6953,45 +6953,22 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ width: '100%', maxWidth: '600px', position: 'relative' }}>
-          {/* Header container with language toggle integrated */}
-          <div style={{ position: 'relative', marginBottom: '16px' }}>
-            {/* Language Toggle - positioned absolutely */}
-            <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
-              <button
-                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  backdropFilter: 'blur(4px)',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 1)';
-                  e.target.style.transform = 'scale(1.05)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.9)';
-                  e.target.style.transform = 'scale(1)';
-                }}
-              >
-                {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-              </button>
-            </div>
+          {/* Header container with language toggle */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            justifyContent: 'space-between',
+            marginBottom: '16px',
+            position: 'relative'
+          }}>
+            {/* Invisible placeholder for balance */}
+            <div style={{ width: '120px', flexShrink: 0 }}></div>
             
             {/* Centered App Title with Logo */}
             <div style={{ 
+              flex: 1,
               textAlign: 'center', 
-              color: 'white',
-              paddingTop: '0',
-              paddingRight: '120px', // Add right padding to account for language button
-              paddingLeft: '120px'   // Add matching left padding for perfect centering
+              color: 'white'
             }}>
               <div style={{
                 display: 'flex',
@@ -7020,6 +6997,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   {t('appTitle')}
                 </h1>
               </div>
+            </div>
+
+            {/* Language Toggle - positioned on the right */}
+            <div style={{ width: '120px', flexShrink: 0, display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.9)',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  backdropFilter: 'blur(4px)',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 1)';
+                  e.target.style.transform = 'scale(1.05)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+              </button>
             </div>
           </div>
           
@@ -7385,7 +7392,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
           </div>
-          )}
         </div>
       </div>
     );
