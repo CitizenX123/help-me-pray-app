@@ -6666,6 +6666,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Language Toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.9)',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#374151',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 1)';
+                e.target.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+            </button>
+          </div>
+          
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '30px' }}>
             {/* App Title with Logo */}
@@ -6892,6 +6922,37 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         justifyContent: 'center',
         padding: '20px'
       }}>
+        <div style={{ width: '100%', maxWidth: '600px', position: 'relative' }}>
+          {/* Language Toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.9)',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#374151',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 1)';
+                e.target.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+            </button>
+          </div>
+          
         <div style={{ textAlign: 'center', color: 'white' }}>
           {/* App Title with Logo */}
           <div style={{
@@ -7302,6 +7363,36 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          {/* Language Toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.9)',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#374151',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 1)';
+                e.target.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+            </button>
+          </div>
+          
           {/* App Title with Logo */}
           <div style={{ 
             textAlign: 'center', 
