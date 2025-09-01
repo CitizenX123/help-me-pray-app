@@ -130,7 +130,17 @@ const translations = {
     whatToPrayAbout: "What would you like to pray about?",
     describePrayer: "Describe your prayer here...",
     characters: "characters",
-    mayThisPrayerBring: "May this prayer bring you peace and guidance"
+    mayThisPrayerBring: "May this prayer bring you peace and guidance",
+    generatePrayerImage: "Generate Prayer Image",
+    // Generate button texts
+    generateGratitude: "Generate A Prayer for Gratitude",
+    generateMorning: "Generate A Prayer for Morning",
+    generateBedtime: "Generate A Prayer for Bedtime",
+    generateHealing: "Generate A Prayer for Healing",
+    generateFamily: "Generate A Prayer for Family and Friends",
+    generateGrace: "Generate A Prayer for Grace",
+    generateBibleVerses: "Generate A Prayer for Bible Verses",
+    generateCustom: "Generate A Custom Prayer"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -231,7 +241,17 @@ const translations = {
     whatToPrayAbout: "¿Por qué te gustaría orar?",
     describePrayer: "Describe tu oración aquí...",
     characters: "caracteres",
-    mayThisPrayerBring: "Que esta oración te traiga paz y guía"
+    mayThisPrayerBring: "Que esta oración te traiga paz y guía",
+    generatePrayerImage: "Generar Imagen de Oración",
+    // Generate button texts
+    generateGratitude: "Generar una Oración de Gratitud",
+    generateMorning: "Generar una Oración Matutina",
+    generateBedtime: "Generar una Oración Nocturna",
+    generateHealing: "Generar una Oración de Sanación",
+    generateFamily: "Generar una Oración para Familia y Amigos",
+    generateGrace: "Generar una Oración de Bendición",
+    generateBibleVerses: "Generar una Oración Bíblica",
+    generateCustom: "Generar una Oración Personalizada"
   }
 };
 
@@ -5117,10 +5137,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       </div>
                     </div>
                     <p style={{ fontSize: '18px', marginBottom: '8px', textAlign: 'center' }}>
-                      Ready to generate a {prayerCategories[selectedCategory].name.toLowerCase()} prayer
+                      {t('readyToGenerate')} {prayerCategories[selectedCategory].name.toLowerCase()} {t('prayer')}
                     </p>
                     <p style={{ fontSize: '14px', textAlign: 'center', margin: 0 }}>
-                      Click "Generate Prayer" to begin
+                      {t('clickGenerate')}
                     </p>
                     
                     {/* Prayer History and Sign Out buttons */}
@@ -5986,7 +6006,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     cursor: 'pointer'
                   }}
                 >
-                  Generate Prayer Image
+                  {t('generatePrayerImage')}
                 </button>
               </div>
             )}
@@ -7277,16 +7297,16 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               >
                 {(() => {
                   const buttonTextMap = {
-                    gratitude: 'Generate A Prayer for Gratitude',
-                    morning: 'Generate A Prayer for Morning', 
-                    bedtime: 'Generate A Prayer for Bedtime',
-                    healing: 'Generate A Prayer for Healing',
-                    family: 'Generate A Prayer for Family and Friends',
-                    grace: 'Generate A Prayer for Grace',
-                    bibleVerses: 'Generate A Prayer for Bible Verses',
-                    custom: 'Generate A Custom Prayer'
+                    gratitude: t('generateGratitude'),
+                    morning: t('generateMorning'), 
+                    bedtime: t('generateBedtime'),
+                    healing: t('generateHealing'),
+                    family: t('generateFamily'),
+                    grace: t('generateGrace'),
+                    bibleVerses: t('generateBibleVerses'),
+                    custom: t('generateCustom')
                   };
-                  return buttonTextMap[selectedCategory] || 'Generate Prayer';
+                  return buttonTextMap[selectedCategory] || t('generatePrayer');
                 })()}
               </button>
 
