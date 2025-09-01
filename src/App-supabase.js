@@ -140,7 +140,12 @@ const translations = {
     generateFamily: "Generate A Prayer for Family and Friends",
     generateGrace: "Generate A Prayer for Grace",
     generateBibleVerses: "Generate A Prayer for Bible Verses",
-    generateCustom: "Generate A Custom Prayer"
+    generateCustom: "Generate A Custom Prayer",
+    // Custom prayer form
+    createYourCustomPrayer: "Create Your Custom Prayer",
+    customizeYourPrayer: "Customize Your",
+    customPrayer: "Prayer",
+    thisPrayerIsFor: "This prayer is for:"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -251,7 +256,12 @@ const translations = {
     generateFamily: "Generar una Oración para Familia y Amigos",
     generateGrace: "Generar una Oración de Bendición",
     generateBibleVerses: "Generar una Oración Bíblica",
-    generateCustom: "Generar una Oración Personalizada"
+    generateCustom: "Generar una Oración Personalizada",
+    // Custom prayer form
+    createYourCustomPrayer: "Crear tu Oración Personalizada",
+    customizeYourPrayer: "Personaliza tu Oración de",
+    customPrayer: "Oración",
+    thisPrayerIsFor: "Esta oración es para:"
   }
 };
 
@@ -6943,64 +6953,74 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         padding: '20px'
       }}>
         <div style={{ width: '100%', maxWidth: '600px', position: 'relative' }}>
-          {/* Language Toggle */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(255, 255, 255, 0.9)',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#374151',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backdropFilter: 'blur(4px)',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 1)';
-                e.target.style.transform = 'scale(1.05)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.9)';
-                e.target.style.transform = 'scale(1)';
-              }}
-            >
-              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-            </button>
-          </div>
-          
-          <div style={{ textAlign: 'center', color: 'white' }}>
-            {/* App Title with Logo */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            marginBottom: '40px'
-          }}>
-            <img 
-              src="/prayhands.png" 
-              alt="Praying hands" 
-              style={{ 
-                width: '80px', 
-                height: '80px',
-                filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
-              }} 
-            />
-            <h1 style={{ 
-              color: 'white', 
-              fontSize: '28px', 
-              fontWeight: '600',
-              textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-              margin: '0'
+          {/* Header container with language toggle integrated */}
+          <div style={{ position: 'relative', marginBottom: '16px' }}>
+            {/* Language Toggle - positioned absolutely */}
+            <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.9)',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  backdropFilter: 'blur(4px)',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 1)';
+                  e.target.style.transform = 'scale(1.05)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+              </button>
+            </div>
+            
+            {/* Centered App Title with Logo */}
+            <div style={{ 
+              textAlign: 'center', 
+              color: 'white',
+              paddingTop: '0',
+              paddingRight: '120px', // Add right padding to account for language button
+              paddingLeft: '120px'   // Add matching left padding for perfect centering
             }}>
-              Help Me Pray
-            </h1>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                marginBottom: '40px'
+              }}>
+                <img 
+                  src="/prayhands.png" 
+                  alt="Praying hands" 
+                  style={{ 
+                    width: '80px', 
+                    height: '80px',
+                    filter: 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
+                  }} 
+                />
+                <h1 style={{ 
+                  color: 'white', 
+                  fontSize: '28px', 
+                  fontWeight: '600',
+                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                  margin: '0'
+                }}>
+                  {t('appTitle')}
+                </h1>
+              </div>
+            </div>
           </div>
           
           {showCustomForm ? (
@@ -7044,8 +7064,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
                 }}>
                   {selectedCategory === 'custom' 
-                    ? 'Create Your Custom Prayer'
-                    : `Customize Your ${categories.find(c => c.key === selectedCategory)?.name || 'Custom'} Prayer`
+                    ? t('createYourCustomPrayer')
+                    : `${t('customizeYourPrayer')} ${categories.find(c => c.key === selectedCategory)?.name || t('custom')} ${t('customPrayer')}`
                   }
                 </div>
               </div>
@@ -7062,7 +7082,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               {/* Prayer For Selection */}
               <div style={{ marginBottom: '20px' }}>
                 <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '12px', fontSize: '14px' }}>
-                  This prayer is for:
+                  {t('thisPrayerIsFor')}
                 </p>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
                   <button
