@@ -7385,7 +7385,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
           </div>
-        </div>
+            </>
+          )}
         </div>
       </div>
     );
