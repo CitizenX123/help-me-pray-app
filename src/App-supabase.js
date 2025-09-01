@@ -4120,7 +4120,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       <img src="/logo192.png" alt="Praying hands" style={{ width: '24px', height: '24px' }} />
                     </div>
                     <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'white', margin: 0, textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
-                      Create Custom Prayer
+                      {t('custom')}
                     </h2>
                   </div>
                   
@@ -6756,14 +6756,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           }}>
             {categories.map((category) => {
               const categoryDescriptions = {
-                gratitude: "Prayers for thanksgiving and expressing appreciation",
-                morning: "Prayers to start your day with purpose and hope", 
-                bedtime: "Prayers for reflection, rest, and peaceful sleep",
-                healing: "Prayers for physical, emotional, and spiritual restoration",
-                family: "Prayers for relationships and loved ones",
-                grace: "Dedicated to blessing the meals",
-                bibleVerses: "Prayers inspired by Scripture",
-                custom: "Generate personalized prayers for any situation"
+                gratitude: t('gratitudeDesc'),
+                morning: t('morningDesc'),
+                bedtime: t('bedtimeDesc'),
+                healing: t('healingDesc'),
+                family: t('familyDesc'),
+                grace: t('graceDesc'),
+                bibleVerses: t('bibleVersesDesc'),
+                custom: t('customDesc')
               };
               
               return (
@@ -6828,7 +6828,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     }}>
                       {category.key === 'custom' ? (
                         <div style={{ lineHeight: '1.1', whiteSpace: 'pre-line' }}>
-                          Create Custom{'\n'}Prayer
+                          {t('custom')}
                         </div>
                       ) : (
                         category.name
