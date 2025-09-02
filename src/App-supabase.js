@@ -6193,13 +6193,31 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               }}>
                 {t('appTitle')}
               </h1>
+              
+              {/* Simple centered language toggle */}
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '16px',
+                  padding: '6px 12px',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  marginTop: '12px'
+                }}
+              >
+                {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
+              </button>
             </div>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
               fontSize: '16px',
               textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' 
             }}>
-              Find peace through prayer
+              {t('appSubtitle')}
             </p>
           </div>
 
@@ -6619,42 +6637,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               </div>
             </div>
           </div>
-
-          {/* Bottom-centered language toggle */}
-          <div style={{
-            position: 'fixed',
-            bottom: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000
-          }}>
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(0, 0, 0, 0.6)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '20px',
-                padding: '8px 16px',
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.8)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.6)';
-                e.target.style.transform = 'translateY(0px)';
-              }}
-            >
-              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -6968,6 +6950,24 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               }}>
                 {t('appTitle')}
               </h1>
+              
+              {/* Simple centered language toggle */}
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '16px',
+                  padding: '6px 12px',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  marginTop: '12px'
+                }}
+              >
+                {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
+              </button>
             </div>
           </div>
           
@@ -7415,6 +7415,24 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             }}>
               {t('appTitle')}
             </h1>
+            
+            {/* Simple centered language toggle */}
+            <button
+              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '16px',
+                padding: '6px 12px',
+                color: 'white',
+                fontSize: '12px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                marginTop: '12px'
+              }}
+            >
+              {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
+            </button>
           </div>
 
           {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
@@ -9257,42 +9275,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
               </div>
             )}
-          </div>
-
-          {/* Bottom-centered language toggle */}
-          <div style={{
-            position: 'fixed',
-            bottom: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000
-          }}>
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(0, 0, 0, 0.6)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '20px',
-                padding: '8px 16px',
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.8)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.6)';
-                e.target.style.transform = 'translateY(0px)';
-              }}
-            >
-              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-            </button>
           </div>
         </div>
       </div>
