@@ -6952,38 +6952,8 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         justifyContent: 'center',
         padding: '20px'
       }}>
-        <div style={{ width: '100%', maxWidth: '600px', position: 'relative' }}>
-          {/* Language Toggle - positioned absolutely in top right */}
-          <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(255, 255, 255, 0.9)',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#374151',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backdropFilter: 'blur(4px)',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 1)';
-                e.target.style.transform = 'scale(1.05)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.9)';
-                e.target.style.transform = 'scale(1)';
-              }}
-            >
-              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-            </button>
-          </div>
-
-          {/* Centered App Title with Logo - completely independent */}
+        <div style={{ width: '100%', maxWidth: '600px' }}>
+          {/* Perfectly Centered App Title with Logo - no interference */}
           <div style={{ 
             textAlign: 'center', 
             color: 'white',
@@ -7357,11 +7327,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           </>
           )}
           
-          {/* Navigation Arrow - Below content, aligned left */}
+          {/* Navigation and Language Controls */}
           <div style={{
             marginTop: '8px',
-            textAlign: 'left'
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
           }}>
+            {/* Back Arrow - Left aligned */}
             <button
               onClick={() => setCurrentScreen('prayer-selection')}
               style={{
@@ -7379,6 +7352,39 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             >
               ←
             </button>
+
+            {/* Language Toggle - Center bottom */}
+            <button
+              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+              style={{
+                background: 'rgba(0, 0, 0, 0.6)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '20px',
+                padding: '8px 16px',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(0, 0, 0, 0.8)';
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(0, 0, 0, 0.6)';
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                e.target.style.transform = 'translateY(0px)';
+              }}
+            >
+              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+            </button>
+
+            {/* Invisible spacer for balance */}
+            <div style={{ width: '48px' }}></div>
           </div>
         </div>
       </div>
