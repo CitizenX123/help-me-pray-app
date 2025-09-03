@@ -1,4 +1,6 @@
-# Getting Started with Create React App
+# Help Me Pray App
+
+A beautiful prayer app with Spanish language support and perfectly centered logos.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
