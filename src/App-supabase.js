@@ -6193,24 +6193,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               }}>
                 {t('appTitle')}
               </h1>
-              
-              {/* Simple centered language toggle */}
-              <button
-                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '16px',
-                  padding: '6px 12px',
-                  color: 'white',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  marginTop: '12px'
-                }}
-              >
-                {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
-              </button>
             </div>
             <p style={{ 
               color: 'rgba(255, 255, 255, 0.8)', 
@@ -6950,24 +6932,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               }}>
                 {t('appTitle')}
               </h1>
-              
-              {/* Simple centered language toggle */}
-              <button
-                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '16px',
-                  padding: '6px 12px',
-                  color: 'white',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  marginTop: '12px'
-                }}
-              >
-                {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
-              </button>
             </div>
           </div>
           
@@ -7415,24 +7379,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             }}>
               {t('appTitle')}
             </h1>
-            
-            {/* Simple centered language toggle */}
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '16px',
-                padding: '6px 12px',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                marginTop: '12px'
-              }}
-            >
-              {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
-            </button>
           </div>
 
           {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
