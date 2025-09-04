@@ -88,6 +88,8 @@ const translations = {
     finalClosingLong: "We offer this prayer in faith, believing in your goodness and love. In Jesus' name we pray, Amen.",
     comprehensiveMiddle1: "We come before you with humble hearts, acknowledging your sovereignty and grace in our lives.",
     comprehensiveMiddle2: "We trust in your perfect timing and your infinite wisdom, knowing that you work all things together for our good.",
+    mediumMiddle: "We trust in your perfect timing and boundless mercy. May your will be done in every aspect of our lives.",
+    fallbackPrayer: "Dear God, we come to you with grateful hearts. Thank you for your love and guidance. Please bless us and help us to grow in faith. In your holy name, Amen.",
     // Custom prayer templates
     addictionSelf: "Heavenly Father, I come to you broken and in desperate need of your healing power. Lord, I confess that I cannot overcome this addiction on my own - I need your divine intervention. Break the chains that bind me and set me free from this destructive cycle. Give me strength for each moment of temptation and surround me with people who will support my recovery. I trust in your power to make me new. Amen.",
     addictionOther: "Compassionate God, I come to you with a heavy heart, lifting up",
@@ -214,6 +216,8 @@ const translations = {
     finalClosingLong: "Ofrecemos esta oración con fe, creyendo en tu bondad y amor. En el nombre de Jesús oramos, Amén.",
     comprehensiveMiddle1: "Venimos ante ti con corazones humildes, reconociendo tu soberanía y gracia en nuestras vidas.",
     comprehensiveMiddle2: "Confiamos en tu tiempo perfecto y tu sabiduría infinita, sabiendo que todas las cosas obran para nuestro bien.",
+    mediumMiddle: "Confiamos en tu tiempo perfecto y misericordia infinita. Que tu voluntad se haga en todos los aspectos de nuestras vidas.",
+    fallbackPrayer: "Querido Dios, venimos ante ti con corazones agradecidos. Gracias por tu amor y guía. Por favor bendícenos y ayúdanos a crecer en fe. En tu santo nombre, Amén.",
     // Custom prayer templates
     addictionSelf: "Padre Celestial, vengo ante ti quebrantado y necesitando desesperadamente tu poder sanador. Señor, confieso que no puedo superar esta adicción por mi cuenta - necesito tu intervención divina. Rompe las cadenas que me atan y libérame de este ciclo destructivo. Dame fuerza para cada momento de tentación y rodéame de personas que apoyen mi recuperación. Confío en tu poder para hacerme nuevo. Amén.",
     addictionOther: "Dios compasivo, vengo ante ti con el corazón pesado, elevando a",
@@ -1614,7 +1618,7 @@ May this verse continue to speak to your heart throughout the day, bringing you 
       
       return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
 
-${randomTransition}, ${subjects[2]}. ${subjects[3]}. We trust in your perfect timing and boundless mercy. May your will be done in every aspect of our lives.
+${randomTransition}, ${subjects[2]}. ${subjects[3]}. ${t('mediumMiddle')}
 
 ${closings[0]} ${closings[1]} ${t('finalClosingLong')}`;
       
@@ -3101,7 +3105,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         
         if (!generatedPrayer) {
           console.error('Prayer generation returned null/undefined');
-          generatedPrayer = `Dear God, we come to you with grateful hearts. Thank you for your love and guidance. Please bless us and help us to grow in faith. In your holy name, Amen.`;
+          generatedPrayer = t('fallbackPrayer');
         }
         
         const cleanedPrayer = cleanupPrayerText(generatedPrayer);
