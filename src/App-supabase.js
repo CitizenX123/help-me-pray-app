@@ -6201,6 +6201,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             }}>
               {t('appSubtitle')}
             </p>
+            
+            {/* Simple Language Toggle */}
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '20px',
+                  padding: '8px 16px',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+              </button>
+            </div>
           </div>
 
           {/* Login Form */}
@@ -6236,7 +6255,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
               >
                 <User size={20} />
-                Continue with Google
+                {t('continueWithGoogle')}
               </button>
               
               <button
@@ -6260,7 +6279,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
               >
                 <UserCheck size={20} />
-                Continue as Guest
+                {t('continueAsGuest')}
               </button>
 
               {/* Divider */}
@@ -6271,7 +6290,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 margin: '20px 0'
               }}>
                 <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }}></div>
-                <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>or</span>
+                <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>{language === 'en' ? 'or' : 'o'}</span>
                 <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }}></div>
               </div>
 
@@ -6287,7 +6306,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       marginBottom: '8px',
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
                     }}>
-                      Email Address
+                      {t('emailAddress')}
                     </label>
                     <input
                       type="email"
@@ -6305,7 +6324,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         backdropFilter: 'blur(10px)',
                         boxSizing: 'border-box'
                       }}
-                      placeholder="Enter your email"
+                      placeholder={t('enterEmail')}
                     />
                   </div>
                   
@@ -6336,7 +6355,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         backdropFilter: 'blur(10px)',
                         boxSizing: 'border-box'
                       }}
-                      placeholder="Enter your password"
+                      placeholder={t('enterPassword')}
                     />
                   </div>
 
@@ -6416,7 +6435,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       marginBottom: '8px',
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
                     }}>
-                      Email Address
+                      {t('emailAddress')}
                     </label>
                     <input
                       type="email"
@@ -6434,7 +6453,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         backdropFilter: 'blur(10px)',
                         boxSizing: 'border-box'
                       }}
-                      placeholder="Enter your email"
+                      placeholder={t('enterEmail')}
                     />
                   </div>
                   
@@ -6465,7 +6484,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         backdropFilter: 'blur(10px)',
                         boxSizing: 'border-box'
                       }}
-                      placeholder="Enter your password"
+                      placeholder={t('enterPassword')}
                     />
                     {/* Password strength indicator */}
                     {password && (
