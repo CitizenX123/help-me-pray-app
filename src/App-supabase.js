@@ -145,7 +145,10 @@ const translations = {
     createYourCustomPrayer: "Create Your Custom Prayer",
     customizeYourPrayer: "Customize Your",
     customPrayer: "Prayer",
-    thisPrayerIsFor: "This prayer is for:"
+    thisPrayerIsFor: "This prayer is for:",
+    // User status
+    signedInAs: "Signed in as",
+    guest: "Guest"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -261,7 +264,10 @@ const translations = {
     createYourCustomPrayer: "Crear tu Oración Personalizada",
     customizeYourPrayer: "Personaliza tu Oración de",
     customPrayer: "Oración",
-    thisPrayerIsFor: "Esta oración es para:"
+    thisPrayerIsFor: "Esta oración es para:",
+    // User status
+    signedInAs: "Conectado como",
+    guest: "Invitado"
   }
 };
 
@@ -6875,7 +6881,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
                 textAlign: 'right'
               }}>
-                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+                {t('signedInAs')} {user.id === 'guest' ? t('guest') : user.user_metadata?.full_name || user.email}
               </div>
             )}
           </div>
@@ -7370,6 +7376,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             }}>
               {t('appTitle')}
             </h1>
+            
+            {/* Simple Language Toggle */}
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '20px',
+                  padding: '8px 16px',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+              </button>
+            </div>
           </div>
 
           {/* Prayer Display with Integrated Title Bar - Match Category Button Styling */}
@@ -7536,7 +7561,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
                 textAlign: 'right'
               }}>
-                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+                {t('signedInAs')} {user.id === 'guest' ? t('guest') : user.user_metadata?.full_name || user.email}
               </div>
             )}
           </div>
@@ -7733,7 +7758,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
                 textAlign: 'right'
               }}>
-                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+                {t('signedInAs')} {user.id === 'guest' ? t('guest') : user.user_metadata?.full_name || user.email}
               </div>
             )}
           </div>
@@ -8115,7 +8140,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
                 textAlign: 'right'
               }}>
-                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+                {t('signedInAs')} {user.id === 'guest' ? t('guest') : user.user_metadata?.full_name || user.email}
               </div>
             )}
           </div>
@@ -8438,7 +8463,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
                 textAlign: 'right'
               }}>
-                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+                {t('signedInAs')} {user.id === 'guest' ? t('guest') : user.user_metadata?.full_name || user.email}
               </div>
             )}
           </div>
@@ -9209,7 +9234,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
                 textAlign: 'right'
               }}>
-                Signed in as {user.id === 'guest' ? 'Guest' : user.user_metadata?.full_name || user.email}
+                {t('signedInAs')} {user.id === 'guest' ? t('guest') : user.user_metadata?.full_name || user.email}
               </div>
             )}
           </div>
