@@ -8517,16 +8517,35 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               gap: '8px'
             }}>
               <Share2 size={22} color="white" />
-              Share Your Prayer
+              {language === 'en' ? 'Share Your Prayer' : 'Comparte tu Oración'}
             </h2>
             <p style={{
               color: 'rgba(255, 255, 255, 0.8)',
               fontSize: '13px',
-              margin: '0',
+              margin: '0 0 16px 0',
               lineHeight: '1.4'
             }}>
-              See your image and listen to your audio, then share what you like
+              {language === 'en' ? 'See your image and listen to your audio, then share what you like' : 'Mira tu imagen y escucha tu audio, luego comparte lo que te guste'}
             </p>
+
+            {/* Simple Language Toggle */}
+            <div style={{ textAlign: 'center' }}>
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '20px',
+                  padding: '6px 12px',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                {language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
+              </button>
+            </div>
           </div>
 
           {/* Generated Image Display */}
