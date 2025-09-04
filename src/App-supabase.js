@@ -157,7 +157,19 @@ const translations = {
     imageSharingOptions: "Image Sharing Options",
     audioSharingOptions: "Audio Sharing Options",
     shareAudio: "Share Prayer Audio",
-    shareBoth: "Share Both Image & Audio"
+    shareBoth: "Share Both Image & Audio",
+    // Prayer titles
+    prayerForMorning: "A Prayer for Morning",
+    prayerForGratitude: "A Prayer for Gratitude", 
+    prayerForBedtime: "A Prayer for Bedtime",
+    prayerForHealing: "A Prayer for Healing",
+    prayerForFamily: "A Prayer for Family and Friends",
+    prayerForGrace: "A Prayer for Grace",
+    prayerForBibleVerses: "A Prayer for Bible Verses",
+    prayerForCustom: "A Custom Prayer",
+    // Sharing text
+    generatedWith: "Generated with",
+    downloadApp: "Download"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -285,7 +297,19 @@ const translations = {
     imageSharingOptions: "Opciones para Compartir Imagen",
     audioSharingOptions: "Opciones para Compartir Audio",
     shareAudio: "Compartir Audio de Oración",
-    shareBoth: "Compartir Imagen y Audio"
+    shareBoth: "Compartir Imagen y Audio",
+    // Prayer titles
+    prayerForMorning: "Una Oración para la Mañana",
+    prayerForGratitude: "Una Oración de Gratitud",
+    prayerForBedtime: "Una Oración para Dormir",
+    prayerForHealing: "Una Oración de Sanidad",
+    prayerForFamily: "Una Oración por Familia y Amigos",
+    prayerForGrace: "Una Oración de Gracia",
+    prayerForBibleVerses: "Una Oración con Versículos Bíblicos",
+    prayerForCustom: "Una Oración Personalizada",
+    // Sharing text
+    generatedWith: "Generado con",
+    downloadApp: "Descargar"
   }
 };
 
@@ -546,13 +570,13 @@ const HelpMePrayApp = ({ user, setUser }) => {
       
       // Add title with proper text wrapping and bounds checking
       const titles = {
-        morning: 'A Prayer for Morning',
-        gratitude: 'A Prayer for Gratitude',
-        bedtime: 'A Prayer for Bedtime',
-        healing: 'A Prayer for Healing',
-        family: 'A Prayer for Family and Friends',
-        grace: 'A Prayer for Grace',
-        bibleVerses: 'A Prayer for Bible Verses'
+        morning: t('prayerForMorning'),
+        gratitude: t('prayerForGratitude'),
+        bedtime: t('prayerForBedtime'),
+        healing: t('prayerForHealing'),
+        family: t('prayerForFamily'),
+        grace: t('prayerForGrace'),
+        bibleVerses: t('prayerForBibleVerses')
       };
       
       const titleText = titles[selectedCategory] || 'Prayer';
@@ -684,7 +708,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
       if (logoLoaded) {
         // Logo + text branding with improved quality
         const logoSz = 180; // 3x scale from 60px for better quality
-        const brand = 'Help Me Pray App';
+        const brand = t('appTitle');
         ctx.font = 'bold 42px Arial'; // 3x scale from 14px
         const txtW = ctx.measureText(brand).width;
         const totW = logoSz + 24 + txtW; // 3x scale from 8px spacing
@@ -735,7 +759,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
         ctx.shadowBlur = 6; // 3x scale from 2px
         ctx.shadowOffsetX = 3; // 3x scale from 1px
         ctx.shadowOffsetY = 3; // 3x scale from 1px
-        ctx.fillText('Help Me Pray App', canvas.width / 2, brandY);
+        ctx.fillText(t('appTitle'), canvas.width / 2, brandY);
       }
       
       // Generate image
@@ -2300,7 +2324,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
   // Social sharing functions
   const formatPrayerForSharing = (prayer, includeAttribution = true) => {
-    const appBranding = "\n\n🙏 Generated with Help Me Pray\nDownload: helpmepray.app";
+    const appBranding = "\n\n🙏 ${t('generatedWith')} ${t('appTitle')}\nDownload: helpmepray.app";
     const attribution = shareAnonymously ? "" : (user ? `\n\nShared by ${user.user_metadata?.full_name || 'a friend'}` : "");
     
     return `${prayer}${includeAttribution ? attribution : ""}${appBranding}`;
@@ -7451,14 +7475,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     ? currentPrayerInfo.customTopic
                     : (() => {
                         const categoryNames = {
-                          gratitude: 'A Prayer for Gratitude',
-                          morning: 'A Prayer for Morning', 
-                          bedtime: 'A Prayer for Bedtime',
-                          healing: 'A Prayer for Healing',
-                          family: 'A Prayer for Family and Friends',
-                          grace: 'A Prayer for Grace',
-                          bibleVerses: 'A Prayer for Bible Verses',
-                          custom: 'A Custom Prayer'
+                          gratitude: t('prayerForGratitude'),
+                          morning: t('prayerForMorning'), 
+                          bedtime: t('prayerForBedtime'),
+                          healing: t('prayerForHealing'),
+                          family: t('prayerForFamily'),
+                          grace: t('prayerForGrace'),
+                          bibleVerses: t('prayerForBibleVerses'),
+                          custom: t('prayerForCustom')
                         };
                         return categoryNames[currentPrayerInfo.category] || `${currentPrayerInfo.category.charAt(0).toUpperCase() + currentPrayerInfo.category.slice(1)} Prayer`;
                       })()
