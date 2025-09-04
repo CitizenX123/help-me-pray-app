@@ -1,6 +1,6 @@
 {
   "name": "help-me-pray-app",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "dependencies": {
     "@capacitor/android": "^7.4.2",
