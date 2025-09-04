@@ -6842,41 +6842,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             )}
           </div>
 
-          {/* Language Toggle - Bottom Center */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            marginTop: '20px' 
-          }}>
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(0, 0, 0, 0.6)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '20px',
-                padding: '8px 16px',
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.8)';
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.6)';
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                e.target.style.transform = 'translateY(0px)';
-              }}
-            >
-              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -7300,38 +7265,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               ←
             </button>
 
-            {/* Language Toggle - Center bottom */}
-            <button
-              onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
-              style={{
-                background: 'rgba(0, 0, 0, 0.6)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '20px',
-                padding: '8px 16px',
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.8)';
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.6)';
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                e.target.style.transform = 'translateY(0px)';
-              }}
-            >
-              {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
-            </button>
-
-            {/* Invisible spacer for balance */}
-            <div style={{ width: '48px' }}></div>
           </div>
         </div>
       </div>
