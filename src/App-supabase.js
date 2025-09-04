@@ -153,7 +153,9 @@ const translations = {
     share: "Share",
     logout: "Logout",
     imageSharingOptions: "Image Sharing Options",
-    audioSharingOptions: "Audio Sharing Options"
+    audioSharingOptions: "Audio Sharing Options",
+    shareAudio: "Share Prayer Audio",
+    shareBoth: "Share Both Image & Audio"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -277,7 +279,9 @@ const translations = {
     share: "Compartir",
     logout: "Cerrar Sesión",
     imageSharingOptions: "Opciones para Compartir Imagen",
-    audioSharingOptions: "Opciones para Compartir Audio"
+    audioSharingOptions: "Opciones para Compartir Audio",
+    shareAudio: "Compartir Audio de Oración",
+    shareBoth: "Compartir Imagen y Audio"
   }
 };
 
@@ -8874,7 +8878,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     gap: '8px'
                   }}>
                     <Headphones size={20} color="#10b981" />
-                    Share Prayer Audio
+                    {t('shareAudio')}
                   </h3>
                   <button
                     onClick={() => setShowAudioSharingDialog(false)}
@@ -8889,6 +8893,53 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   >
                     <X size={20} />
                   </button>
+                </div>
+
+                {/* Language Toggle for Audio Sharing Dialog */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  marginBottom: '16px' 
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '20px',
+                    padding: '2px'
+                  }}>
+                    <button
+                      onClick={() => handleLanguageChange('en')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '18px',
+                        border: 'none',
+                        background: language === 'en' ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
+                        color: language === 'en' ? '#000' : 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      EN
+                    </button>
+                    <button
+                      onClick={() => handleLanguageChange('es')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '18px',
+                        border: 'none',
+                        background: language === 'es' ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
+                        color: language === 'es' ? '#000' : 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      ES
+                    </button>
+                  </div>
                 </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
@@ -9069,7 +9120,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     gap: '8px'
                   }}>
                     <Package size={20} color="#f59e0b" />
-                    Share Both Image & Audio
+                    {t('shareBoth')}
                   </h3>
                   <button
                     onClick={() => setShowBothSharingDialog(false)}
@@ -9084,6 +9135,53 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   >
                     <X size={20} />
                   </button>
+                </div>
+
+                {/* Language Toggle for Both Sharing Dialog */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  marginBottom: '16px' 
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '20px',
+                    padding: '2px'
+                  }}>
+                    <button
+                      onClick={() => handleLanguageChange('en')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '18px',
+                        border: 'none',
+                        background: language === 'en' ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
+                        color: language === 'en' ? '#000' : 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      EN
+                    </button>
+                    <button
+                      onClick={() => handleLanguageChange('es')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '18px',
+                        border: 'none',
+                        background: language === 'es' ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
+                        color: language === 'es' ? '#000' : 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      ES
+                    </button>
+                  </div>
                 </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
