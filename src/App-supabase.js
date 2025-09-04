@@ -8908,7 +8908,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     padding: '2px'
                   }}>
                     <button
-                      onClick={() => handleLanguageChange('en')}
+                      onClick={() => changeLanguage('en')}
                       style={{
                         padding: '6px 12px',
                         borderRadius: '18px',
@@ -8924,7 +8924,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       EN
                     </button>
                     <button
-                      onClick={() => handleLanguageChange('es')}
+                      onClick={() => changeLanguage('es')}
                       style={{
                         padding: '6px 12px',
                         borderRadius: '18px',
@@ -9150,7 +9150,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     padding: '2px'
                   }}>
                     <button
-                      onClick={() => handleLanguageChange('en')}
+                      onClick={() => changeLanguage('en')}
                       style={{
                         padding: '6px 12px',
                         borderRadius: '18px',
@@ -9166,7 +9166,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       EN
                     </button>
                     <button
-                      onClick={() => handleLanguageChange('es')}
+                      onClick={() => changeLanguage('es')}
                       style={{
                         padding: '6px 12px',
                         borderRadius: '18px',
