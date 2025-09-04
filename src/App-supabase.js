@@ -6278,7 +6278,6 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
               >
-                <UserCheck size={20} />
                 {t('continueAsGuest')}
               </button>
 
