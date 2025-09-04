@@ -148,7 +148,12 @@ const translations = {
     thisPrayerIsFor: "This prayer is for:",
     // User status
     signedInAs: "Signed in as",
-    guest: "Guest"
+    guest: "Guest",
+    // Sharing
+    share: "Share",
+    logout: "Logout",
+    imageSharingOptions: "Image Sharing Options",
+    audioSharingOptions: "Audio Sharing Options"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -267,7 +272,12 @@ const translations = {
     thisPrayerIsFor: "Esta oración es para:",
     // User status
     signedInAs: "Conectado como",
-    guest: "Invitado"
+    guest: "Invitado",
+    // Sharing
+    share: "Compartir",
+    logout: "Cerrar Sesión",
+    imageSharingOptions: "Opciones para Compartir Imagen",
+    audioSharingOptions: "Opciones para Compartir Audio"
   }
 };
 
@@ -7494,7 +7504,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               }}
             >
               <Share2 size={20} />
-              Share
+              {t('share')}
             </button>
 
             {/* Logout Button */}
@@ -7517,7 +7527,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}
             >
-              Logout
+              {t('logout')}
             </button>
           </div>
           
@@ -7667,7 +7677,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                Image Sharing Options
+                {t('imageSharingOptions')}
               </button>
             </div>
 
@@ -7720,7 +7730,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                Audio Sharing Options
+                {t('audioSharingOptions')}
               </button>
             </div>
           </div>
