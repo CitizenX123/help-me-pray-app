@@ -6337,7 +6337,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       marginBottom: '8px',
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
                     }}>
-                      Password
+                      {t('password')}
                     </label>
                     <input
                       type="password"
@@ -6389,7 +6389,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    {authLoading ? 'Signing In...' : 'Sign In'}
+                    {authLoading ? (language === 'en' ? 'Signing In...' : 'Iniciando Sesión...') : t('signIn')}
                   </button>
                 </form>
               ) : (
@@ -6404,7 +6404,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       marginBottom: '8px',
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
                     }}>
-                      Full Name
+                      {t('fullName')}
                     </label>
                     <input
                       type="text"
@@ -6422,7 +6422,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         backdropFilter: 'blur(10px)',
                         boxSizing: 'border-box'
                       }}
-                      placeholder="Enter your full name"
+                      placeholder={t('enterFullName')}
                     />
                   </div>
 
@@ -6466,7 +6466,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       marginBottom: '8px',
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
                     }}>
-                      Password
+                      {t('password')}
                     </label>
                     <input
                       type="password"
@@ -6526,7 +6526,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                           fontSize: '12px', 
                           color: 'rgba(255, 255, 255, 0.7)' 
                         }}>
-                          Password must contain: 8+ chars, uppercase, lowercase, number, special char
+                          {t('password')} must contain: 8+ chars, uppercase, lowercase, number, special char
                         </div>
                       </div>
                     )}
@@ -6541,7 +6541,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       marginBottom: '8px',
                       textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' 
                     }}>
-                      Confirm Password
+                      {t('confirmPassword')}
                     </label>
                     <input
                       type="password"
@@ -6599,7 +6599,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    {authLoading ? 'Creating Account...' : 'Create Account'}
+                    {authLoading ? t('creatingAccount') : t('createAccount')}
                   </button>
                 </form>
               )}
@@ -6607,7 +6607,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               {/* Sign Up / Sign In Toggle */}
               <div style={{ marginTop: '20px', textAlign: 'center' }}>
                 <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px', margin: '0 0 8px 0' }}>
-                  {showSignUp ? 'Already have an account?' : "Don't have an account?"}
+                  {showSignUp ? t('alreadyHaveAccount') : t('dontHaveAccount')}
                 </p>
                 <button
                   onClick={() => {
@@ -6633,7 +6633,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   onMouseOver={(e) => e.target.style.color = '#3b82f6'}
                   onMouseOut={(e) => e.target.style.color = '#60a5fa'}
                 >
-                  {showSignUp ? 'Sign In' : 'Sign Up'}
+                  {showSignUp ? t('signIn') : t('signUp')}
                 </button>
               </div>
             </div>
