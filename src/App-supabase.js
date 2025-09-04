@@ -6898,6 +6898,25 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 {t('appTitle')}
               </h1>
             </div>
+            
+            {/* Simple Language Toggle */}
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <button
+                onClick={() => changeLanguage(language === 'en' ? 'es' : 'en')}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '20px',
+                  padding: '8px 16px',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                {language === 'en' ? '🇪🇸 Español' : '🇺🇸 English'}
+              </button>
+            </div>
           </div>
           
           {showCustomForm ? (
@@ -6907,13 +6926,14 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               borderRadius: '20px',
-              padding: '0',  // Remove padding since header will have its own
+              padding: '0',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)',
               marginBottom: '20px',
               maxWidth: '400px',
               width: '100%',
-              overflow: 'hidden'  // Ensure header bars fit cleanly
+              margin: '0 auto',
+              overflow: 'hidden'
             }}>
               {/* Header Section - Match category button design */}
               <div style={{
