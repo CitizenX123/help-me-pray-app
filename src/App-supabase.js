@@ -177,7 +177,12 @@ const translations = {
     prayerImageCopied: "Prayer image copied to clipboard! Paste it in",
     prayerTextCopied: "Prayer text copied!",
     beautifulPrayerImage: "Beautiful Prayer Image",
-    beautifulPrayerAudio: "Beautiful Prayer Audio"
+    beautifulPrayerAudio: "Beautiful Prayer Audio",
+    shareImage: "Share Image",
+    shareAudio: "Share Audio", 
+    shareBoth: "Share Both",
+    generateNewImage: "Generate New Image",
+    generatingImage: "Generating your beautiful prayer image..."
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -325,7 +330,12 @@ const translations = {
     prayerImageCopied: "¡Imagen de oración copiada al portapapeles! Pégala en",
     prayerTextCopied: "¡Texto de oración copiado!",
     beautifulPrayerImage: "Hermosa Imagen de Oración",
-    beautifulPrayerAudio: "Hermoso Audio de Oración"
+    beautifulPrayerAudio: "Hermoso Audio de Oración",
+    shareImage: "Compartir Imagen",
+    shareAudio: "Compartir Audio",
+    shareBoth: "Compartir Ambos",
+    generateNewImage: "Generar Nueva Imagen",
+    generatingImage: "Generando tu hermosa imagen de oración..."
   }
 };
 
@@ -5942,7 +5952,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             marginBottom: '20px',
             fontFamily: 'Georgia, serif'
           }}>
-            Share Your Prayer Image
+{t('imageSharingOptions')}
           </h1>
 
           {/* Generated Image Display */}
@@ -5969,7 +5979,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   <RefreshCw size={20} color="white" />
                 </div>
                 <br />
-                Generating your beautiful prayer image...
+{t('generatingImage')}
               </div>
             ) : generatedImageUrl ? (
               <>
@@ -5999,7 +6009,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     marginTop: '10px'
                   }}
                 >
-                  Generate New Image
+{t('generateNewImage')}
                 </button>
               </>
             ) : (
@@ -7704,7 +7714,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}>
                 <Share2 size={20} color="#10b981" />
-                Share Prayer Image
+{t('imageSharingOptions')}
               </h3>
               <p style={{ 
                 color: 'rgba(255, 255, 255, 0.8)', 
@@ -7757,7 +7767,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}>
                 <Volume2 size={20} color="#8b5cf6" />
-                Share Audio Prayer
+{t('shareAudio')} Prayer
               </h3>
               <p style={{ 
                 color: 'rgba(255, 255, 255, 0.8)', 
@@ -7870,7 +7880,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 margin: 0,
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
               }}>
-                Share Audio Prayer
+{t('shareAudio')} Prayer
               </h1>
             </div>
           </div>
@@ -8252,7 +8262,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 margin: 0,
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
               }}>
-                Share Prayer Image
+{t('imageSharingOptions')}
               </h1>
             </div>
           </div>
@@ -8365,7 +8375,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOut={(e) => e.target.style.backgroundColor = '#007AFF'}
               >
                 <Share2 size={18} />
-                Share Prayer Image
+{t('imageSharingOptions')}
               </button>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
@@ -8682,7 +8692,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                       cursor: 'pointer'
                     }}
                   >
-                    Generate New Image
+  {t('generateNewImage')}
                   </button>
                 </div>
               ) : (
@@ -8840,7 +8850,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 }}
               >
                 <Image size={16} />
-                Share Image
+{t('shareImage')}
               </button>
 
               <button
@@ -8861,7 +8871,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 }}
               >
                 <Headphones size={16} />
-                Share Audio
+{t('shareAudio')}
               </button>
 
               <button
@@ -8882,7 +8892,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 }}
               >
                 <Package size={16} />
-                Share Both
+{t('shareBoth')}
               </button>
             </div>
 
