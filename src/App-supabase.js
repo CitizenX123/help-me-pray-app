@@ -169,7 +169,15 @@ const translations = {
     prayerForCustom: "A Custom Prayer",
     // Sharing text
     generatedWith: "Generated with",
-    downloadApp: "Download"
+    downloadApp: "Download",
+    listenToPrayer: "Listen to prayer",
+    listen: "Listen",
+    listenToYourPrayer: "Listen to your prayer and share the audio",
+    prayerCopied: "Prayer copied to clipboard!",
+    prayerImageCopied: "Prayer image copied to clipboard! Paste it in",
+    prayerTextCopied: "Prayer text copied!",
+    beautifulPrayerImage: "Beautiful Prayer Image",
+    beautifulPrayerAudio: "Beautiful Prayer Audio"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -309,7 +317,15 @@ const translations = {
     prayerForCustom: "Una Oración Personalizada",
     // Sharing text
     generatedWith: "Generado con",
-    downloadApp: "Descargar"
+    downloadApp: "Descargar",
+    listenToPrayer: "Escuchar oración",
+    listen: "Escuchar",
+    listenToYourPrayer: "Escucha tu oración y comparte el audio",
+    prayerCopied: "¡Oración copiada al portapapeles!",
+    prayerImageCopied: "¡Imagen de oración copiada al portapapeles! Pégala en",
+    prayerTextCopied: "¡Texto de oración copiado!",
+    beautifulPrayerImage: "Hermosa Imagen de Oración",
+    beautifulPrayerAudio: "Hermoso Audio de Oración"
   }
 };
 
@@ -2675,7 +2691,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
     copyToClipboard: async (text) => {
       try {
         await navigator.clipboard.writeText(formatPrayerForSharing(text));
-        setShareSuccess('Prayer copied to clipboard!');
+        setShareSuccess(t('prayerCopied'));
         setTimeout(() => setShareSuccess(''), 3000);
       } catch (err) {
         console.error('Failed to copy:', err);
@@ -2716,7 +2732,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               const url = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
               window.open(url, '_blank');
               
-              setShareSuccess('Prayer image copied to clipboard! Paste it in WhatsApp.');
+              setShareSuccess(`${t('prayerImageCopied')} WhatsApp.`);
               setTimeout(() => setShareSuccess(''), 5000);
               return;
             } catch (clipboardError) {
@@ -2779,7 +2795,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               const url = `sms:&body=${encodeURIComponent(messagesText)}`;
               window.location.href = url;
               
-              setShareSuccess('Prayer image copied to clipboard! Paste it in Messages.');
+              setShareSuccess(`${t('prayerImageCopied')} Messages.`);
               setTimeout(() => setShareSuccess(''), 5000);
               return;
             } catch (clipboardError) {
@@ -2856,7 +2872,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
         if (navigator.share) {
           try {
             await navigator.share({
-              title: 'Beautiful Prayer Image',
+              title: t('beautifulPrayerImage'),
               text: formatPrayerForSharing(currentPrayer, false),
               files: [file]
             });
@@ -2866,7 +2882,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             
             // Fallback: Try without files (text only sharing that opens share menu)
             await navigator.share({
-              title: 'Beautiful Prayer Image',
+              title: t('beautifulPrayerImage'),
               text: `${formatPrayerForSharing(currentPrayer, false)}\n\n🖼️ Beautiful prayer image created with Help Me Pray!`,
               url: window.location.href
             });
@@ -4543,10 +4559,10 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             cursor: 'pointer',
                             transition: 'background-color 0.2s'
                           }}
-                          title="Listen to prayer"
+                          title={t('listenToPrayer')}
                         >
                           <Play size={16} />
-                          Listen
+                          {t('listen')}
                         </button>
                       ) : (
                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -5467,7 +5483,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   onClick={() => {
                     // Instagram sharing
                     navigator.clipboard.writeText(`🙏 Beautiful prayer created with Help Me Pray app!\n\n${currentPrayer}\n\n#Prayer #Faith #HelpMePray\n\nDownload: helmpmeray.app`).then(() => {
-                      alert('Prayer text copied! Now opening Instagram - paste this with your prayer.');
+                      alert(`${t('prayerTextCopied')} ${language === 'es' ? 'Abriendo Instagram - pega esto con tu oración.' : 'Now opening Instagram - paste this with your prayer.'}`);
                       window.open('https://www.instagram.com/', '_blank');
                     });
                   }}
@@ -7749,7 +7765,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 textAlign: 'center',
                 margin: '0 0 16px 0' 
               }}>
-                Listen to your prayer and share the audio
+{t('listenToYourPrayer')}
               </p>
               <button
                 onClick={() => setCurrentScreen('unified-sharing')}
@@ -9087,7 +9103,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   <button
                     onClick={() => {
                       socialSharing.downloadAudio();
-                      const emailSubject = encodeURIComponent('Beautiful Prayer Audio');
+                      const emailSubject = encodeURIComponent(t('beautifulPrayerAudio'));
                       const emailBody = encodeURIComponent(`🎵 I wanted to share this beautiful prayer audio I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nThe audio file has been downloaded. Please attach it to this email.\n\nYou can download the app at helmeray.app to create your own personalized prayer audio.`);
                       window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
                       setShowAudioSharingDialog(false);
@@ -9334,7 +9350,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                     onClick={() => {
                       downloadPrayerImage();
                       socialSharing.downloadAudio();
-                      const emailSubject = encodeURIComponent('Beautiful Prayer Image & Audio');
+                      const emailSubject = encodeURIComponent(`${t('beautifulPrayerImage')} & ${t('beautifulPrayerAudio')}`);
                       const emailBody = encodeURIComponent(`🙏🎵 I wanted to share this beautiful prayer image and audio I created with Help Me Pray app!\n\n"${currentPrayer}"\n\nBoth the image and audio files have been downloaded. Please attach them to this email.\n\nYou can download the app at helmepray.app to create your own personalized prayers.`);
                       window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
                       setShowBothSharingDialog(false);
