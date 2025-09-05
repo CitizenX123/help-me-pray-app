@@ -182,7 +182,16 @@ const translations = {
     shareAudio: "Share Audio", 
     shareBoth: "Share Both",
     generateNewImage: "Generate New Image",
-    generatingImage: "Generating your beautiful prayer image..."
+    generatingImage: "Generating your beautiful prayer image...",
+    // Critical sharing text
+    prayerImage: "Prayer Image",
+    prayerAudio: "Prayer Audio",
+    shareThisPrayer: "Share this prayer",
+    downloadImage: "Download Image",
+    pause: "Pause",
+    resume: "Resume",
+    stop: "Stop",
+    pleaseGeneratePrayerFirst: "Please generate a prayer first!"
   },
   es: {
     appTitle: "Ayúdame a Orar",
@@ -335,7 +344,16 @@ const translations = {
     shareAudio: "Compartir Audio",
     shareBoth: "Compartir Ambos",
     generateNewImage: "Generar Nueva Imagen",
-    generatingImage: "Generando tu hermosa imagen de oración..."
+    generatingImage: "Generando tu hermosa imagen de oración...",
+    // Critical sharing text
+    prayerImage: "Imagen de Oración",
+    prayerAudio: "Audio de Oración",
+    shareThisPrayer: "Compartir esta oración",
+    downloadImage: "Descargar Imagen",
+    pause: "Pausar",
+    resume: "Reanudar",
+    stop: "Detener",
+    pleaseGeneratePrayerFirst: "¡Por favor genera una oración primero!"
   }
 };
 
@@ -830,7 +848,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   const downloadPrayerImage = async () => {
     if (!currentPrayer) {
-      alert('Please generate a prayer first!');
+      alert(t('pleaseGeneratePrayerFirst'));
       return;
     }
 
@@ -848,7 +866,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   // Simple direct download functions
   const downloadImage = async () => {
     if (!currentPrayer) {
-      alert('Please generate a prayer first!');
+      alert(t('pleaseGeneratePrayerFirst'));
       return;
     }
 
@@ -885,7 +903,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   const downloadAudio = async () => {
     if (!currentPrayer) {
-      alert('Please generate a prayer first!');
+      alert(t('pleaseGeneratePrayerFirst'));
       return;
     }
 
@@ -918,7 +936,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
 
   const downloadBoth = async () => {
     if (!currentPrayer) {
-      alert('Please generate a prayer first!');
+      alert(t('pleaseGeneratePrayerFirst'));
       return;
     }
 
@@ -2973,7 +2991,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           });
 
           const shareData = {
-            title: 'Prayer Audio',
+            title: t('prayerAudio'),
             text: `🎵 Listen to this beautiful prayer I generated with Help Me Pray!\n\n${formatPrayerForSharing(currentPrayer, false)}`,
             files: [file]
           };
@@ -3021,7 +3039,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
           });
 
           const shareData = {
-            title: 'Prayer Audio',
+            title: t('prayerAudio'),
             text: `🎵 Listen to this beautiful prayer I generated with Help Me Pray!\n\n${formatPrayerForSharing(currentPrayer, false)}`,
             files: [file]
           };
@@ -4591,7 +4609,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                 fontSize: '14px',
                                 cursor: 'pointer'
                               }}
-                              title="Pause"
+                              title={t('pause')}
                             >
                               <Pause size={16} />
                             </button>
@@ -4610,7 +4628,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                                 fontSize: '14px',
                                 cursor: 'pointer'
                               }}
-                              title="Resume"
+                              title={t('resume')}
                             >
                               <Play size={16} />
                             </button>
@@ -4630,7 +4648,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                               fontSize: '14px',
                               cursor: 'pointer'
                             }}
-                            title="Stop"
+                            title={t('stop')}
                           >
                             <Square size={16} />
                           </button>
@@ -4952,7 +4970,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                         onMouseOut={(e) => e.target.style.backgroundColor = '#6366f1'}
                       >
                         <Share2 size={16} />
-                        Share this prayer
+        {t('shareThisPrayer')}
                       </button>
                       
                       {shareSuccess && (
@@ -5013,7 +5031,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             if (currentPrayer) e.target.style.backgroundColor = '#059669';
                           }}
                         >
-                          Download Image
+          {t('downloadImage')}
                         </button>
                         
                         <button
@@ -5201,7 +5219,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                             if (currentPrayer) e.target.style.backgroundColor = '#059669';
                           }}
                         >
-                          Download Image
+          {t('downloadImage')}
                         </button>
                         
                         <button
@@ -5356,7 +5374,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)' }}>
-                Share this prayer
+{t('shareThisPrayer')}
               </h3>
               <button
                 onClick={() => setShowShareModal(false)}
@@ -8319,7 +8337,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
                 onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
               >
-                Download Image
+{t('downloadImage')}
               </button>
             </div>
 
