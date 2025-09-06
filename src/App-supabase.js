@@ -8310,7 +8310,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                 gap: '8px'
               }}>
                 <Share2 size={20} color="#10b981" />
-                Download Prayer Image
+{t('imageSharingOptions')}
               </h3>
               <p style={{ 
                 color: 'rgba(255, 255, 255, 0.8)', 
@@ -8662,7 +8662,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               gap: '8px'
             }}>
               <Image size={18} color="white" />
-              Prayer Image
+{t('prayerImage')}
             </h3>
             
             <div style={{ textAlign: 'center' }}>
@@ -8767,7 +8767,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               gap: '8px'
             }}>
               <Headphones size={18} color="white" />
-              Prayer Audio
+{t('prayerAudio')}
             </h3>
             
             <div style={{ textAlign: 'center' }}>
