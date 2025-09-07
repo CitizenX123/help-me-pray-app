@@ -2039,25 +2039,45 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
     try {
       console.log('Starting OAuth flow...');
-      // Always use current domain for redirect - let Supabase handle it
       const redirectUrl = `${window.location.origin}/`;
       console.log('Google OAuth redirect URL:', redirectUrl);
       console.log('Current location:', window.location.href);
+      console.log('Current domain:', window.location.hostname);
+      console.log('Protocol:', window.location.protocol);
       
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
         }
       });
 
+      console.log('OAuth response data:', data);
+      console.log('OAuth response error:', error);
+
       if (error) {
-        console.error('OAuth error:', error);
-        setAuthError(`Google sign-in failed: ${error.message}`);
+        console.error('OAuth error details:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText,
+          name: error.name,
+          stack: error.stack
+        });
+        
+        let errorMessage = `Google sign-in failed: ${error.message}`;
+        if (error.message.includes('requested path is invalid')) {
+          errorMessage += '\n\nThis usually means the redirect URL is not configured in Google OAuth Console. Current URL: ' + redirectUrl;
+        }
+        
+        setAuthError(errorMessage);
         setAuthLoading(false);
       }
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Unexpected error details:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack
+      });
       setAuthError('An unexpected error occurred. Please try again.');
       setAuthLoading(false);
     }
