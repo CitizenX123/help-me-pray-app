@@ -7289,7 +7289,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   marginBottom: '12px',
                   textAlign: 'center'
                 }}>
-                  Prayer length:
+                  {t('prayerLength')}
                 </label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <button
