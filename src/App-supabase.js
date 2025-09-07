@@ -8793,7 +8793,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
                   onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                 >
                   <Play size={18} />
-                  Listen to Prayer
+{t('listenToPrayer')}
                 </button>
               ) : (
                 <button
@@ -8845,7 +8845,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
               gap: '8px'
             }}>
               <Share2 size={18} color="white" />
-              Share Options
+{t('imageSharingOptions')}
             </h3>
 
             {/* Share Type Buttons */}
