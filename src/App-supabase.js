@@ -1522,15 +1522,19 @@ const HelpMePrayApp = ({ user, setUser }) => {
   };
 
   // Function to ensure prayer uniqueness
-  const generateUniquePrayer = (generatorFunction, maxAttempts = 10) => {
+  const generateUniquePrayer = (generatorFunction, maxAttempts = 15) => {
     let attempts = 0;
     let prayer = '';
     
+    // Add time-based randomness to ensure different prayers even with same inputs
+    const timeBasedSeed = Date.now() + Math.random() * 1000;
+    
     do {
-      prayer = generatorFunction();
+      // Pass time-based seed to generator for additional randomness
+      prayer = generatorFunction(timeBasedSeed + attempts);
       attempts++;
       
-      // Simple uniqueness - if we hit max attempts, just use current prayer
+      // If we hit max attempts, just use current prayer
       if (attempts >= maxAttempts) {
         break;
       }
@@ -1543,7 +1547,7 @@ const HelpMePrayApp = ({ user, setUser }) => {
   };
 
   // Internal prayer generator (called by uniqueness checker)
-  const generatePrayerInternal = (category, length = 'medium') => {
+  const generatePrayerInternal = (category, length = 'medium', seed = 0) => {
     try {
     // Special handling for Bible Verses category
     if (category === 'bibleVerses') {
@@ -1552,53 +1556,55 @@ const HelpMePrayApp = ({ user, setUser }) => {
           verse: "And we know that God causes everything to work together for the good of those who love God and are called according to his purpose for them.",
           reference: "Romans 8:28 (NLT)",
           theme: "God's sovereignty and purpose",
-          prayer: "Heavenly Father, thank you for this beautiful promise that you are working in all circumstances of our lives. When we face uncertainty or difficulty, help us remember that you have a purpose and plan. Give us the faith to trust in your goodness even when we cannot see the outcome. May we find peace knowing that you are weaving all things together for our good and your glory. In Jesus' name, Amen."
+          prayer: "Heavenly Father, thank you for this beautiful promise that you are working in all circumstances of my life. When I face uncertainty or difficulty, help me remember that you have a purpose and plan. Give me the faith to trust in your goodness even when I cannot see the outcome. May I find peace knowing that you are weaving all things together for my good and your glory. In Jesus' name, Amen."
         },
         {
           verse: "The Lord your God is with you, the Mighty Warrior who saves. He will take great delight in you; in his love he will no longer rebuke you, but will rejoice over you with singing.",
           reference: "Zephaniah 3:17 (NLT)",
           theme: "God's love and presence",
-          prayer: "Lord, what a wonderful truth that you delight in us and rejoice over us with singing! When we feel alone or unworthy, remind us of your constant presence and unconditional love. Help us to hear your songs of joy over our lives, even in the quiet moments. Fill our hearts with the assurance that we are treasured by you, our Mighty Warrior and Savior. Amen."
+          prayer: "Lord, what a wonderful truth that you delight in me and rejoice over me with singing! When I feel alone or unworthy, remind me of your constant presence and unconditional love. Help me to hear your songs of joy over my life, even in the quiet moments. Fill my heart with the assurance that I am treasured by you, my Mighty Warrior and Savior. Amen."
         },
         {
           verse: "Give all your worries and cares to God, for he cares about you.",
           reference: "1 Peter 5:7 (NLT)",
           theme: "God's care and peace",
-          prayer: "Caring Father, we come to you carrying the weight of our worries and fears. This verse reminds us that we don't have to bear these burdens alone. You invite us to give our worries and cares to you because you truly care for us. Help us to let go of the things that trouble our hearts and minds. Replace our anxiety with your perfect peace, and help us to trust in your loving care for every detail of our lives. Amen."
+          prayer: "Caring Father, I come to you carrying the weight of my worries and fears. This verse reminds me that I don't have to bear these burdens alone. You invite me to give my worries and cares to you because you truly care for me. Help me to let go of the things that trouble my heart and mind. Replace my anxiety with your perfect peace, and help me to trust in your loving care for every detail of my life. Amen."
         },
         {
           verse: "For I know the plans I have for you,\" declares the Lord, \"plans to prosper you and not to harm you, plans to give you hope and a future.",
           reference: "Jeremiah 29:11 (NLT)",
           theme: "God's plans and hope",
-          prayer: "Gracious God, thank you for having plans for our lives that are filled with hope and purpose. When we are uncertain about the future or questioning our path, help us to remember that you have good plans for us. Give us patience to wait for your timing and wisdom to follow your guidance. May we find courage in knowing that our future is secure in your loving hands. Amen."
+          prayer: "Gracious God, thank you for having plans for my life that are filled with hope and purpose. When I am uncertain about the future or questioning my path, help me to remember that you have good plans for me. Give me patience to wait for your timing and wisdom to follow your guidance. May I find courage in knowing that my future is secure in your loving hands. Amen."
         },
         {
           verse: "He heals the brokenhearted and bandages their wounds.",
           reference: "Psalm 147:3 (NLT)",
           theme: "God's healing and comfort",
-          prayer: "Healing God, you see every broken heart and every wound that life has inflicted upon us. This verse assures us that you are the great healer who tenderly cares for our pain. Come and heal the places in our hearts that are broken. Bandage our wounds with your love and mercy. Help us to find comfort in your presence and hope in your promise of restoration. Thank you for being close to the brokenhearted. Amen."
+          prayer: "Healing God, you see every broken heart and every wound that life has inflicted upon me. This verse assures me that you are the great healer who tenderly cares for my pain. Come and heal the places in my heart that are broken. Bandage my wounds with your love and mercy. Help me to find comfort in your presence and hope in your promise of restoration. Thank you for being close to the brokenhearted. Amen."
         },
         {
           verse: "Be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.",
           reference: "Joshua 1:9 (NLT)",
           theme: "God's presence and courage",
-          prayer: "Mighty God, when we face challenges that seem overwhelming, this verse reminds us to be strong and courageous. Help us to remember that we are never alone because you are always with us. When fear tries to paralyze us or discouragement weighs us down, fill us with your strength and courage. May we walk boldly into each day knowing that you go before us and beside us wherever we go. Amen."
+          prayer: "Mighty God, when I face challenges that seem overwhelming, this verse reminds me to be strong and courageous. Help me to remember that I am never alone because you are always with me. When fear tries to paralyze me or discouragement weighs me down, fill me with your strength and courage. May I walk boldly into each day knowing that you go before me and beside me wherever I go. Amen."
         },
         {
           verse: "Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.",
           reference: "Philippians 4:6 (NLT)",
           theme: "Prayer and gratitude over worry",
-          prayer: "Gracious God, you call us to bring everything to you in prayer rather than carrying the burden of worry. Help us to remember that you want to hear about all our needs, both big and small. Teach us to approach you with thankful hearts, remembering all the ways you have provided for us in the past. When worry tries to overwhelm us, redirect our hearts to pray and give thanks. Thank you for the peace that comes from trusting in you. Amen."
+          prayer: "Gracious God, you call me to bring everything to you in prayer rather than carrying the burden of worry. Help me to remember that you want to hear about all my needs, both big and small. Teach me to approach you with a thankful heart, remembering all the ways you have provided for me in the past. When worry tries to overwhelm me, redirect my heart to pray and give thanks. Thank you for the peace that comes from trusting in you. Amen."
         },
         {
           verse: "And I am convinced that nothing can ever separate us from God's love. Neither death nor life, neither angels nor demons, neither our fears for today nor our worries about tomorrow—not even the powers of hell can separate us from God's love. Nothing in all creation will ever be able to separate us from the love of God that is revealed in Christ Jesus our Lord.",
           reference: "Romans 8:38-39 (NLT)",
           theme: "God's unending love",
-          prayer: "Faithful God, what an incredible promise that nothing can separate us from your love! When we feel distant from you or doubt our worth, help us to remember this unshakeable truth. No mistake we've made, no fear we carry, no circumstance we face can diminish your love for us. Give us confidence to rest in this eternal love that surrounds us always. May we live with the freedom and joy that comes from knowing we are forever held in your love. Amen."
+          prayer: "Faithful God, what an incredible promise that nothing can separate me from your love! When I feel distant from you or doubt my worth, help me to remember this unshakeable truth. No mistake I've made, no fear I carry, no circumstance I face can diminish your love for me. Give me confidence to rest in this eternal love that surrounds me always. May I live with the freedom and joy that comes from knowing I am forever held in your love. Amen."
         }
       ];
 
-      const randomVerse = bibleVerses[Math.floor(Math.random() * bibleVerses.length)];
+      // Use seed for consistent but varied randomization
+      const seededRandom = (seed + Date.now()) % 1000 / 1000;
+      const randomVerse = bibleVerses[Math.floor(seededRandom * bibleVerses.length)];
       
       if (length === 'brief') {
         return `"${randomVerse.verse}" - ${randomVerse.reference}
@@ -1607,15 +1613,15 @@ This verse reminds us of ${randomVerse.theme}. ${randomVerse.prayer}`;
       } else if (length === 'medium') {
         return `"${randomVerse.verse}" - ${randomVerse.reference}
         
-This beautiful verse speaks to us about ${randomVerse.theme}. In times of uncertainty and challenge, God's Word provides the foundation we need for hope and strength.
+This beautiful verse speaks to me about ${randomVerse.theme}. In times of uncertainty and challenge, God's Word provides the foundation I need for hope and strength.
 
 ${randomVerse.prayer}`;
       } else {
         return `"${randomVerse.verse}" - ${randomVerse.reference}
         
-This powerful verse illuminates the truth about ${randomVerse.theme}. Throughout Scripture, we see God's consistent character of love, faithfulness, and care for His people. When we meditate on His Word, our hearts are strengthened and our faith is renewed.
+This powerful verse illuminates the truth about ${randomVerse.theme}. Throughout Scripture, I see God's consistent character of love, faithfulness, and care for His people. When I meditate on His Word, my heart is strengthened and my faith is renewed.
 
-The wisdom found in this passage reminds us that God's truth is unchanging and His promises are sure. In a world full of uncertainty, we can anchor our souls in the eternal truths of His Word.
+The wisdom found in this passage reminds me that God's truth is unchanging and His promises are sure. In a world full of uncertainty, I can anchor my soul in the eternal truths of His Word.
 
 ${randomVerse.prayer}
 
@@ -1626,22 +1632,29 @@ May this verse continue to speak to your heart throughout the day, bringing you 
     const templates = language === 'es' ? prayerTemplatesSpanish[category] : prayerTemplates[category];
     if (!templates) return null;
     
+    // Create seeded random function for consistent but varied selection
+    const seededRandom = (offset = 0) => ((seed + Date.now() + offset) % 997) / 997;
+    
     if (length === 'brief') {
       // Brief: ~100 words (Brief & Beautiful)
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
-      const randomSubject1 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
-      let randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+      const randomOpening = templates.openings[Math.floor(seededRandom(1) * templates.openings.length)];
+      const randomSubject1 = templates.subjects[Math.floor(seededRandom(2) * templates.subjects.length)];
+      let randomSubject2 = templates.subjects[Math.floor(seededRandom(3) * templates.subjects.length)];
+      let randomSubject3 = templates.subjects[Math.floor(seededRandom(4) * templates.subjects.length)];
       
       // Ensure different subjects
-      while (randomSubject2 === randomSubject1) {
-        randomSubject2 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+      let attempts = 0;
+      while (randomSubject2 === randomSubject1 && attempts < 5) {
+        randomSubject2 = templates.subjects[Math.floor(seededRandom(5 + attempts) * templates.subjects.length)];
+        attempts++;
       }
-      while (randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) {
-        randomSubject3 = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+      attempts = 0;
+      while ((randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) && attempts < 5) {
+        randomSubject3 = templates.subjects[Math.floor(seededRandom(10 + attempts) * templates.subjects.length)];
+        attempts++;
       }
       
-      const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+      const randomClosing = templates.closings[Math.floor(seededRandom(15) * templates.closings.length)];
       
       const middlePhrases = language === 'es' ? [
         'Te pido con fe que obres en mi vida y me guíes por tus sendas',
@@ -1655,33 +1668,45 @@ May this verse continue to speak to your heart throughout the day, bringing you 
         'I seek your face and your wisdom to face each day'
       ];
       
-      const randomMiddle = middlePhrases[Math.floor(Math.random() * middlePhrases.length)];
+      const randomMiddle = middlePhrases[Math.floor(seededRandom(20) * middlePhrases.length)];
       
       return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${randomMiddle}. ${randomSubject3}. ${randomClosing} ${t('finalClosingShort')}`;
       
     } else if (length === 'medium') {
       // Medium: ~200 words (Perfectly Timed)
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomOpening = templates.openings[Math.floor(seededRandom(30) * templates.openings.length)];
       const randomTransition = language === 'es' ? 
-        ['Por tanto', 'También', 'Además'][Math.floor(Math.random() * 3)] :
-        ['Therefore', 'Also', 'Furthermore'][Math.floor(Math.random() * 3)];
+        ['Por tanto', 'También', 'Además'][Math.floor(seededRandom(31) * 3)] :
+        ['Therefore', 'Also', 'Furthermore'][Math.floor(seededRandom(31) * 3)];
       
       // Get 4 different subjects
       const subjects = [];
-      while (subjects.length < 4) {
-        const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+      let subjectAttempts = 0;
+      while (subjects.length < 4 && subjectAttempts < 20) {
+        const randomSubject = templates.subjects[Math.floor(seededRandom(40 + subjectAttempts) * templates.subjects.length)];
         if (!subjects.includes(randomSubject)) {
           subjects.push(randomSubject);
         }
+        subjectAttempts++;
+      }
+      // Ensure we have at least 2 subjects
+      while (subjects.length < 2) {
+        subjects.push(templates.subjects[Math.floor(seededRandom(60 + subjects.length) * templates.subjects.length)]);
       }
       
       // Get 2 different closings
       const closings = [];
-      while (closings.length < 2) {
-        const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+      let closingAttempts = 0;
+      while (closings.length < 2 && closingAttempts < 10) {
+        const randomClosing = templates.closings[Math.floor(seededRandom(70 + closingAttempts) * templates.closings.length)];
         if (!closings.includes(randomClosing)) {
           closings.push(randomClosing);
         }
+        closingAttempts++;
+      }
+      // Ensure we have at least 1 closing
+      while (closings.length < 1) {
+        closings.push(templates.closings[Math.floor(seededRandom(80 + closings.length) * templates.closings.length)]);
       }
       
       return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
@@ -1692,51 +1717,63 @@ ${closings[0]} ${closings[1]} ${t('finalClosingLong')}`;
       
     } else {
       // Comprehensive: ~300 words (Rich & Meaningful)
-      const randomOpening = templates.openings[Math.floor(Math.random() * templates.openings.length)];
+      const randomOpening = templates.openings[Math.floor(seededRandom(90) * templates.openings.length)];
       const transitions = language === 'es' ? 
         ['Por tanto', 'También', 'Además', 'Asimismo'] :
         ['Therefore', 'Also', 'Furthermore', 'Moreover'];
-      const randomTransition1 = transitions[Math.floor(Math.random() * transitions.length)];
-      const randomTransition2 = transitions[Math.floor(Math.random() * transitions.length)];
+      const randomTransition1 = transitions[Math.floor(seededRandom(91) * transitions.length)];
+      const randomTransition2 = transitions[Math.floor(seededRandom(92) * transitions.length)];
       
       // Get 6 different subjects
       const subjects = [];
-      while (subjects.length < 6) {
-        const randomSubject = templates.subjects[Math.floor(Math.random() * templates.subjects.length)];
+      let subjectAttempts = 0;
+      while (subjects.length < 6 && subjectAttempts < 30) {
+        const randomSubject = templates.subjects[Math.floor(seededRandom(100 + subjectAttempts) * templates.subjects.length)];
         if (!subjects.includes(randomSubject)) {
           subjects.push(randomSubject);
         }
+        subjectAttempts++;
+      }
+      // Ensure we have at least 3 subjects
+      while (subjects.length < 3) {
+        subjects.push(templates.subjects[Math.floor(seededRandom(130 + subjects.length) * templates.subjects.length)]);
       }
       
       // Get 3 different closings
       const closings = [];
-      while (closings.length < 3) {
-        const randomClosing = templates.closings[Math.floor(Math.random() * templates.closings.length)];
+      let closingAttempts = 0;
+      while (closings.length < 3 && closingAttempts < 15) {
+        const randomClosing = templates.closings[Math.floor(seededRandom(140 + closingAttempts) * templates.closings.length)];
         if (!closings.includes(randomClosing)) {
           closings.push(randomClosing);
         }
+        closingAttempts++;
+      }
+      // Ensure we have at least 1 closing
+      while (closings.length < 1) {
+        closings.push(templates.closings[Math.floor(seededRandom(155 + closings.length) * templates.closings.length)]);
       }
       
       const gratitudePhrases = language === 'es' ? [
-        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre nosotros',
+        'Mi corazón se llena de gratitud por todas las bendiciones que derramas sobre mí',
         'Te alabo por tu bondad constante y tu amor que nunca falla',
-        'Reconozco con humildad todos los dones que nos has otorgado'
+        'Reconozco con humildad todos los dones que me has otorgado'
       ] : [
-        'My heart fills with gratitude for all the blessings you pour upon us',
+        'My heart fills with gratitude for all the blessings you pour upon me',
         'I praise you for your constant goodness and your love that never fails',
-        'I humbly acknowledge all the gifts you have bestowed upon us'
+        'I humbly acknowledge all the gifts you have bestowed upon me'
       ];
       
-      const randomGratitude = gratitudePhrases[Math.floor(Math.random() * gratitudePhrases.length)];
+      const randomGratitude = gratitudePhrases[Math.floor(seededRandom(160) * gratitudePhrases.length)];
       
       // Create a substantial 4-paragraph prayer
-      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')} We come before you with hearts full of expectation, knowing that you hear every word we speak and understand the deepest longings of our souls.
+      return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')} I come before you with a heart full of expectation, knowing that you hear every word I speak and understand the deepest longings of my soul.
 
-${subjects[2]}. ${subjects[3]}. Your word reminds us that you are working all things together for good for those who love you. We place our trust in your perfect plan, even when we cannot see the full picture of what you are accomplishing in our lives.
+${subjects[2]}. ${subjects[3]}. Your word reminds me that you are working all things together for good for those who love you. I place my trust in your perfect plan, even when I cannot see the full picture of what you are accomplishing in my life.
 
-${randomTransition1}, we bring before you these concerns: ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')} We ask for your divine intervention, knowing that nothing is too difficult for you and that your power is made perfect in our weakness.
+${randomTransition1}, I bring before you these concerns: ${subjects[4]}. ${subjects[5]}. ${t('comprehensiveMiddle2')} I ask for your divine intervention, knowing that nothing is too difficult for you and that your power is made perfect in my weakness.
 
-${randomGratitude}. We celebrate your faithfulness in the past, trust in your provision for today, and have hope in your promises for tomorrow. ${randomTransition2}, ${closings[0]} ${closings[1]} ${closings[2]} ${t('finalClosingLong')}`;
+${randomGratitude}. I celebrate your faithfulness in the past, trust in your provision for today, and have hope in your promises for tomorrow. ${randomTransition2}, ${closings[0]} ${closings[1]} ${closings[2]} ${t('finalClosingLong')}`;
     }
     } catch (error) {
       console.error(`Prayer generation error for category: ${category}, length: ${length}`, error);
@@ -1757,7 +1794,7 @@ ${randomGratitude}. We celebrate your faithfulness in the past, trust in your pr
 
   // Public function that ensures uniqueness
   const generateDynamicPrayer = (category, length = 'medium') => {
-    return generateUniquePrayer(() => generatePrayerInternal(category, length));
+    return generateUniquePrayer((seed) => generatePrayerInternal(category, length, seed));
   };
 
   const prayerCategories = {
