@@ -1603,8 +1603,8 @@ const HelpMePrayApp = ({ user, setUser }) => {
       ];
 
       // Use seed for consistent but varied randomization
-      const seededRandom = (seed + Date.now()) % 1000 / 1000;
-      const randomVerse = bibleVerses[Math.floor(seededRandom * bibleVerses.length)];
+      const seededBibleRandom = Math.abs((seed + Date.now()) % 1000) / 1000;
+      const randomVerse = bibleVerses[Math.floor(seededBibleRandom * bibleVerses.length)] || bibleVerses[0];
       
       if (length === 'brief') {
         return `"${randomVerse.verse}" - ${randomVerse.reference}
@@ -1633,28 +1633,38 @@ May this verse continue to speak to your heart throughout the day, bringing you 
     if (!templates) return null;
     
     // Create seeded random function for consistent but varied selection
-    const seededRandom = (offset = 0) => ((seed + Date.now() + offset) % 997) / 997;
+    const seededRandom = (offset = 0) => {
+      const value = ((seed + Date.now() + offset) % 997) / 997;
+      return Math.abs(value); // Ensure positive value
+    };
+    
+    // Safe array access function
+    const safeArrayAccess = (array, index, fallback = '') => {
+      if (!array || array.length === 0) return fallback;
+      const safeIndex = Math.floor(Math.abs(index)) % array.length;
+      return array[safeIndex] || fallback;
+    };
     
     if (length === 'brief') {
       // Brief: ~100 words (Brief & Beautiful)
-      const randomOpening = templates.openings[Math.floor(seededRandom(1) * templates.openings.length)];
-      const randomSubject1 = templates.subjects[Math.floor(seededRandom(2) * templates.subjects.length)];
-      let randomSubject2 = templates.subjects[Math.floor(seededRandom(3) * templates.subjects.length)];
-      let randomSubject3 = templates.subjects[Math.floor(seededRandom(4) * templates.subjects.length)];
+      const randomOpening = safeArrayAccess(templates.openings, seededRandom(1) * templates.openings.length, 'Lord,');
+      const randomSubject1 = safeArrayAccess(templates.subjects, seededRandom(2) * templates.subjects.length, 'we come before you with grateful hearts');
+      let randomSubject2 = safeArrayAccess(templates.subjects, seededRandom(3) * templates.subjects.length, 'we seek your guidance and blessing');
+      let randomSubject3 = safeArrayAccess(templates.subjects, seededRandom(4) * templates.subjects.length, 'we trust in your love and mercy');
       
       // Ensure different subjects
       let attempts = 0;
       while (randomSubject2 === randomSubject1 && attempts < 5) {
-        randomSubject2 = templates.subjects[Math.floor(seededRandom(5 + attempts) * templates.subjects.length)];
+        randomSubject2 = safeArrayAccess(templates.subjects, seededRandom(5 + attempts) * templates.subjects.length, 'we seek your peace and comfort');
         attempts++;
       }
       attempts = 0;
       while ((randomSubject3 === randomSubject1 || randomSubject3 === randomSubject2) && attempts < 5) {
-        randomSubject3 = templates.subjects[Math.floor(seededRandom(10 + attempts) * templates.subjects.length)];
+        randomSubject3 = safeArrayAccess(templates.subjects, seededRandom(10 + attempts) * templates.subjects.length, 'we offer our praise and thanksgiving');
         attempts++;
       }
       
-      const randomClosing = templates.closings[Math.floor(seededRandom(15) * templates.closings.length)];
+      const randomClosing = safeArrayAccess(templates.closings, seededRandom(15) * templates.closings.length, 'May your will be done in our lives.');
       
       const middlePhrases = language === 'es' ? [
         'Te pido con fe que obres en mi vida y me guíes por tus sendas',
@@ -1668,45 +1678,50 @@ May this verse continue to speak to your heart throughout the day, bringing you 
         'I seek your face and your wisdom to face each day'
       ];
       
-      const randomMiddle = middlePhrases[Math.floor(seededRandom(20) * middlePhrases.length)];
+      const randomMiddle = safeArrayAccess(middlePhrases, seededRandom(20) * middlePhrases.length, 'I ask with faith that you work in my life and guide me in your ways');
       
       return `${randomOpening} ${randomSubject1}. ${randomSubject2}. ${randomMiddle}. ${randomSubject3}. ${randomClosing} ${t('finalClosingShort')}`;
       
     } else if (length === 'medium') {
       // Medium: ~200 words (Perfectly Timed)
-      const randomOpening = templates.openings[Math.floor(seededRandom(30) * templates.openings.length)];
-      const randomTransition = language === 'es' ? 
-        ['Por tanto', 'También', 'Además'][Math.floor(seededRandom(31) * 3)] :
-        ['Therefore', 'Also', 'Furthermore'][Math.floor(seededRandom(31) * 3)];
+      const randomOpening = safeArrayAccess(templates.openings, seededRandom(30) * templates.openings.length, 'Lord,');
+      const transitions = language === 'es' ? 
+        ['Por tanto', 'También', 'Además'] :
+        ['Therefore', 'Also', 'Furthermore'];
+      const randomTransition = safeArrayAccess(transitions, seededRandom(31) * transitions.length, 'Also');
       
       // Get 4 different subjects
       const subjects = [];
       let subjectAttempts = 0;
       while (subjects.length < 4 && subjectAttempts < 20) {
-        const randomSubject = templates.subjects[Math.floor(seededRandom(40 + subjectAttempts) * templates.subjects.length)];
-        if (!subjects.includes(randomSubject)) {
+        const randomSubject = safeArrayAccess(templates.subjects, seededRandom(40 + subjectAttempts) * templates.subjects.length, 'we come before you with grateful hearts');
+        if (!subjects.includes(randomSubject) && randomSubject) {
           subjects.push(randomSubject);
         }
         subjectAttempts++;
       }
-      // Ensure we have at least 2 subjects
+      // Ensure we have at least 2 subjects with fallbacks
+      const fallbackSubjects = ['we seek your guidance and blessing', 'we trust in your love and mercy', 'we offer our praise and thanksgiving', 'we ask for your peace and comfort'];
       while (subjects.length < 2) {
-        subjects.push(templates.subjects[Math.floor(seededRandom(60 + subjects.length) * templates.subjects.length)]);
+        const fallback = fallbackSubjects[subjects.length % fallbackSubjects.length];
+        if (!subjects.includes(fallback)) {
+          subjects.push(fallback);
+        }
       }
       
       // Get 2 different closings
       const closings = [];
       let closingAttempts = 0;
       while (closings.length < 2 && closingAttempts < 10) {
-        const randomClosing = templates.closings[Math.floor(seededRandom(70 + closingAttempts) * templates.closings.length)];
-        if (!closings.includes(randomClosing)) {
+        const randomClosing = safeArrayAccess(templates.closings, seededRandom(70 + closingAttempts) * templates.closings.length, 'May your will be done in our lives.');
+        if (!closings.includes(randomClosing) && randomClosing) {
           closings.push(randomClosing);
         }
         closingAttempts++;
       }
-      // Ensure we have at least 1 closing
-      while (closings.length < 1) {
-        closings.push(templates.closings[Math.floor(seededRandom(80 + closings.length) * templates.closings.length)]);
+      // Ensure we have at least 1 closing with fallback
+      if (closings.length < 1) {
+        closings.push('May your will be done in our lives.');
       }
       
       return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')}
@@ -1717,41 +1732,45 @@ ${closings[0]} ${closings[1]} ${t('finalClosingLong')}`;
       
     } else {
       // Comprehensive: ~300 words (Rich & Meaningful)
-      const randomOpening = templates.openings[Math.floor(seededRandom(90) * templates.openings.length)];
+      const randomOpening = safeArrayAccess(templates.openings, seededRandom(90) * templates.openings.length, 'Lord,');
       const transitions = language === 'es' ? 
         ['Por tanto', 'También', 'Además', 'Asimismo'] :
         ['Therefore', 'Also', 'Furthermore', 'Moreover'];
-      const randomTransition1 = transitions[Math.floor(seededRandom(91) * transitions.length)];
-      const randomTransition2 = transitions[Math.floor(seededRandom(92) * transitions.length)];
+      const randomTransition1 = safeArrayAccess(transitions, seededRandom(91) * transitions.length, 'Also');
+      const randomTransition2 = safeArrayAccess(transitions, seededRandom(92) * transitions.length, 'Furthermore');
       
       // Get 6 different subjects
       const subjects = [];
       let subjectAttempts = 0;
       while (subjects.length < 6 && subjectAttempts < 30) {
-        const randomSubject = templates.subjects[Math.floor(seededRandom(100 + subjectAttempts) * templates.subjects.length)];
-        if (!subjects.includes(randomSubject)) {
+        const randomSubject = safeArrayAccess(templates.subjects, seededRandom(100 + subjectAttempts) * templates.subjects.length, 'we come before you with grateful hearts');
+        if (!subjects.includes(randomSubject) && randomSubject) {
           subjects.push(randomSubject);
         }
         subjectAttempts++;
       }
-      // Ensure we have at least 3 subjects
+      // Ensure we have at least 3 subjects with fallbacks
+      const fallbackSubjects = ['we seek your guidance and blessing', 'we trust in your love and mercy', 'we offer our praise and thanksgiving', 'we ask for your peace and comfort', 'we celebrate your faithfulness', 'we acknowledge your sovereignty'];
       while (subjects.length < 3) {
-        subjects.push(templates.subjects[Math.floor(seededRandom(130 + subjects.length) * templates.subjects.length)]);
+        const fallback = fallbackSubjects[subjects.length % fallbackSubjects.length];
+        if (!subjects.includes(fallback)) {
+          subjects.push(fallback);
+        }
       }
       
       // Get 3 different closings
       const closings = [];
       let closingAttempts = 0;
       while (closings.length < 3 && closingAttempts < 15) {
-        const randomClosing = templates.closings[Math.floor(seededRandom(140 + closingAttempts) * templates.closings.length)];
-        if (!closings.includes(randomClosing)) {
+        const randomClosing = safeArrayAccess(templates.closings, seededRandom(140 + closingAttempts) * templates.closings.length, 'May your will be done in our lives.');
+        if (!closings.includes(randomClosing) && randomClosing) {
           closings.push(randomClosing);
         }
         closingAttempts++;
       }
-      // Ensure we have at least 1 closing
-      while (closings.length < 1) {
-        closings.push(templates.closings[Math.floor(seededRandom(155 + closings.length) * templates.closings.length)]);
+      // Ensure we have at least 1 closing with fallback
+      if (closings.length < 1) {
+        closings.push('May your will be done in our lives.');
       }
       
       const gratitudePhrases = language === 'es' ? [
@@ -1764,7 +1783,7 @@ ${closings[0]} ${closings[1]} ${t('finalClosingLong')}`;
         'I humbly acknowledge all the gifts you have bestowed upon me'
       ];
       
-      const randomGratitude = gratitudePhrases[Math.floor(seededRandom(160) * gratitudePhrases.length)];
+      const randomGratitude = safeArrayAccess(gratitudePhrases, seededRandom(160) * gratitudePhrases.length, 'My heart fills with gratitude for all the blessings you pour upon me');
       
       // Create a substantial 4-paragraph prayer
       return `${randomOpening} ${subjects[0]}. ${subjects[1]}. ${t('comprehensiveMiddle1')} I come before you with a heart full of expectation, knowing that you hear every word I speak and understand the deepest longings of my soul.
